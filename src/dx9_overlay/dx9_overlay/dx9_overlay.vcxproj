@@ -80,13 +80,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Box.cpp" />
+    <ClCompile Include="D3DFont.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="dx_utils.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="Line.cpp" />
     <ClCompile Include="pattern.cpp" />
+    <ClCompile Include="RenderBase.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Text.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algorithm.h" />
+    <ClInclude Include="Box.h" />
+    <ClInclude Include="D3DFont.h" />
+    <ClInclude Include="dx_utils.h" />
     <ClInclude Include="hook.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="Line.h" />
     <ClInclude Include="pattern.h" />
+    <ClInclude Include="RenderBase.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="windows.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

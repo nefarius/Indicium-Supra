@@ -4,11 +4,14 @@
 #include "windows.h"
 #include "hook.h"
 #include "pattern.h"
+#include "Renderer.h"
 
 #include <d3dx9.h>
 
 Hook<convention_type::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
 Hook<convention_type::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
+
+CRenderer g_renderer;
 
 void init()
 {
@@ -24,6 +27,7 @@ void init()
 	g_presentHook.apply(vtbl[17], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
 	{
 		__asm pushad
+		g_renderer.Draw(dev);
 		__asm popad
 
 		return g_presentHook.callOrig(dev, a1, a2, a3, a4);
@@ -32,7 +36,9 @@ void init()
 	g_resetHook.apply(vtbl[16], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
 	{
 		__asm pushad
+		g_renderer.Reset(dev);
 		__asm popad
+
 		return g_resetHook.callOrig(dev, pp);
 	});
 }

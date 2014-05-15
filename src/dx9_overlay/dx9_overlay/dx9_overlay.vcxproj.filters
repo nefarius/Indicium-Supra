@@ -1,39 +1,79 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Quelldateien">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="misc">
+      <UniqueIdentifier>{d4cc0191-ac6f-4d42-901b-2505073235ea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Ressourcendateien">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="rendering">
+      <UniqueIdentifier>{4ea0c7f5-dc2f-4aaf-8f2b-a4e70c40aa74}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="pattern.cpp">
-      <Filter>Quelldateien</Filter>
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="dx_utils.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderBase.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Box.cpp">
+      <Filter>rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DFont.cpp">
+      <Filter>rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="windows.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="hook.h">
-      <Filter>Headerdateien</Filter>
+    <ClInclude Include="pattern.h">
+      <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="algorithm.h">
-      <Filter>Headerdateien</Filter>
+      <Filter>misc</Filter>
     </ClInclude>
-    <ClInclude Include="pattern.h">
-      <Filter>Headerdateien</Filter>
+    <ClInclude Include="hook.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="windows.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="dx_utils.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderBase.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DFont.h">
+      <Filter>rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>rendering</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
