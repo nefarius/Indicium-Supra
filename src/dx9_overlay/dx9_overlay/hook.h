@@ -34,9 +34,7 @@ public:
 	Hook() : _isApplied(false), _orig(0), _detour(0) { }
 
 	template<typename T>
-	Hook(T pFunc, type detour) {
-		apply<T>(pFunc, detour);
-	}
+	Hook(T pFunc, type detour) : apply<T>(pFunc, detour) { }
 
 	~Hook(){
 		remove();
