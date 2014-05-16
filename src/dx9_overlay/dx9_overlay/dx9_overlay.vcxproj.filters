@@ -38,6 +38,9 @@
     <ClCompile Include="utils\NamedPipeClient.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="utils\NamedPipeServer.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="game">
@@ -103,6 +106,9 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="utils\NamedPipeClient.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\NamedPipeServer.h">
       <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
