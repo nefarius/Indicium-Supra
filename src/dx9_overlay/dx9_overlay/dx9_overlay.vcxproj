@@ -89,6 +89,7 @@
     <ClCompile Include="client\render_funcs.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="game\game.cpp" />
+    <ClCompile Include="game\MessageHandler.cpp" />
     <ClCompile Include="game\rendering\Box.cpp" />
     <ClCompile Include="game\rendering\D3DFont.cpp" />
     <ClCompile Include="game\rendering\dx_utils.cpp" />
@@ -107,6 +108,7 @@
     <ClInclude Include="client\render_funcs.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="game\game.h" />
+    <ClInclude Include="game\MessageHandler.h" />
     <ClInclude Include="game\rendering\Box.h" />
     <ClInclude Include="game\rendering\D3DFont.h" />
     <ClInclude Include="game\rendering\dx_utils.h" />

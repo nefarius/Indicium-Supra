@@ -47,6 +47,9 @@
     <ClCompile Include="utils\misc.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="game\MessageHandler.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="game">
@@ -126,6 +129,9 @@
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="utils\misc.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="game\MessageHandler.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
