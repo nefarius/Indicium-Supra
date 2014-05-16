@@ -20,5 +20,5 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 	if (GetModuleHandle("d3d9.dll"))
 		return CreateThread(0, 0, (LPTHREAD_START_ROUTINE) initGame, 0, 0, 0) > 0;
 
-	return FALSE;
+	return TRUE;
 }

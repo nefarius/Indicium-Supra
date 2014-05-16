@@ -47,7 +47,7 @@ std::string GetParam(char *_szParamName)
 }
 
 
-EXPORT int API_Init()
+EXPORT int Init()
 {
 	char szDLLPath[MAX_PATH + 1] = { 0 };
 	DWORD dwPId = 0;

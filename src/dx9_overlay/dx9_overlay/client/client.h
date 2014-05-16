@@ -9,7 +9,7 @@
 #define SERVER_CHECK(retn)	\
 if (!IsServerAvailable())	\
 {							\
-	if (!API_Init())		\
+	if (!Init())		\
 		return retn;		\
 	else					\
 		Sleep(100);			\
@@ -17,5 +17,5 @@ if (!IsServerAvailable())	\
 
 bool IsServerAvailable();
 
-EXPORT int  API_Init();
+EXPORT int  Init();
 EXPORT void	SetParam(char *_szParamName, char *_szParamValue);
