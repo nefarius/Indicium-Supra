@@ -35,6 +35,9 @@
     <ClCompile Include="client\render_funcs.cpp">
       <Filter>client</Filter>
     </ClCompile>
+    <ClCompile Include="utils\NamedPipeClient.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="game">
@@ -97,6 +100,9 @@
       <Filter>client</Filter>
     </ClInclude>
     <ClInclude Include="utils\BitStream.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\NamedPipeClient.h">
       <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>

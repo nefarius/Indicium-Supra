@@ -35,7 +35,7 @@ public:
 		}
 		catch (...)
 		{
-			_oa.reset();
+			_ia.reset();
 		}
 	}
 
@@ -100,5 +100,19 @@ public:
 	int GetNumberOfBytesUsed() const
 	{
 		return _ss.str().length();
+	}
+
+	void SetData(const char *szData, const size_t size)
+	{
+		_ss = std::stringstream(std::string(szData, size));
+
+		try
+		{
+			_ia.reset(new boost::archive::text_iarchive(_ss));
+		}
+		catch (...)
+		{
+			_ia.reset();
+		}
 	}
 };
