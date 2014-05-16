@@ -1,6 +1,8 @@
+#include <utils/algorithm.h>
+
 #include "Renderer.h"
 #include "RenderBase.h"
-#include "algorithm.h"
+
 
 #include <boost/range/algorithm.hpp>
 

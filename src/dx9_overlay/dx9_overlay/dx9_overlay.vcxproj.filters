@@ -1,79 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="misc">
-      <UniqueIdentifier>{d4cc0191-ac6f-4d42-901b-2505073235ea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="rendering">
-      <UniqueIdentifier>{4ea0c7f5-dc2f-4aaf-8f2b-a4e70c40aa74}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="pattern.cpp">
-      <Filter>misc</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="dx_utils.cpp">
-      <Filter>rendering</Filter>
+    <ClCompile Include="game\rendering\Box.cpp">
+      <Filter>game\rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Image.cpp">
-      <Filter>rendering</Filter>
+    <ClCompile Include="game\rendering\D3DFont.cpp">
+      <Filter>game\rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Line.cpp">
-      <Filter>rendering</Filter>
+    <ClCompile Include="game\rendering\dx_utils.cpp">
+      <Filter>game\rendering</Filter>
     </ClCompile>
-    <ClCompile Include="RenderBase.cpp">
-      <Filter>rendering</Filter>
+    <ClCompile Include="game\rendering\Image.cpp">
+      <Filter>game\rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>rendering</Filter>
+    <ClCompile Include="game\rendering\Line.cpp">
+      <Filter>game\rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>rendering</Filter>
+    <ClCompile Include="game\rendering\RenderBase.cpp">
+      <Filter>game\rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Box.cpp">
-      <Filter>rendering</Filter>
+    <ClCompile Include="game\rendering\Renderer.cpp">
+      <Filter>game\rendering</Filter>
     </ClCompile>
-    <ClCompile Include="D3DFont.cpp">
-      <Filter>rendering</Filter>
+    <ClCompile Include="game\rendering\Text.cpp">
+      <Filter>game\rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\pattern.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="game\game.cpp">
+      <Filter>game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pattern.h">
-      <Filter>misc</Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{cd0420a0-7f6c-4057-b791-e3d61d9c24ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="client">
+      <UniqueIdentifier>{bba86b6d-8571-4a75-b67a-40abb9ad0000}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game\rendering">
+      <UniqueIdentifier>{13d9c7aa-01e3-429c-b233-9963d359d701}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{73d3675a-a6ac-4c93-ac87-a1d4d500dcc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared">
+      <UniqueIdentifier>{3b5d3b0a-16b2-4805-a0a8-4cf8445aec66}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="game\rendering\Box.h">
+      <Filter>game\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="algorithm.h">
-      <Filter>misc</Filter>
+    <ClInclude Include="game\rendering\D3DFont.h">
+      <Filter>game\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="hook.h">
-      <Filter>misc</Filter>
+    <ClInclude Include="game\rendering\dx_utils.h">
+      <Filter>game\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="windows.h">
-      <Filter>misc</Filter>
+    <ClInclude Include="game\rendering\Image.h">
+      <Filter>game\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Box.h">
-      <Filter>rendering</Filter>
+    <ClInclude Include="game\rendering\Line.h">
+      <Filter>game\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="dx_utils.h">
-      <Filter>rendering</Filter>
+    <ClInclude Include="game\rendering\RenderBase.h">
+      <Filter>game\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Image.h">
-      <Filter>rendering</Filter>
+    <ClInclude Include="game\rendering\Renderer.h">
+      <Filter>game\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Line.h">
-      <Filter>rendering</Filter>
+    <ClInclude Include="game\rendering\Text.h">
+      <Filter>game\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="RenderBase.h">
-      <Filter>rendering</Filter>
+    <ClInclude Include="utils\algorithm.h">
+      <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>rendering</Filter>
+    <ClInclude Include="utils\hook.h">
+      <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="D3DFont.h">
-      <Filter>rendering</Filter>
+    <ClInclude Include="utils\pattern.h">
+      <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>rendering</Filter>
+    <ClInclude Include="utils\windows.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="game\game.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

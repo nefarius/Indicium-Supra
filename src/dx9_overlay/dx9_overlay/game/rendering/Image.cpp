@@ -73,6 +73,8 @@ bool CImage::UpdateImage(const std::string& file_path, int x, int y, int rotatio
 	SetShown(bShow);
 
 	ChangeResource();
+
+	return true;
 }
 
 void CImage::Draw(IDirect3DDevice9 *pDevice)

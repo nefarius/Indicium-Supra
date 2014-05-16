@@ -41,9 +41,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\..\..\samples\</OutDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+    <IncludePath>$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\..\..\samples\</OutDir>
+    <IncludePath>$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -56,7 +61,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
@@ -73,37 +78,39 @@
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Box.cpp" />
-    <ClCompile Include="D3DFont.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="dx_utils.cpp" />
-    <ClCompile Include="Image.cpp" />
-    <ClCompile Include="Line.cpp" />
-    <ClCompile Include="pattern.cpp" />
-    <ClCompile Include="RenderBase.cpp" />
-    <ClCompile Include="Renderer.cpp" />
-    <ClCompile Include="Text.cpp" />
+    <ClCompile Include="game\game.cpp" />
+    <ClCompile Include="game\rendering\Box.cpp" />
+    <ClCompile Include="game\rendering\D3DFont.cpp" />
+    <ClCompile Include="game\rendering\dx_utils.cpp" />
+    <ClCompile Include="game\rendering\Image.cpp" />
+    <ClCompile Include="game\rendering\Line.cpp" />
+    <ClCompile Include="game\rendering\RenderBase.cpp" />
+    <ClCompile Include="game\rendering\Renderer.cpp" />
+    <ClCompile Include="game\rendering\Text.cpp" />
+    <ClCompile Include="utils\pattern.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="algorithm.h" />
-    <ClInclude Include="Box.h" />
-    <ClInclude Include="D3DFont.h" />
-    <ClInclude Include="dx_utils.h" />
-    <ClInclude Include="hook.h" />
-    <ClInclude Include="Image.h" />
-    <ClInclude Include="Line.h" />
-    <ClInclude Include="pattern.h" />
-    <ClInclude Include="RenderBase.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="Text.h" />
-    <ClInclude Include="windows.h" />
+    <ClInclude Include="game\game.h" />
+    <ClInclude Include="game\rendering\Box.h" />
+    <ClInclude Include="game\rendering\D3DFont.h" />
+    <ClInclude Include="game\rendering\dx_utils.h" />
+    <ClInclude Include="game\rendering\Image.h" />
+    <ClInclude Include="game\rendering\Line.h" />
+    <ClInclude Include="game\rendering\RenderBase.h" />
+    <ClInclude Include="game\rendering\Renderer.h" />
+    <ClInclude Include="game\rendering\Text.h" />
+    <ClInclude Include="utils\algorithm.h" />
+    <ClInclude Include="utils\hook.h" />
+    <ClInclude Include="utils\pattern.h" />
+    <ClInclude Include="utils\windows.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
