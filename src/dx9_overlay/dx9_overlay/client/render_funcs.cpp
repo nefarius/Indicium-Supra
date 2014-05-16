@@ -1,7 +1,3 @@
-//-----------------------------------------------------------------------------
-// Copyright (c)  Manuel Stampfl & Maximilian Müller. All rights reserved.
-//-----------------------------------------------------------------------------
-
 #include "render_funcs.h"
 
 #include <utils/misc.h>
