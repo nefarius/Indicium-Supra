@@ -17,6 +17,7 @@ CRenderer g_renderer;
 
 void initGame()
 {
+
 	HMODULE hMod = NULL;
 
 	while ((hMod = GetModuleHandle("d3d9.dll")) == NULL)
@@ -85,7 +86,7 @@ void initGame()
 	PaketHandler[PipeMessages::ShowAllVisual] = boost::bind(ShowAllVisual, _1, _2, _3);
 	PaketHandler[PipeMessages::HideAllVisual] = boost::bind(HideAllVisual, _1, _2, _3);
 
-	CNamedPipeServer("Overlay_Server", [&](CNamedPipeServer::LPPIPEINSTANCE pp, BitStream *bsIn, BitStream *bsOut)
+	new CNamedPipeServer("Overlay_Server", [&](CNamedPipeServer::LPPIPEINSTANCE pp, BitStream *bsIn, BitStream *bsOut)
 	{
 		short eMessage;
 		bsIn->Read(eMessage);
@@ -106,7 +107,6 @@ void initGame()
 
 		}
 	});
-
 
 	while (true){
 		Sleep(100);

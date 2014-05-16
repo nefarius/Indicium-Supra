@@ -1,4 +1,14 @@
-﻿#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+﻿#SingleInstance, force
+#NoEnv
+
+#include ..\..\include\ahk\overlay.ahk
+
+SetParam("process", "GFXTest.exe")
+
+TextCreate("Arial", 25, false, false, 100, 100, 0xFFFFFFFF, "Hello World", true, true)
+BoxCreate(200, 200, 200, 200, 0xFFFFFFFF, true)
+return
+
+~1::
+ExitApp
+return

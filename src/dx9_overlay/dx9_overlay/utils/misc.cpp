@@ -2,7 +2,9 @@
 #include "windows.h"
 
 #include <TlHelp32.h>
-#include <boost/algorithm/string/case_conv.hpp>
+
+#include <boost/algorithm/string.hpp>
+
 
 unsigned long GetProcIdByWindowName(std::string windName)
 {
@@ -27,16 +29,16 @@ unsigned long GetProcIdByProcName(std::string procName)
 
 	entry.dwSize = sizeof(entry);
 	Process32First(hSnapshot, &entry);
+
 	while (Process32Next(hSnapshot, &entry))
 	{
-		std::string szExeFile = entry.szExeFile;
-		boost::algorithm::to_lower(szExeFile);
-		if (szExeFile.find(procName) != std::string::npos)
+		if (boost::iequals(entry.szExeFile, procName))
 		{
 			dwPID = entry.th32ProcessID;
 			break;
 		}
 	}
+
 	CloseHandle(hSnapshot);
 	return dwPID;
 }

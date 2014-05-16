@@ -16,9 +16,9 @@ struct sParamInfo
 
 sParamInfo paramArray[3] =
 {
-	"procName", "",
-	"windowName", "",
-	"isWindow", "1"
+	"process", "",
+	"window", "",
+	"use_window", "0"
 };
 
 bool IsServerAvailable()
@@ -54,27 +54,23 @@ EXPORT int Init()
 	BOOL bRetn;
 
 	GetModuleFileName((HMODULE) g_hDllHandle, szDLLPath, sizeof(szDLLPath));
-	if (!atoi(GetParam("isWindow").c_str()))
+	if (!atoi(GetParam("use_window").c_str()))
 	{
-		std::string szSearchName = GetParam("procName");
+		std::string szSearchName = GetParam("process");
 		dwPId = GetProcIdByProcName(szSearchName);
 	}
 	else
 	{
-		std::string szSearchName = GetParam("windowName");
+		std::string szSearchName = GetParam("window");
 		dwPId = GetProcIdByWindowName(szSearchName);
 	}
 
 	if (dwPId == 0)
-	{
 		return 0;
-	}
 
 	HANDLE hHandle = OpenProcess((STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xFFF), FALSE, dwPId);
 	if (hHandle == 0 || hHandle == INVALID_HANDLE_VALUE)
-	{
 		return 0;
-	}
 
 	void *pAddr = VirtualAllocEx(hHandle, NULL, strlen(szDLLPath) + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	if (pAddr == NULL)
