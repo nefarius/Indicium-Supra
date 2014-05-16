@@ -32,6 +32,9 @@
     <ClCompile Include="game\game.cpp">
       <Filter>game</Filter>
     </ClCompile>
+    <ClCompile Include="client\render_funcs.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="game">
@@ -89,6 +92,12 @@
     </ClInclude>
     <ClInclude Include="game\game.h">
       <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="client\render_funcs.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\BitStream.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

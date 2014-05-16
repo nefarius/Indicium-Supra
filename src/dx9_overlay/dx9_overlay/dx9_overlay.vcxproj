@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="client\render_funcs.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="game\game.cpp" />
     <ClCompile Include="game\rendering\Box.cpp" />
@@ -98,6 +99,7 @@
     <ClCompile Include="utils\pattern.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="client\render_funcs.h" />
     <ClInclude Include="game\game.h" />
     <ClInclude Include="game\rendering\Box.h" />
     <ClInclude Include="game\rendering\D3DFont.h" />
@@ -108,6 +110,7 @@
     <ClInclude Include="game\rendering\Renderer.h" />
     <ClInclude Include="game\rendering\Text.h" />
     <ClInclude Include="utils\algorithm.h" />
+    <ClInclude Include="utils\BitStream.h" />
     <ClInclude Include="utils\hook.h" />
     <ClInclude Include="utils\pattern.h" />
     <ClInclude Include="utils\windows.h" />
