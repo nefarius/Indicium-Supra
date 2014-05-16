@@ -41,6 +41,12 @@
     <ClCompile Include="utils\NamedPipeServer.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="client\client.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\misc.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="game">
@@ -109,6 +115,16 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="utils\NamedPipeServer.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="client\client.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="shared\PipeMessages.h">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClInclude Include="dllmain.h" />
+    <ClInclude Include="utils\misc.h">
       <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
