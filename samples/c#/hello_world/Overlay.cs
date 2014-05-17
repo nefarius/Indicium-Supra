@@ -42,41 +42,41 @@ namespace DX9OverlayAPI
         public static extern int BoxSetWidth(int id, int width);
 
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-	    public static extern int LineCreate(int x1, int y1, int x2, int y2, int width, uint color, bool bShow);
+        public static extern int LineCreate(int x1, int y1, int x2, int y2, int width, uint color, bool bShow);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int LineDestroy(int id);
+        public static extern int LineDestroy(int id);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int LineSetShown(int id, bool bShown);
+        public static extern int LineSetShown(int id, bool bShown);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int LineSetColor(int id, uint color);
+        public static extern int LineSetColor(int id, uint color);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int LineSetWidth(int id, int width);
+        public static extern int LineSetWidth(int id, int width);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int LineSetPos(int id, int x1, int y1, int x2, int y2);
+        public static extern int LineSetPos(int id, int x1, int y1, int x2, int y2);
 
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int ImageCreate(string path, int x, int y, int rotation, int align, bool bShow);
+        public static extern int ImageCreate(string path, int x, int y, int rotation, int align, bool bShow);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int ImageDestroy(int id);
+        public static extern int ImageDestroy(int id);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int ImageSetShown(int id, bool bShown);
+        public static extern int ImageSetShown(int id, bool bShown);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int ImageSetAlign(int id, int align);
+        public static extern int ImageSetAlign(int id, int align);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int ImageSetPos(int id, int x, int y);
+        public static extern int ImageSetPos(int id, int x, int y);
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int ImageSetRotation(int id, int rotation);
+        public static extern int ImageSetRotation(int id, int rotation);
 
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int DestroyAllVisual();
+        public static extern int DestroyAllVisual();
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int ShowAllVisual();
+        public static extern int ShowAllVisual();
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int HideAllVisual();
+        public static extern int HideAllVisual();
 
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern int Init();
+        public static extern int Init();
         [DllImport("dx9_overlay.dll", CallingConvention = CallingConvention.Cdecl)]
-		public static extern void SetParam(string _szParamName, string _szParamValue);
+        public static extern void SetParam(string _szParamName, string _szParamValue);
     }
 }
