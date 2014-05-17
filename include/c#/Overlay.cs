@@ -1,9 +1,9 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace DXOverlay
+namespace DX9OverlayAPI
 {
-    class Overlay
+    class DX9Overlay
     {
         [DllImport("dx9_overlay.dll")]
         public static extern int TextCreate(string font, int fontSize, bool bBold, bool bItalic, int x, int y, uint color, string text, bool bShadow, bool bShow);
