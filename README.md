@@ -3,6 +3,11 @@ DX9-Overlay-API (LGPL v3)
 
 An overlay API for DirectX 9 based games, which is licensed and distributed under the terms of the LGPL v3
 
+Documentation
+--------
+
+German: https://mani1337.at/api/de/overlay_8h.html
+English: https://mani1337.at/api/en/overlay_8h.html (not completed yet!)
 
 Examples
 --------
