@@ -1,0 +1,39 @@
+#pragma once
+#include <d3dx9.h>
+
+#include "renderbase.h"
+
+class line : public renderbase
+{
+public:
+	line(renderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow);
+
+	void SetPos(int x1,int y1,int x2,int y2);
+	void SetWidth(int width);
+	void SetColor(D3DCOLOR color);
+	void SetShown(bool show);
+
+protected:
+	virtual void Draw(IDirect3DDevice9 *pDevice) sealed;
+	virtual void Reset(IDirect3DDevice9 *pDevice) sealed;
+
+	virtual void Show() sealed;
+	virtual void Hide() sealed;
+
+	virtual void ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice) sealed;
+	virtual bool CanBeDeleted() sealed;
+
+	virtual bool LoadResource(IDirect3DDevice9 *pDevice) override sealed;
+	virtual void FirstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
+
+private:
+	int					m_X1, m_X2,
+						m_Y1, m_Y2,
+						m_Width;
+
+	bool				m_bShow;
+
+	D3DCOLOR			m_Color;
+
+	LPD3DXLINE			m_Line;
+};
