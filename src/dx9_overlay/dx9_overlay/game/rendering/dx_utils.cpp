@@ -47,6 +47,38 @@ void Drawing::DrawPrimtive(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE Primitive
 	pDevice->SetFVF(dwOldFVF);
 }
 
+void Drawing::DrawSprite(LPD3DXSPRITE SpriteInterface, LPDIRECT3DTEXTURE9 TextureInterface, int PosX, int PosY, int Rotation, int Align)
+{
+	if (SpriteInterface == NULL || TextureInterface == NULL)
+		return;
+
+	D3DXVECTOR3 Vec;
+
+	Vec.x = (FLOAT) PosX;
+	Vec.y = (FLOAT) PosY;
+	Vec.z = (FLOAT)0.0f;
+
+	D3DXMATRIX mat;
+	D3DXVECTOR2 scaling(1.0f, 1.0f);
+	D3DSURFACE_DESC desc;
+
+	TextureInterface->GetLevelDesc(0, &desc);
+
+	D3DXVECTOR2 spriteCentre;
+	if (Align == 1)
+		spriteCentre = D3DXVECTOR2((FLOAT) desc.Width / 2, (FLOAT) desc.Height / 2);
+	else
+		spriteCentre = D3DXVECTOR2(0, 0);
+
+	D3DXVECTOR2 trans = D3DXVECTOR2(0, 0);
+	D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, &spriteCentre, (FLOAT) Rotation, &trans);
+
+	SpriteInterface->SetTransform(&mat);
+	SpriteInterface->Begin(D3DXSPRITE_ALPHABLEND);
+	SpriteInterface->Draw(TextureInterface, NULL, NULL, &Vec, 0xFFFFFFFF);
+	SpriteInterface->End();
+}
+
 void Drawing::InitFont(LPDIRECT3DDEVICE9 pDevice, const char *str, int size, DWORD dwFlags, class CD3DFont **pFont)
 {
 	if(pFont)

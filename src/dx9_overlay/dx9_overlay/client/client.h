@@ -9,7 +9,7 @@
 #define SERVER_CHECK(retn)	\
 if (!IsServerAvailable())	\
 {							\
-	if (!Init())		\
+	if (!Init())			\
 		return retn;		\
 	else					\
 		Sleep(100);			\

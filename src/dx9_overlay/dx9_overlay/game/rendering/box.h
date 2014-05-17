@@ -8,9 +8,6 @@ class box : public renderbase
 public:
 	box(renderer *renderer, int x, int y, int w, int h, D3DCOLOR color, bool show);
 
-	static void		DrawBox(int x,int y, int w, int h, D3DCOLOR dwColor, LPDIRECT3DDEVICE9 pDev);
-	static void		DrawRectangular(int x,int y, int width,int height,int thickness, D3DCOLOR dwColor, LPDIRECT3DDEVICE9 pDev);
-
 	void			SetPos(int x,int y);
 	void			SetBorderColor(D3DCOLOR dwColor);
 	void			SetBoxColor(D3DCOLOR dwColor);

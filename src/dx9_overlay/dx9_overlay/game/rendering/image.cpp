@@ -1,33 +1,5 @@
 #include "image.h"
-
-void image::DrawSprite(LPD3DXSPRITE SpriteInterface, LPDIRECT3DTEXTURE9 TextureInterface, int PosX, int PosY, int Rotation, int Align)
-{
-	if(SpriteInterface == NULL || TextureInterface == NULL)
-		return;
-
-	D3DXVECTOR3 Vec;
-
-	Vec.x = (FLOAT)PosX;
-	Vec.y = (FLOAT)PosY;
-	Vec.z = (FLOAT)0.0f;
-
-	D3DXMATRIX mat;
-	D3DXVECTOR2 scaling(1.0f, 1.0f);
-	D3DSURFACE_DESC desc;
-	TextureInterface->GetLevelDesc(0, &desc);
-	D3DXVECTOR2 spriteCentre;
-	if(Align == 1)
-		spriteCentre = D3DXVECTOR2((FLOAT)desc.Width / 2, (FLOAT)desc.Height / 2);
-	else
-		spriteCentre = D3DXVECTOR2(0, 0);
-	D3DXVECTOR2 trans = D3DXVECTOR2(0, 0);
-	D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, &spriteCentre, (FLOAT)Rotation, &trans);
-
-	SpriteInterface->SetTransform(&mat);
-	SpriteInterface->Begin(D3DXSPRITE_ALPHABLEND);
-	SpriteInterface->Draw(TextureInterface, NULL, NULL, &Vec, 0xFFFFFFFF);
-	SpriteInterface->End();
-}
+#include "dx_utils.h"
 
 image::image(renderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
 	: renderbase(renderer), m_pSprite(NULL), m_pTexture(NULL)
@@ -89,7 +61,7 @@ void image::Draw(IDirect3DDevice9 *pDevice)
 
 	if(m_pTexture && m_pSprite)
 	{
-		DrawSprite(m_pSprite, m_pTexture, view.Width * fFactor[0], view.Height * fFactor[1], m_rotation, m_align);
+		Drawing::DrawSprite(m_pSprite, m_pTexture, view.Width * fFactor[0], view.Height * fFactor[1], m_rotation, m_align);
 	}
 }
 
