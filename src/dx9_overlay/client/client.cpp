@@ -24,7 +24,9 @@ sParamInfo paramArray[3] =
 bool IsServerAvailable()
 {
 	bitstream bsIn, bsOut;
-	bsIn.Write((short) PipeMessages::Ping);
+
+	bsIn << (short) PipeMessages::Ping;
+
 	return namedpipeclient("Overlay_Server", &bsIn, &bsOut).Success();
 }
 
