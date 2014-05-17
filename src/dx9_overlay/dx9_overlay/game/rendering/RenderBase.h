@@ -1,12 +1,12 @@
 #pragma once
-#include "Renderer.h"
+#include "renderer.h"
 
-class CRenderBase
+class renderbase
 {
-	friend class CRenderer;
+	friend class renderer;
 public:
-	CRenderBase(CRenderer *render);
-	virtual ~CRenderBase(void);
+	renderbase(renderer *render);
+	virtual ~renderbase(void);
 
 	void Destroy();
 
@@ -27,7 +27,7 @@ protected:
 
 	void ChangeResource();
 
-	CRenderer *Renderer();
+	renderer *Renderer();
 
 private:
 	bool		_hasToBeInitialised;
@@ -35,6 +35,6 @@ private:
 	bool		_resourceChanged;
 	bool		_firstDrawAfterReset;
 
-	CRenderer *	_renderer;
+	renderer *	_renderer;
 };
 

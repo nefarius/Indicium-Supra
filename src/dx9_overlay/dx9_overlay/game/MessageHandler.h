@@ -1,6 +1,6 @@
 #pragma once
-#include <utils/BitStream.h>
-#include <shared/PipeMessages.h>
+#include <utils/bitstream.h>
+#include <shared/pipemessages.h>
 
 #include <boost/bind.hpp>
 

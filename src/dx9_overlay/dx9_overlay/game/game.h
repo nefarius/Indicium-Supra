@@ -1,5 +1,5 @@
 #pragma once
 
-extern class CRenderer g_renderer;
+extern class renderer g_renderer;
 
 void initGame();

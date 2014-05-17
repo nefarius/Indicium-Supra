@@ -1,19 +1,19 @@
 #include <utils/windows.h>
 #include <utils/hook.h>
 #include <utils/pattern.h>
-#include <utils/NamedPipeServer.h>
+#include <utils/namedpipeserver.h>
 
 #include "game.h"
-#include "MessageHandler.h"
+#include "messagehandler.h"
 
-#include "rendering/Renderer.h"
+#include "rendering/renderer.h"
 
 #include <d3dx9.h>
 
-Hook<convention_type::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
-Hook<convention_type::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
+hook<convention_type::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
+hook<convention_type::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
 
-CRenderer g_renderer;
+renderer g_renderer;
 
 void initGame()
 {

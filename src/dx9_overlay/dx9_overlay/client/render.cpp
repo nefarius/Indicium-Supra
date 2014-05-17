@@ -1,10 +1,10 @@
-#include "render_funcs.h"
+#include "render.h"
 
 #include <utils/misc.h>
-#include <utils/BitStream.h>
-#include <utils/NamedPipeClient.h>
+#include <utils/bitstream.h>
+#include <utils/namedpipeclient.h>
 #include <utils/windows.h>
-#include <shared/PipeMessages.h>
+#include <shared/pipemessages.h>
 
 #include <boost/filesystem.hpp>
 

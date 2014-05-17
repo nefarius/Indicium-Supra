@@ -1,6 +1,6 @@
 #include "windows.h"
-#include "NamedPipeClient.h"
-#include "BitStream.h"
+#include "namedpipeclient.h"
+#include "bitstream.h"
 
 #include <iostream>
 

@@ -1,12 +1,12 @@
 #pragma once
 #include <d3dx9.h>
 
-#include "RenderBase.h"
+#include "renderbase.h"
 
-class CBox : public CRenderBase
+class box : public renderbase
 {
 public:
-	CBox(CRenderer *renderer, int x, int y, int w, int h, D3DCOLOR color, bool show);
+	box(renderer *renderer, int x, int y, int w, int h, D3DCOLOR color, bool show);
 
 	static void		DrawBox(int x,int y, int w, int h, D3DCOLOR dwColor, LPDIRECT3DDEVICE9 pDev);
 	static void		DrawRectangular(int x,int y, int width,int height,int thickness, D3DCOLOR dwColor, LPDIRECT3DDEVICE9 pDev);

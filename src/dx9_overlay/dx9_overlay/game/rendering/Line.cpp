@@ -1,7 +1,7 @@
-#include "Line.h"
+#include "line.h"
 
-CLine::CLine(CRenderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow)
-	: CRenderBase(renderer), m_Line(NULL)
+line::line(renderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow)
+	: renderbase(renderer), m_Line(NULL)
 {
 	SetPos(x1,y1,x2,y2);
 	SetWidth(width);
@@ -9,28 +9,28 @@ CLine::CLine(CRenderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR
 	SetShown(bShow);
 }
 
-void CLine::SetPos(int x1,int y1,int x2,int y2)
+void line::SetPos(int x1,int y1,int x2,int y2)
 {
 	m_X1 = x1, m_X2 = x2;
 	m_Y1 = y1, m_Y2 = y2;
 }
 
-void CLine::SetWidth(int width)
+void line::SetWidth(int width)
 {
 	m_Width = width;
 }
 
-void CLine::SetColor(D3DCOLOR color)
+void line::SetColor(D3DCOLOR color)
 {
 	m_Color = color;
 }
 
-void CLine::SetShown(bool show)
+void line::SetShown(bool show)
 {
 	m_bShow = show;
 }
 
-void CLine::Draw(IDirect3DDevice9 *pDevice)
+void line::Draw(IDirect3DDevice9 *pDevice)
 {
 	if(!m_bShow || m_Line == NULL)
 		return;
@@ -60,7 +60,7 @@ void CLine::Draw(IDirect3DDevice9 *pDevice)
 	m_Line->End();	
 }
 
-void CLine::Reset(IDirect3DDevice9 *pDevice)
+void line::Reset(IDirect3DDevice9 *pDevice)
 {
 	if(m_Line)
 	{
@@ -69,17 +69,17 @@ void CLine::Reset(IDirect3DDevice9 *pDevice)
 	}
 }
 
-void CLine::Show()
+void line::Show()
 {
 	SetShown(true);
 }
 
-void CLine::Hide()
+void line::Hide()
 {
 	SetShown(false);
 }
 
-void CLine::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
+void line::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 {
 	if(m_Line)
 	{
@@ -88,12 +88,12 @@ void CLine::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 	}
 }
 
-bool CLine::CanBeDeleted()
+bool line::CanBeDeleted()
 {
 	return (m_Line == NULL) ? true : false;
 }
 
-bool CLine::LoadResource(IDirect3DDevice9 *pDevice)
+bool line::LoadResource(IDirect3DDevice9 *pDevice)
 {
 	if(m_Line)
 	{
@@ -106,7 +106,7 @@ bool CLine::LoadResource(IDirect3DDevice9 *pDevice)
 	return m_Line != NULL;
 }
 
-void CLine::FirstDrawAfterReset(IDirect3DDevice9 *pDevice)
+void line::FirstDrawAfterReset(IDirect3DDevice9 *pDevice)
 {
 
 }

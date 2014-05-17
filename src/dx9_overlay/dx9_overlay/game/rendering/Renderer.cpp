@@ -1,15 +1,14 @@
 #include <utils/algorithm.h>
 
-#include "Renderer.h"
-#include "RenderBase.h"
-
+#include "renderer.h"
+#include "renderbase.h"
 
 #include <boost/range/algorithm.hpp>
 
-CRenderer::RenderObjects	CRenderer::_RenderObjects;
-boost::mutex				CRenderer::_mtx;
+renderer::RenderObjects	renderer::_RenderObjects;
+boost::mutex			renderer::_mtx;
 
-int CRenderer::Add(SharedRenderObject Object)
+int renderer::Add(SharedRenderObject Object)
 {
 	boost::lock_guard<boost::mutex> l(_mtx);
 
@@ -25,7 +24,7 @@ int CRenderer::Add(SharedRenderObject Object)
 	return id;
 }
 
-bool CRenderer::Remove(int id)
+bool renderer::Remove(int id)
 {
 	boost::lock_guard<boost::mutex> l(_mtx);
 
@@ -43,7 +42,7 @@ bool CRenderer::Remove(int id)
 	return true;
 }
 
-void CRenderer::Draw(IDirect3DDevice9 *pDevice)
+void renderer::Draw(IDirect3DDevice9 *pDevice)
 {
 	boost::lock_guard<boost::mutex> l(_mtx);
 
@@ -91,7 +90,7 @@ void CRenderer::Draw(IDirect3DDevice9 *pDevice)
 	}
 }
 
-void CRenderer::Reset(IDirect3DDevice9 *pDevice)
+void renderer::Reset(IDirect3DDevice9 *pDevice)
 {
 	boost::lock_guard<boost::mutex> l(_mtx);
 
@@ -105,7 +104,7 @@ void CRenderer::Reset(IDirect3DDevice9 *pDevice)
 	}
 }
 
-void CRenderer::ShowAll()
+void renderer::ShowAll()
 {
 	boost::lock_guard<boost::mutex> l(_mtx);
 
@@ -121,7 +120,7 @@ void CRenderer::ShowAll()
 	}
 }
 
-void CRenderer::HideAll()
+void renderer::HideAll()
 {
 	boost::lock_guard<boost::mutex> l(_mtx);
 
@@ -137,7 +136,7 @@ void CRenderer::HideAll()
 	}
 }
 
-void CRenderer::DestroyAll()
+void renderer::DestroyAll()
 {
 	boost::lock_guard<boost::mutex> l(_mtx);
 

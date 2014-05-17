@@ -1,5 +1,5 @@
-#include "NamedPipeServer.h"
-#include "BitStream.h"
+#include "namedpipeserver.h"
+#include "bitstream.h"
 
 #include <boost/thread.hpp>
 
@@ -41,7 +41,7 @@ void CNamedPipeServer::DisconnectAndReconnect(DWORD dwIdx)
 	m_Pipes[dwIdx].m_dwState = m_Pipes[dwIdx].m_fPendingIO ? CONNECTING_STATE : READING_STATE;
 
 }
-CNamedPipeServer::CNamedPipeServer(const char *pipe, boost::function<void(CNamedPipeServer::LPPIPEINSTANCE, BitStream *, BitStream *)> func) : m_cbCallback(func)
+CNamedPipeServer::CNamedPipeServer(const char *pipe, boost::function<void(CNamedPipeServer::LPPIPEINSTANCE, BitStream *, BitStream *)> func) : m_cbCallback(func), m_thread(0)
 {
 	memset(m_szPipe, 0, sizeof(m_szPipe));
 	memset(m_Pipes, 0, sizeof(m_Pipes));

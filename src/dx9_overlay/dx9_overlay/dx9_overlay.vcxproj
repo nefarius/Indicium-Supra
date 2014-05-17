@@ -86,44 +86,44 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="client\client.cpp" />
-    <ClCompile Include="client\render_funcs.cpp" />
+    <ClCompile Include="client\render.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="game\game.cpp" />
-    <ClCompile Include="game\MessageHandler.cpp" />
-    <ClCompile Include="game\rendering\Box.cpp" />
+    <ClCompile Include="game\messagehandler.cpp" />
+    <ClCompile Include="game\rendering\box.cpp" />
     <ClCompile Include="game\rendering\D3DFont.cpp" />
     <ClCompile Include="game\rendering\dx_utils.cpp" />
-    <ClCompile Include="game\rendering\Image.cpp" />
-    <ClCompile Include="game\rendering\Line.cpp" />
-    <ClCompile Include="game\rendering\RenderBase.cpp" />
-    <ClCompile Include="game\rendering\Renderer.cpp" />
-    <ClCompile Include="game\rendering\Text.cpp" />
+    <ClCompile Include="game\rendering\image.cpp" />
+    <ClCompile Include="game\rendering\line.cpp" />
+    <ClCompile Include="game\rendering\renderbase.cpp" />
+    <ClCompile Include="game\rendering\renderer.cpp" />
+    <ClCompile Include="game\rendering\text.cpp" />
     <ClCompile Include="utils\misc.cpp" />
-    <ClCompile Include="utils\NamedPipeClient.cpp" />
-    <ClCompile Include="utils\NamedPipeServer.cpp" />
+    <ClCompile Include="utils\namedpipeclient.cpp" />
+    <ClCompile Include="utils\namedpipeserver.cpp" />
     <ClCompile Include="utils\pattern.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client\client.h" />
-    <ClInclude Include="client\render_funcs.h" />
+    <ClInclude Include="client\render.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="game\game.h" />
-    <ClInclude Include="game\MessageHandler.h" />
-    <ClInclude Include="game\rendering\Box.h" />
+    <ClInclude Include="game\messagehandler.h" />
+    <ClInclude Include="game\rendering\box.h" />
     <ClInclude Include="game\rendering\D3DFont.h" />
     <ClInclude Include="game\rendering\dx_utils.h" />
-    <ClInclude Include="game\rendering\Image.h" />
-    <ClInclude Include="game\rendering\Line.h" />
-    <ClInclude Include="game\rendering\RenderBase.h" />
-    <ClInclude Include="game\rendering\Renderer.h" />
-    <ClInclude Include="game\rendering\Text.h" />
-    <ClInclude Include="shared\PipeMessages.h" />
+    <ClInclude Include="game\rendering\image.h" />
+    <ClInclude Include="game\rendering\line.h" />
+    <ClInclude Include="game\rendering\renderbase.h" />
+    <ClInclude Include="game\rendering\renderer.h" />
+    <ClInclude Include="game\rendering\text.h" />
+    <ClInclude Include="shared\pipemessages.h" />
     <ClInclude Include="utils\algorithm.h" />
-    <ClInclude Include="utils\BitStream.h" />
+    <ClInclude Include="utils\bitstream.h" />
     <ClInclude Include="utils\hook.h" />
     <ClInclude Include="utils\misc.h" />
-    <ClInclude Include="utils\NamedPipeClient.h" />
-    <ClInclude Include="utils\NamedPipeServer.h" />
+    <ClInclude Include="utils\namedpipeclient.h" />
+    <ClInclude Include="utils\namedpipeserver.h" />
     <ClInclude Include="utils\pattern.h" />
     <ClInclude Include="utils\windows.h" />
   </ItemGroup>

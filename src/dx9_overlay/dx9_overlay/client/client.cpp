@@ -1,7 +1,7 @@
 #include "client.h"
 
 #include <dllmain.h>
-#include <shared/PipeMessages.h>
+#include <shared/pipemessages.h>
 #include <utils/misc.h>
 #include <string>
 #include <ShlObj.h>

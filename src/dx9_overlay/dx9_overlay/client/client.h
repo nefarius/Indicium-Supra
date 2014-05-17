@@ -1,8 +1,8 @@
 #pragma once
 
 #include <utils/windows.h>
-#include <utils/NamedPipeClient.h>
-#include <utils/BitStream.h>
+#include <utils/namedpipeclient.h>
+#include <utils/bitstream.h>
 
 #define EXPORT extern "C" __declspec(dllexport)
 

@@ -1,6 +1,6 @@
-#include "Box.h"
+#include "box.h"
 
-void CBox::DrawBox(int x,int y, int w, int h, D3DCOLOR dwColor, LPDIRECT3DDEVICE9 pDev)
+void box::DrawBox(int x,int y, int w, int h, D3DCOLOR dwColor, LPDIRECT3DDEVICE9 pDev)
 {
 	struct stVertex
 	{
@@ -23,7 +23,7 @@ void CBox::DrawBox(int x,int y, int w, int h, D3DCOLOR dwColor, LPDIRECT3DDEVICE
 	pDev->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, q, sizeof(stVertex));
 }
 
-void CBox::DrawRectangular(int X, int Y, int Width, int Height, int Thickness, D3DCOLOR Color, LPDIRECT3DDEVICE9 pDev)
+void box::DrawRectangular(int X, int Y, int Width, int Height, int Thickness, D3DCOLOR Color, LPDIRECT3DDEVICE9 pDev)
 {
 	DrawBox(X, Y + Height - Thickness, Width, Thickness, Color,pDev);
 	DrawBox( X, Y, Thickness, Height, Color,pDev);
@@ -31,7 +31,7 @@ void CBox::DrawRectangular(int X, int Y, int Width, int Height, int Thickness, D
 	DrawBox(X + Width - Thickness, Y, Thickness, Height, Color,pDev);
 }
 
-CBox::CBox(CRenderer *renderer,  int x, int y, int w, int h, D3DCOLOR color, bool show) : CRenderBase(renderer), m_bShown(false)
+box::box(renderer *renderer,  int x, int y, int w, int h, D3DCOLOR color, bool show) : renderbase(renderer), m_bShown(false)
 {
 	SetPos(x, y);
 	SetBoxWidth(w);
@@ -45,47 +45,47 @@ CBox::CBox(CRenderer *renderer,  int x, int y, int w, int h, D3DCOLOR color, boo
 }
 
 
-void CBox::SetPos(int x,int y)
+void box::SetPos(int x,int y)
 {
 	m_iX = x, m_iY = y;
 }
 
-void CBox::SetBorderColor(D3DCOLOR dwColor)
+void box::SetBorderColor(D3DCOLOR dwColor)
 {
 	m_dwBorderColor = dwColor;
 }
 
-void CBox::SetBoxColor(D3DCOLOR dwColor)
+void box::SetBoxColor(D3DCOLOR dwColor)
 {
 	m_dwBoxColor = dwColor;
 }
 
-void CBox::SetBorderWidth(DWORD dwWidth)
+void box::SetBorderWidth(DWORD dwWidth)
 {
 	m_dwBorderWidth = dwWidth;
 }
 
-void CBox::SetBoxWidth(DWORD dwWidth)
+void box::SetBoxWidth(DWORD dwWidth)
 {
 	m_dwBoxWidth = dwWidth;
 }
 
-void CBox::SetBoxHeight(DWORD dwHeight)
+void box::SetBoxHeight(DWORD dwHeight)
 {
 	m_dwBoxHeight = dwHeight;
 }
 
-void CBox::SetBorderShown(bool b)
+void box::SetBorderShown(bool b)
 {
 	m_bBorderShown = b;
 }
 
-void CBox::SetShown(bool b)
+void box::SetShown(bool b)
 {
 	m_bShown = b;
 }
 
-void CBox::Draw(IDirect3DDevice9 *pDevice)
+void box::Draw(IDirect3DDevice9 *pDevice)
 {
 	if(!m_bShown)
 		return;
@@ -115,38 +115,38 @@ void CBox::Draw(IDirect3DDevice9 *pDevice)
 		DrawRectangular(iX,iY,iBoxWidth,iBoxHeight,m_dwBorderWidth,m_dwBorderColor,pDevice);
 }
 
-void CBox::Reset(IDirect3DDevice9 *pDevice)
+void box::Reset(IDirect3DDevice9 *pDevice)
 {
 	
 }
 
-void CBox::Show()
+void box::Show()
 {
 	SetShown(true);
 }
 
-void CBox::Hide()
+void box::Hide()
 {
 	SetShown(false);
 }
 
-void CBox::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
+void box::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 {
 	m_bShown = false;
 	m_bBorderShown = false;
 }
 
-bool CBox::CanBeDeleted()
+bool box::CanBeDeleted()
 {
 	return true;
 }
 
-bool CBox::LoadResource(IDirect3DDevice9 *pDevice)
+bool box::LoadResource(IDirect3DDevice9 *pDevice)
 {
 	return true;
 }
 
-void CBox::FirstDrawAfterReset(IDirect3DDevice9 *pDevice)
+void box::FirstDrawAfterReset(IDirect3DDevice9 *pDevice)
 {
 	
 }

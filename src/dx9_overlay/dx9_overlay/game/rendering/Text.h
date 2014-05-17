@@ -3,14 +3,12 @@
 #include <d3dx9.h>
 
 #include "D3DFont.h"
-#include "RenderBase.h"
+#include "renderbase.h"
 
-class CRenderer;
-
-class CText : public CRenderBase
+class text : public renderbase
 {
 public:
-	CText(CRenderer *renderer, const char *font,int iFontSize,bool Bold,bool Italic,int x,int y,D3DCOLOR color,const char *text, bool bShadow, bool bShow);
+	text(renderer *renderer, const char *font,int iFontSize,bool Bold,bool Italic,int x,int y,D3DCOLOR color,const char *text, bool bShadow, bool bShow);
 
 	bool UpdateText(const char *Font,int FontSize,bool Bold,bool Italic);
 	void SetText(const char *str);

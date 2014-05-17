@@ -5,7 +5,6 @@
 
 #include <boost/algorithm/string.hpp>
 
-
 unsigned long GetProcIdByWindowName(std::string windName)
 {
 	DWORD dwPID = 0;

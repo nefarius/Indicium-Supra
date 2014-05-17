@@ -6,11 +6,11 @@
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 
-class CRenderBase;
+class renderbase;
 
-class CRenderer
+class renderer
 {
-	typedef boost::shared_ptr<CRenderBase> SharedRenderObject;
+	typedef boost::shared_ptr<renderbase> SharedRenderObject;
 	typedef boost::container::map<int, SharedRenderObject> RenderObjects;
 
 public:
@@ -29,7 +29,7 @@ public:
 		if(_RenderObjects[id]->_isMarkedForDeletion)
 			return nullptr;
 
-		return boost::dynamic_pointer_cast<T, CRenderBase>(_RenderObjects[id]);
+		return boost::dynamic_pointer_cast<T, renderbase>(_RenderObjects[id]);
 	}
 
 	void Draw(IDirect3DDevice9 *pDevice);

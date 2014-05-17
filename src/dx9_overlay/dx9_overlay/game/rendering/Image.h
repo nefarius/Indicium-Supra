@@ -1,14 +1,14 @@
 #pragma once
 #include <d3dx9.h>
 
-#include "RenderBase.h"
+#include "renderbase.h"
 
-class CImage : public CRenderBase
+class image : public renderbase
 {
 public:
 	static void DrawSprite(LPD3DXSPRITE SpriteInterface, LPDIRECT3DTEXTURE9 TextureInterface, int PosX, int PosY, int Rotation, int Align);
 
-	CImage(CRenderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow);
+	image(renderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow);
 
 	void SetFilePath(const std::string & path);
 	void SetPos(int x, int y);

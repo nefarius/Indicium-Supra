@@ -22,7 +22,7 @@ struct convention<convention_type::cdecl_t, retn, args...> {
 };
 
 
-template<convention_type tp, typename retn, typename ...args> class Hook
+template<convention_type tp, typename retn, typename ...args> class hook
 {
 	typedef typename convention<tp, retn, args...>::type type;
 
@@ -31,12 +31,12 @@ template<convention_type tp, typename retn, typename ...args> class Hook
 
 	bool _isApplied;
 public:
-	Hook() : _isApplied(false), _orig(0), _detour(0) { }
+	hook() : _isApplied(false), _orig(0), _detour(0) { }
 
 	template<typename T>
-	Hook(T pFunc, type detour) : apply<T>(pFunc, detour) { }
+	hook(T pFunc, type detour) : apply<T>(pFunc, detour) { }
 
-	~Hook(){
+	~hook(){
 		remove();
 	}
 

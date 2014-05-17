@@ -1,15 +1,15 @@
-#include "RenderBase.h"
+#include "renderbase.h"
 
-CRenderBase::CRenderBase(CRenderer *renderer)
+renderbase::renderbase(renderer *renderer)
 	: _renderer(renderer), _isMarkedForDeletion(false), _resourceChanged(false), _hasToBeInitialised(true), _firstDrawAfterReset(false)
 {
 }
 
-CRenderBase::~CRenderBase()
+renderbase::~renderbase()
 {
 }
 
-void CRenderBase::Destroy()
+void renderbase::Destroy()
 {
 	if(!_isMarkedForDeletion)
 	{
@@ -17,12 +17,12 @@ void CRenderBase::Destroy()
 	}	
 }
 
-void CRenderBase::ChangeResource()
+void renderbase::ChangeResource()
 {
 	_resourceChanged = true;
 }
 
-CRenderer *CRenderBase::Renderer()
+renderer *renderbase::Renderer()
 {
 	return _renderer;
 }

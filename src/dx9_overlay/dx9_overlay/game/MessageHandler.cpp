@@ -1,14 +1,11 @@
-#include "MessageHandler.h"
+#include "messagehandler.h"
 #include "game.h"
-#include "rendering/Box.h"
-#include "rendering/Line.h"
-#include "rendering/Text.h"
-#include "rendering/Renderer.h"
-#include "rendering/RenderBase.h"
-#include "rendering/Text.h"
-#include "rendering/Line.h"
-#include "rendering/Box.h"
-#include "rendering/Image.h"
+#include "rendering/text.h"
+#include "rendering/box.h"
+#include "rendering/line.h"
+#include "rendering/image.h"
+#include "rendering/renderer.h"
+#include "rendering/renderbase.h"
 
 
 void TextCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
@@ -30,7 +27,7 @@ void TextCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 	bsIn->Read(bShadow);
 	bsIn->Read(bShow);
 
-	boost::shared_ptr<CText> obj(new CText(&g_renderer, Font.c_str(), FontSize, bBold, bItalic, x, y, color, Text.c_str(), bShadow, bShow));
+	boost::shared_ptr<text> obj(new text(&g_renderer, Font.c_str(), FontSize, bBold, bItalic, x, y, color, Text.c_str(), bShadow, bShow));
 
 	bsOut->Write(g_renderer.Add(obj));
 }
@@ -51,7 +48,7 @@ void TextSetShadow(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *
 	bsIn->Read(id);
 	bsIn->Read(bShadow);
 
-	boost::shared_ptr<CText> obj = g_renderer.Get<CText>(id);
+	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
 	if (obj)
 	{
 		obj->SetShadow(bShadow);
@@ -69,10 +66,10 @@ void TextSetShown(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 	bsIn->Read(bShown);
 
 
-	boost::shared_ptr<CText> text = g_renderer.Get<CText>(id);
-	if (text)
+	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
+	if (obj)
 	{
-		text->SetShown(bShown);
+		obj->SetShown(bShown);
 		bsOut->Write((int) 1);
 	}
 	bsOut->Write((int) 0);
@@ -87,10 +84,10 @@ void TextSetColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 	bsIn->Read(color);
 
 
-	boost::shared_ptr<CText> text = g_renderer.Get<CText>(id);
-	if (text)
+	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
+	if (obj)
 	{
-		text->SetColor(color);
+		obj->SetColor(color);
 		bsOut->Write((int) 1);
 	}
 	bsOut->Write((int) 0);
@@ -106,10 +103,10 @@ void TextSetPos(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 	bsIn->Read(y);
 
 
-	boost::shared_ptr<CText> text = g_renderer.Get<CText>(id);
-	if (text)
+	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
+	if (obj)
 	{
-		text->SetPos(x, y);
+		obj->SetPos(x, y);
 		bsOut->Write((int) 1);
 	}
 	bsOut->Write((int) 0);
@@ -122,10 +119,10 @@ void TextSetString(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *
 	bsIn->Read(id);
 	bsIn->Read(str);
 
-	boost::shared_ptr<CText> text = g_renderer.Get<CText>(id);
-	if (text)
+	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
+	if (obj)
 	{
-		text->SetText(str.c_str());
+		obj->SetText(str.c_str());
 		bsOut->Write((int) 1);
 	}
 	bsOut->Write((int) 0);
@@ -148,9 +145,9 @@ void TextUpdate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 	bsIn->Read(bItalic);
 
 
-	boost::shared_ptr<CText> text = g_renderer.Get<CText>(id);
-	if (text)
-		bsOut->Write((int) text->UpdateText(Font.c_str(), FontSize, bBold, bItalic));
+	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
+	if (obj)
+		bsOut->Write((int) obj->UpdateText(Font.c_str(), FontSize, bBold, bItalic));
 	else
 		bsOut->Write((int) 0);
 }
@@ -168,7 +165,7 @@ void BoxCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOu
 	bsIn->Read(dwColor);
 	bsIn->Read(bShow);
 
-	boost::shared_ptr<CBox> obj(new CBox(&g_renderer, x, y, w, h, dwColor, bShow));
+	boost::shared_ptr<box> obj(new box(&g_renderer, x, y, w, h, dwColor, bShow));
 
 	bsOut->Write(g_renderer.Add(obj));
 }
@@ -190,10 +187,10 @@ void BoxSetShown(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bs
 	bsIn->Read(bShown);
 
 
-	boost::shared_ptr<CBox> box = g_renderer.Get<CBox>(id);
-	if (box)
+	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
+	if (obj)
 	{
-		box->SetShown(bShown);
+		obj->SetShown(bShown);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -210,11 +207,11 @@ void BoxSetBorder(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 	bsIn->Read(bShown);
 
 
-	boost::shared_ptr<CBox> box = g_renderer.Get<CBox>(id);
-	if (box)
+	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
+	if (obj)
 	{
-		box->SetBorderWidth(height);
-		box->SetBorderShown(bShown);
+		obj->SetBorderWidth(height);
+		obj->SetBorderShown(bShown);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -230,10 +227,10 @@ void BoxSetBorderColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStre
 	bsIn->Read(dwColor);
 
 
-	boost::shared_ptr<CBox> box = g_renderer.Get<CBox>(id);
-	if (box)
+	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
+	if (obj)
 	{
-		box->SetBorderColor(dwColor);
+		obj->SetBorderColor(dwColor);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -249,10 +246,10 @@ void BoxSetColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bs
 	bsIn->Read(dwColor);
 
 
-	boost::shared_ptr<CBox> box = g_renderer.Get<CBox>(id);
-	if (box)
+	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
+	if (obj)
 	{
-		box->SetBoxColor(dwColor);
+		obj->SetBoxColor(dwColor);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -267,10 +264,10 @@ void BoxSetHeight(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 	bsIn->Read(height);
 
 
-	boost::shared_ptr<CBox> box = g_renderer.Get<CBox>(id);
-	if (box)
+	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
+	if (obj)
 	{
-		box->SetBoxHeight(height);
+		obj->SetBoxHeight(height);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -286,10 +283,10 @@ void BoxSetPos(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOu
 	bsIn->Read(y);
 
 
-	boost::shared_ptr<CBox> box = g_renderer.Get<CBox>(id);
-	if (box)
+	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
+	if (obj)
 	{
-		box->SetPos(x, y);
+		obj->SetPos(x, y);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -304,10 +301,10 @@ void BoxSetWidth(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bs
 	bsIn->Read(width);
 
 
-	boost::shared_ptr<CBox> box = g_renderer.Get<CBox>(id);
-	if (box)
+	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
+	if (obj)
 	{
-		box->SetBoxWidth(width);
+		obj->SetBoxWidth(width);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -326,7 +323,7 @@ void LineCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 	bsIn->Read(color);
 	bsIn->Read(bShow);
 
-	boost::shared_ptr<CLine> obj(new CLine(&g_renderer, x1, y1, x2, y2, width, color, bShow));
+	boost::shared_ptr<line> obj(new line(&g_renderer, x1, y1, x2, y2, width, color, bShow));
 
 	bsOut->Write(g_renderer.Add(obj));
 }
@@ -346,10 +343,10 @@ void LineSetShown(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 	bsIn->Read(bShown);
 
 
-	boost::shared_ptr<CLine> line = g_renderer.Get<CLine>(id);
-	if (line)
+	boost::shared_ptr<line> obj = g_renderer.Get<line>(id);
+	if (obj)
 	{
-		line->SetShown(bShown);
+		obj->SetShown(bShown);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -363,10 +360,10 @@ void LineSetColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 	bsIn->Read(color);
 
 
-	boost::shared_ptr<CLine> line = g_renderer.Get<CLine>(id);
-	if (line)
+	boost::shared_ptr<line> obj = g_renderer.Get<line>(id);
+	if (obj)
 	{
-		line->SetColor(color);
+		obj->SetColor(color);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -380,10 +377,10 @@ void LineSetWidth(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 	bsIn->Read(width);
 
 
-	boost::shared_ptr<CLine> line = g_renderer.Get<CLine>(id);
-	if (line)
+	boost::shared_ptr<line> obj = g_renderer.Get<line>(id);
+	if (obj)
 	{
-		line->SetWidth(width);
+		obj->SetWidth(width);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -400,10 +397,10 @@ void LineSetPos(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 	bsIn->Read(y2);
 
 
-	boost::shared_ptr<CLine> line = g_renderer.Get<CLine>(id);
-	if (line)
+	boost::shared_ptr<line> obj = g_renderer.Get<line>(id);
+	if (obj)
 	{
-		line->SetPos(x1, y1, x2, y2);
+		obj->SetPos(x1, y1, x2, y2);
 		bsOut->Write((int) 1);
 	}
 	else
@@ -423,7 +420,7 @@ void ImageCreate(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
 	bsIn->Read(align);
 	bsIn->Read(show);
 
-	boost::shared_ptr<CImage> obj(new CImage(&g_renderer, path.c_str(), x, y, rotation, align, show));
+	boost::shared_ptr<image> obj(new image(&g_renderer, path.c_str(), x, y, rotation, align, show));
 
 	bsOut->Write(g_renderer.Add(obj));
 }
@@ -445,7 +442,7 @@ void ImageSetShown(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOu
 	bsIn->Read(bShow);
 
 
-	boost::shared_ptr<CImage> obj = g_renderer.Get<CImage>(id);
+	boost::shared_ptr<image> obj = g_renderer.Get<image>(id);
 	if (obj)
 	{
 		obj->SetShown(bShow);
@@ -463,7 +460,7 @@ void ImageSetAlign(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOu
 	bsIn->Read(align);
 
 
-	boost::shared_ptr<CImage> obj = g_renderer.Get<CImage>(id);
+	boost::shared_ptr<image> obj = g_renderer.Get<image>(id);
 	if (obj)
 	{
 		obj->SetAlign(align);
@@ -482,7 +479,7 @@ void ImageSetPos(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
 	bsIn->Read(y);
 
 
-	boost::shared_ptr<CImage> obj = g_renderer.Get<CImage>(id);
+	boost::shared_ptr<image> obj = g_renderer.Get<image>(id);
 	if (obj)
 	{
 		obj->SetPos(x, y);
@@ -500,7 +497,7 @@ void ImageSetRotation(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *b
 	bsIn->Read(rotation);
 
 
-	boost::shared_ptr<CImage> obj = g_renderer.Get<CImage>(id);
+	boost::shared_ptr<image> obj = g_renderer.Get<image>(id);
 	if (obj)
 	{
 		obj->SetRotation(rotation);

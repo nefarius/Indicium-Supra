@@ -1,12 +1,12 @@
 #pragma once
 #include <d3dx9.h>
 
-#include "RenderBase.h"
+#include "renderbase.h"
 
-class CLine : public CRenderBase
+class line : public renderbase
 {
 public:
-	CLine(CRenderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow);
+	line(renderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow);
 
 	void SetPos(int x1,int y1,int x2,int y2);
 	void SetWidth(int width);
