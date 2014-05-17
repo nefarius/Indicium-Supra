@@ -10,22 +10,9 @@
 
 void TextCreate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	std::string Font, Text;
-	bool bBold, bItalic;
-	int x, y, FontSize;
-	unsigned int color;
-	bool bShadow, bShow;
+	std::string Font, Text; bool bBold, bItalic; int x, y, FontSize; unsigned int color; bool bShadow, bShow;
 
-	bsIn->Read(Font);
-	bsIn->Read(FontSize);
-	bsIn->Read(bBold);
-	bsIn->Read(bItalic);
-	bsIn->Read(x);
-	bsIn->Read(y);
-	bsIn->Read(color);
-	bsIn->Read(Text);
-	bsIn->Read(bShadow);
-	bsIn->Read(bShow);
+	*bsIn >> Font >> FontSize >> bBold >> bItalic >> x >> y >> color >> Text >> bShadow >> bShow;
 
 	boost::shared_ptr<text> obj(new text(&g_renderer, Font.c_str(), FontSize, bBold, bItalic, x, y, color, Text.c_str(), bShadow, bShow));
 
@@ -35,18 +22,17 @@ void TextCreate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsO
 void TextDestroy(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
-	bsIn->Read(id);
+
+	*bsIn >> id;
 
 	bsOut->Write((int) g_renderer.Remove(id));
 }
 
 void TextSetShadow(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	bool bShadow;
+	int id; bool bShadow;
 
-	bsIn->Read(id);
-	bsIn->Read(bShadow);
+	*bsIn >> id >> bShadow;
 
 	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
 	if (obj)
@@ -59,12 +45,9 @@ void TextSetShadow(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *
 
 void TextSetShown(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	bool bShown;
+	int id; bool bShown;
 
-	bsIn->Read(id);
-	bsIn->Read(bShown);
-
+	*bsIn >> id >> bShown;
 
 	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
 	if (obj)
@@ -77,12 +60,9 @@ void TextSetShown(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *b
 
 void TextSetColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	unsigned int color;
+	int id; unsigned int color;
 
-	bsIn->Read(id);
-	bsIn->Read(color);
-
+	*bsIn >> id >> color;
 
 	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
 	if (obj)
@@ -95,13 +75,9 @@ void TextSetColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *b
 
 void TextSetPos(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	int x, y;
+	int id, x, y;
 
-	bsIn->Read(id);
-	bsIn->Read(x);
-	bsIn->Read(y);
-
+	*bsIn >> id >> x >> y;
 
 	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
 	if (obj)
@@ -114,10 +90,9 @@ void TextSetPos(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsO
 
 void TextSetString(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	std::string str;
-	bsIn->Read(id);
-	bsIn->Read(str);
+	int id; std::string str;
+
+	*bsIn >> id >> str;
 
 	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
 	if (obj)
@@ -130,20 +105,9 @@ void TextSetString(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *
 
 void TextUpdate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	std::string Font;
-	int len;
-	int FontSize;
-	bool bBold;
-	bool bItalic;
+	int id, FontSize; std::string Font; bool bBold, bItalic;
 
-	bsIn->Read(id);
-	bsIn->Read(len);
-	bsIn->Read(Font);
-	bsIn->Read(FontSize);
-	bsIn->Read(bBold);
-	bsIn->Read(bItalic);
-
+	*bsIn >> id >> Font >> FontSize >> bBold >> bItalic;
 
 	boost::shared_ptr<text> obj = g_renderer.Get<text>(id);
 	if (obj)
@@ -154,16 +118,9 @@ void TextUpdate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsO
 
 void BoxCreate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int x, y, w, h;
-	unsigned int dwColor;
-	bool bShow;
+	int x, y, w, h; unsigned int dwColor; bool bShow;
 
-	bsIn->Read(x);
-	bsIn->Read(y);
-	bsIn->Read(w);
-	bsIn->Read(h);
-	bsIn->Read(dwColor);
-	bsIn->Read(bShow);
+	*bsIn >> x >> y >> w >> h >> dwColor >> bShow;
 
 	boost::shared_ptr<box> obj(new box(&g_renderer, x, y, w, h, dwColor, bShow));
 
@@ -173,19 +130,17 @@ void BoxCreate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOu
 void BoxDestroy(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
-	bsIn->Read(id);
+
+	*bsIn >> id;
 
 	bsOut->Write((int) g_renderer.Remove(id));
 }
 
 void BoxSetShown(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	bool bShown;
+	int id; bool bShown;
 
-	bsIn->Read(id);
-	bsIn->Read(bShown);
-
+	*bsIn >> id >> bShown;
 
 	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
 	if (obj)
@@ -199,13 +154,9 @@ void BoxSetShown(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bs
 
 void BoxSetBorder(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id, height;
-	bool bShown;
+	int id, height; bool bShown;
 
-	bsIn->Read(id);
-	bsIn->Read(height);
-	bsIn->Read(bShown);
-
+	*bsIn >> id >> height >> bShown;
 
 	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
 	if (obj)
@@ -220,12 +171,9 @@ void BoxSetBorder(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *b
 
 void BoxSetBorderColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	unsigned int dwColor;
+	int id; unsigned int dwColor;
 
-	bsIn->Read(id);
-	bsIn->Read(dwColor);
-
+	*bsIn >> id >> dwColor;
 
 	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
 	if (obj)
@@ -239,12 +187,9 @@ void BoxSetBorderColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstre
 
 void BoxSetColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	unsigned int dwColor;
+	int id; unsigned int dwColor;
 
-	bsIn->Read(id);
-	bsIn->Read(dwColor);
-
+	*bsIn >> id >> dwColor;
 
 	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
 	if (obj)
@@ -260,9 +205,7 @@ void BoxSetHeight(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *b
 {
 	int id, height;
 
-	bsIn->Read(id);
-	bsIn->Read(height);
-
+	*bsIn >> id >> height;
 
 	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
 	if (obj)
@@ -278,10 +221,7 @@ void BoxSetPos(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOu
 {
 	int id, x, y;
 
-	bsIn->Read(id);
-	bsIn->Read(x);
-	bsIn->Read(y);
-
+	*bsIn >> id >> x >> y;
 
 	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
 	if (obj)
@@ -297,9 +237,7 @@ void BoxSetWidth(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bs
 {
 	int id, width;
 
-	bsIn->Read(id);
-	bsIn->Read(width);
-
+	*bsIn >> id >> width;
 
 	boost::shared_ptr<box> obj = g_renderer.Get<box>(id);
 	if (obj)
@@ -313,15 +251,9 @@ void BoxSetWidth(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bs
 
 void LineCreate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int x1; int y1; int x2; int y2; int width; unsigned int color; bool bShow;
+	int x1, y1, x2, y2, width; unsigned int color; bool bShow;
 
-	bsIn->Read(x1);
-	bsIn->Read(y1);
-	bsIn->Read(x2);
-	bsIn->Read(y2);
-	bsIn->Read(width);
-	bsIn->Read(color);
-	bsIn->Read(bShow);
+	*bsIn >> x1 >> y1 >> x2 >> y2 >> width >> color >> bShow;
 
 	boost::shared_ptr<line> obj(new line(&g_renderer, x1, y1, x2, y2, width, color, bShow));
 
@@ -331,7 +263,8 @@ void LineCreate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsO
 void LineDestroy(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
-	bsIn->Read(id);
+
+	*bsIn >> id;
 
 	bsOut->Write((int) g_renderer.Remove(id));
 }
@@ -339,9 +272,8 @@ void LineDestroy(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bs
 void LineSetShown(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id; bool bShown;
-	bsIn->Read(id);
-	bsIn->Read(bShown);
 
+	*bsIn >> id >> bShown;
 
 	boost::shared_ptr<line> obj = g_renderer.Get<line>(id);
 	if (obj)
@@ -356,9 +288,8 @@ void LineSetShown(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *b
 void LineSetColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id; unsigned int color;
-	bsIn->Read(id);
-	bsIn->Read(color);
 
+	*bsIn >> id >> color;
 
 	boost::shared_ptr<line> obj = g_renderer.Get<line>(id);
 	if (obj)
@@ -373,9 +304,8 @@ void LineSetColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *b
 void LineSetWidth(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id; int width;
-	bsIn->Read(id);
-	bsIn->Read(width);
 
+	*bsIn >> id >> width;
 
 	boost::shared_ptr<line> obj = g_renderer.Get<line>(id);
 	if (obj)
@@ -389,13 +319,9 @@ void LineSetWidth(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *b
 
 void LineSetPos(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
-	int id; int x1; int y1; int x2; int y2;
-	bsIn->Read(id);
-	bsIn->Read(x1);
-	bsIn->Read(y1);
-	bsIn->Read(x2);
-	bsIn->Read(y2);
+	int id, x1, y1, x2, y2;
 
+	*bsIn >> id >> x1 >> y1 >> x2 >> y2;
 
 	boost::shared_ptr<line> obj = g_renderer.Get<line>(id);
 	if (obj)
@@ -409,16 +335,9 @@ void LineSetPos(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsO
 
 void ImageCreate(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
-	std::string path;
-	int x, y, rotation, align;
-	bool show;
+	std::string path; int x, y, rotation, align; bool show;
 
-	bsIn->Read(path);
-	bsIn->Read(x);
-	bsIn->Read(y);
-	bsIn->Read(rotation);
-	bsIn->Read(align);
-	bsIn->Read(show);
+	*bsIn >> path >> x >> y >> rotation >> align >> show;
 
 	boost::shared_ptr<image> obj(new image(&g_renderer, path.c_str(), x, y, rotation, align, show));
 
@@ -428,19 +347,17 @@ void ImageCreate(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 void ImageDestroy(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
-	bsIn->Read(id);
+
+	*bsIn >> id;
 
 	bsOut->Write((int) g_renderer.Remove(id));
 }
 
 void ImageSetShown(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	bool bShow;
+	int id; bool bShow;
 
-	bsIn->Read(id);
-	bsIn->Read(bShow);
-
+	*bsIn >> id >> bShow;
 
 	boost::shared_ptr<image> obj = g_renderer.Get<image>(id);
 	if (obj)
@@ -453,12 +370,9 @@ void ImageSetShown(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOu
 
 void ImageSetAlign(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	int align;
+	int id, align;
 
-	bsIn->Read(id);
-	bsIn->Read(align);
-
+	*bsIn >> id >> align;
 
 	boost::shared_ptr<image> obj = g_renderer.Get<image>(id);
 	if (obj)
@@ -471,13 +385,9 @@ void ImageSetAlign(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOu
 
 void ImageSetPos(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	int x, y;
+	int id, x, y;
 
-	bsIn->Read(id);
-	bsIn->Read(x);
-	bsIn->Read(y);
-
+	*bsIn >> id >> x >> y;
 
 	boost::shared_ptr<image> obj = g_renderer.Get<image>(id);
 	if (obj)
@@ -490,12 +400,9 @@ void ImageSetPos(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 
 void ImageSetRotation(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
-	int id;
-	int rotation;
+	int id, rotation;
 
-	bsIn->Read(id);
-	bsIn->Read(rotation);
-
+	*bsIn >> id >> rotation;
 
 	boost::shared_ptr<image> obj = g_renderer.Get<image>(id);
 	if (obj)
