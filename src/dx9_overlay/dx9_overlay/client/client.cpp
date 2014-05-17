@@ -23,9 +23,9 @@ sParamInfo paramArray[3] =
 
 bool IsServerAvailable()
 {
-	BitStream bsIn, bsOut;
+	bitstream bsIn, bsOut;
 	bsIn.Write((short) PipeMessages::Ping);
-	return CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success();
+	return namedpipeclient("Overlay_Server", &bsIn, &bsOut).Success();
 }
 
 EXPORT void SetParam(char *_szParamName, char *_szParamValue)

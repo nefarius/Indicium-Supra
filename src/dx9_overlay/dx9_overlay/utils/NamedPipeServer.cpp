@@ -7,7 +7,7 @@
 #define READING_STATE		1 
 #define WRITING_STATE		2 
 
-BOOL CNamedPipeServer::ConnectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo)
+BOOL namedpipeserver::ConnectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo)
 {
 	BOOL fConnected, fPendingIO = FALSE;
 
@@ -34,14 +34,14 @@ BOOL CNamedPipeServer::ConnectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo)
 	return fPendingIO;
 }
 
-void CNamedPipeServer::DisconnectAndReconnect(DWORD dwIdx)
+void namedpipeserver::DisconnectAndReconnect(DWORD dwIdx)
 {
 	DisconnectNamedPipe(m_Pipes[dwIdx].m_hPipe);
 	m_Pipes[dwIdx].m_fPendingIO = ConnectToNewClient(m_Pipes[dwIdx].m_hPipe, &m_Pipes[dwIdx].m_Overlapped);
 	m_Pipes[dwIdx].m_dwState = m_Pipes[dwIdx].m_fPendingIO ? CONNECTING_STATE : READING_STATE;
 
 }
-CNamedPipeServer::CNamedPipeServer(const char *pipe, boost::function<void(CNamedPipeServer::LPPIPEINSTANCE, BitStream *, BitStream *)> func) : m_cbCallback(func), m_thread(0)
+namedpipeserver::namedpipeserver(const char *pipe, boost::function<void(namedpipeserver::LPPIPEINSTANCE, bitstream *, bitstream *)> func) : m_cbCallback(func), m_thread(0)
 {
 	memset(m_szPipe, 0, sizeof(m_szPipe));
 	memset(m_Pipes, 0, sizeof(m_Pipes));
@@ -59,11 +59,11 @@ CNamedPipeServer::CNamedPipeServer(const char *pipe, boost::function<void(CNamed
 		m_Pipes[i].m_dwState = m_Pipes[i].m_fPendingIO ? CONNECTING_STATE : READING_STATE;
 	}
 
-	m_thread = new boost::thread(boost::bind(&CNamedPipeServer::Thread, this));
+	m_thread = new boost::thread(boost::bind(&namedpipeserver::Thread, this));
 }
 
 
-CNamedPipeServer::~CNamedPipeServer(void)
+namedpipeserver::~namedpipeserver(void)
 {
 	if (m_thread)
 	{
@@ -75,7 +75,7 @@ CNamedPipeServer::~CNamedPipeServer(void)
 	}
 }
 
-void CNamedPipeServer::Thread()
+void namedpipeserver::Thread()
 {
 	BOOL bSuccess;
 	DWORD dwRet;
@@ -143,8 +143,8 @@ void CNamedPipeServer::Thread()
 			DisconnectAndReconnect(idx);
 			break;
 		case WRITING_STATE:
-			BitStream bsIn(m_Pipes[idx].m_szRequest, m_Pipes[idx].m_dwRead, false);
-			BitStream bsOut;
+			bitstream bsIn(m_Pipes[idx].m_szRequest, m_Pipes[idx].m_dwRead, false);
+			bitstream bsOut;
 
 			m_cbCallback(&m_Pipes[idx], &bsIn, &bsOut);
 

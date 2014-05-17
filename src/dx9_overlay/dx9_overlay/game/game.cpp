@@ -45,7 +45,7 @@ void initGame()
 		return g_resetHook.callOrig(dev, pp);
 	});
 
-	typedef std::map< PipeMessages::ePipeMessages, boost::function<void(PipeMessages::ePipeMessages, BitStream *, BitStream *)> > MessagePaketHandler;
+	typedef std::map< PipeMessages::ePipeMessages, boost::function<void(PipeMessages::ePipeMessages, bitstream *, bitstream *)> > MessagePaketHandler;
 	MessagePaketHandler PaketHandler;
 
 
@@ -86,7 +86,7 @@ void initGame()
 	PaketHandler[PipeMessages::ShowAllVisual] = boost::bind(ShowAllVisual, _1, _2, _3);
 	PaketHandler[PipeMessages::HideAllVisual] = boost::bind(HideAllVisual, _1, _2, _3);
 
-	new CNamedPipeServer("Overlay_Server", [&](CNamedPipeServer::LPPIPEINSTANCE pp, BitStream *bsIn, BitStream *bsOut)
+	new namedpipeserver("Overlay_Server", [&](namedpipeserver::LPPIPEINSTANCE pp, bitstream *bsIn, bitstream *bsOut)
 	{
 		short eMessage;
 		bsIn->Read(eMessage);

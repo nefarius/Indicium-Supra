@@ -8,7 +8,7 @@
 #include "rendering/renderbase.h"
 
 
-void TextCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void TextCreate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	std::string Font, Text;
 	bool bBold, bItalic;
@@ -32,7 +32,7 @@ void TextCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 	bsOut->Write(g_renderer.Add(obj));
 }
 
-void TextDestroy(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void TextDestroy(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	bsIn->Read(id);
@@ -40,7 +40,7 @@ void TextDestroy(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bs
 	bsOut->Write((int) g_renderer.Remove(id));
 }
 
-void TextSetShadow(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void TextSetShadow(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	bool bShadow;
@@ -57,7 +57,7 @@ void TextSetShadow(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *
 	bsOut->Write((int) 0);
 }
 
-void TextSetShown(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void TextSetShown(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	bool bShown;
@@ -75,7 +75,7 @@ void TextSetShown(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 	bsOut->Write((int) 0);
 }
 
-void TextSetColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void TextSetColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	unsigned int color;
@@ -93,7 +93,7 @@ void TextSetColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 	bsOut->Write((int) 0);
 }
 
-void TextSetPos(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void TextSetPos(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	int x, y;
@@ -112,7 +112,7 @@ void TextSetPos(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 	bsOut->Write((int) 0);
 }
 
-void TextSetString(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void TextSetString(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	std::string str;
@@ -128,7 +128,7 @@ void TextSetString(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *
 	bsOut->Write((int) 0);
 }
 
-void TextUpdate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void TextUpdate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	std::string Font;
@@ -152,7 +152,7 @@ void TextUpdate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 		bsOut->Write((int) 0);
 }
 
-void BoxCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void BoxCreate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int x, y, w, h;
 	unsigned int dwColor;
@@ -170,7 +170,7 @@ void BoxCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOu
 	bsOut->Write(g_renderer.Add(obj));
 }
 
-void BoxDestroy(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void BoxDestroy(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	bsIn->Read(id);
@@ -178,7 +178,7 @@ void BoxDestroy(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 	bsOut->Write((int) g_renderer.Remove(id));
 }
 
-void BoxSetShown(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void BoxSetShown(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	bool bShown;
@@ -197,7 +197,7 @@ void BoxSetShown(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bs
 		bsOut->Write((int) 0);
 }
 
-void BoxSetBorder(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void BoxSetBorder(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id, height;
 	bool bShown;
@@ -218,7 +218,7 @@ void BoxSetBorder(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 		bsOut->Write((int) 0);
 }
 
-void BoxSetBorderColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void BoxSetBorderColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	unsigned int dwColor;
@@ -237,7 +237,7 @@ void BoxSetBorderColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStre
 		bsOut->Write((int) 0);
 }
 
-void BoxSetColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void BoxSetColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	unsigned int dwColor;
@@ -256,7 +256,7 @@ void BoxSetColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bs
 		bsOut->Write((int) 0);
 }
 
-void BoxSetHeight(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void BoxSetHeight(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id, height;
 
@@ -274,7 +274,7 @@ void BoxSetHeight(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 		bsOut->Write((int) 0);
 }
 
-void BoxSetPos(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void BoxSetPos(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id, x, y;
 
@@ -293,7 +293,7 @@ void BoxSetPos(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOu
 		bsOut->Write((int) 0);
 }
 
-void BoxSetWidth(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void BoxSetWidth(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id, width;
 
@@ -311,7 +311,7 @@ void BoxSetWidth(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bs
 		bsOut->Write((int) 0);
 }
 
-void LineCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void LineCreate(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int x1; int y1; int x2; int y2; int width; unsigned int color; bool bShow;
 
@@ -328,7 +328,7 @@ void LineCreate(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 	bsOut->Write(g_renderer.Add(obj));
 }
 
-void LineDestroy(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void LineDestroy(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	bsIn->Read(id);
@@ -336,7 +336,7 @@ void LineDestroy(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bs
 	bsOut->Write((int) g_renderer.Remove(id));
 }
 
-void LineSetShown(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void LineSetShown(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id; bool bShown;
 	bsIn->Read(id);
@@ -353,7 +353,7 @@ void LineSetShown(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 		bsOut->Write((int) 0);
 }
 
-void LineSetColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void LineSetColor(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id; unsigned int color;
 	bsIn->Read(id);
@@ -370,7 +370,7 @@ void LineSetColor(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 		bsOut->Write((int) 0);
 }
 
-void LineSetWidth(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void LineSetWidth(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id; int width;
 	bsIn->Read(id);
@@ -387,7 +387,7 @@ void LineSetWidth(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *b
 		bsOut->Write((int) 0);
 }
 
-void LineSetPos(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void LineSetPos(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	int id; int x1; int y1; int x2; int y2;
 	bsIn->Read(id);
@@ -407,7 +407,7 @@ void LineSetPos(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsO
 		bsOut->Write((int) 0);
 }
 
-void ImageCreate(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
+void ImageCreate(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
 	std::string path;
 	int x, y, rotation, align;
@@ -425,7 +425,7 @@ void ImageCreate(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
 	bsOut->Write(g_renderer.Add(obj));
 }
 
-void ImageDestroy(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
+void ImageDestroy(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	bsIn->Read(id);
@@ -433,7 +433,7 @@ void ImageDestroy(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut
 	bsOut->Write((int) g_renderer.Remove(id));
 }
 
-void ImageSetShown(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
+void ImageSetShown(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	bool bShow;
@@ -451,7 +451,7 @@ void ImageSetShown(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOu
 	bsOut->Write((int) 0);
 }
 
-void ImageSetAlign(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
+void ImageSetAlign(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	int align;
@@ -469,7 +469,7 @@ void ImageSetAlign(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOu
 	bsOut->Write((int) 0);
 }
 
-void ImageSetPos(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
+void ImageSetPos(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	int x, y;
@@ -488,7 +488,7 @@ void ImageSetPos(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
 	bsOut->Write((int) 0);
 }
 
-void ImageSetRotation(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *bsOut)
+void ImageSetRotation(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
 {
 	int id;
 	int rotation;
@@ -507,17 +507,17 @@ void ImageSetRotation(PipeMessages::ePipeMessages, BitStream *bsIn, BitStream *b
 }
 
 
-void DestroyAllVisual(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void DestroyAllVisual(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	g_renderer.DestroyAll();
 }
 
-void ShowAllVisual(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void ShowAllVisual(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	g_renderer.ShowAll();
 }
 
-void HideAllVisual(PipeMessages::ePipeMessages _id, BitStream *bsIn, BitStream *bsOut)
+void HideAllVisual(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *bsOut)
 {
 	g_renderer.HideAll();
 }

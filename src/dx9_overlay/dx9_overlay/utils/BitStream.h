@@ -6,7 +6,7 @@
 #include <string>
 
 
-class BitStream
+class bitstream
 {
 	boost::shared_ptr<boost::archive::text_oarchive> _oa;
 	boost::shared_ptr<boost::archive::text_iarchive> _ia;
@@ -15,7 +15,7 @@ class BitStream
 	std::string _ss_str;
 
 public:
-	BitStream()
+	bitstream()
 	{
 		try
 		{
@@ -27,7 +27,7 @@ public:
 		}
 	}
 
-	BitStream(const char * const _data, const unsigned int len, bool dummy) : _ss(std::string(_data, len))
+	bitstream(const char * const _data, const unsigned int len, bool dummy) : _ss(std::string(_data, len))
 	{
 		try
 		{
@@ -39,7 +39,7 @@ public:
 		}
 	}
 
-	~BitStream()
+	~bitstream()
 	{
 		try
 		{
@@ -79,13 +79,13 @@ public:
 		}
 	}
 
-	template<class T> BitStream& operator<<(const T& t)
+	template<class T> bitstream& operator<<(const T& t)
 	{
 		Write<T>(t);
 		return *this;
 	}
 
-	template<class T> BitStream& operator>>(T& t)
+	template<class T> bitstream& operator>>(T& t)
 	{
 		Read<T>(t);
 		return *this;

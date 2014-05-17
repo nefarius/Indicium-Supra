@@ -6,7 +6,7 @@
 
 
 
-CNamedPipeClient::CNamedPipeClient(const char *Pipe, BitStream *bsIn, BitStream *bsOut) :
+namedpipeclient::namedpipeclient(const char *Pipe, bitstream *bsIn, bitstream *bsOut) :
 m_bSuccess(false)
 {
 	char szData[BUFSIZE] = { 0 };
@@ -22,7 +22,7 @@ m_bSuccess(false)
 	}
 }
 
-bool CNamedPipeClient::Success() const
+bool namedpipeclient::Success() const
 {
 	return m_bSuccess;
 }

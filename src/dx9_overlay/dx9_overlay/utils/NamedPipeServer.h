@@ -9,9 +9,9 @@
 #define PIPE_TIMEOUT	5000
 
 namespace boost { class thread; }
-class BitStream;
+class bitstream;
 
-class CNamedPipeServer
+class namedpipeserver
 {
 public:
 	typedef struct
@@ -26,8 +26,8 @@ public:
 		BOOL		m_fPendingIO;
 	} PIPEINSTANCE, *LPPIPEINSTANCE;
 
-	CNamedPipeServer(const char *pipe, boost::function<void(CNamedPipeServer::LPPIPEINSTANCE, BitStream *, BitStream *)> func);
-	~CNamedPipeServer();
+	namedpipeserver(const char *pipe, boost::function<void(namedpipeserver::LPPIPEINSTANCE, bitstream *, bitstream *)> func);
+	~namedpipeserver();
 
 private:
 	void Thread();
@@ -40,6 +40,6 @@ private:
 	char			m_szPipe[MAX_PATH];
 
 	boost::thread	*m_thread;
-	boost::function<void(CNamedPipeServer::LPPIPEINSTANCE, BitStream *, BitStream *)> m_cbCallback;
+	boost::function<void(namedpipeserver::LPPIPEINSTANCE, bitstream *, bitstream *)> m_cbCallback;
 };
 

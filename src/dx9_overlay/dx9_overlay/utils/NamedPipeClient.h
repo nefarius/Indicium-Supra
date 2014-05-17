@@ -3,12 +3,12 @@
 #define BUFSIZE	 4096
 #define TIME_OUT 100
 
-class BitStream;
+class bitstream;
 
-class CNamedPipeClient
+class namedpipeclient
 {
 public:
-	CNamedPipeClient(const char *szPipe, BitStream *bsIn, BitStream *bsOut);
+	namedpipeclient(const char *szPipe, bitstream *bsIn, bitstream *bsOut);
 
 	bool Success() const;
 private:
