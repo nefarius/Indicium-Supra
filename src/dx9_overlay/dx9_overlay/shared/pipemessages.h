@@ -1,0 +1,41 @@
+#pragma once
+
+namespace PipeMessages
+{
+	enum ePipeMessages
+	{
+		Ping = 1,
+		TextCreate,
+		TextDestroy,
+		TextSetShadow,
+		TextSetShown,
+		TextSetColor,
+		TextSetPos,
+		TextSetString,
+		TextUpdate,
+		BoxCreate,
+		BoxDestroy,
+		BoxSetShown,
+		BoxSetBorder,
+		BoxSetBorderColor,
+		BoxSetColor,
+		BoxSetHeight,
+		BoxSetPos,
+		BoxSetWidth,
+		LineCreate,
+		LineDestroy,
+		LineSetShown,
+		LineSetColor,
+		LineSetWidth,
+		LineSetPos,
+		ImageCreate,
+		ImageDestroy,
+		ImageSetShown,
+		ImageSetAlign,
+		ImageSetPos,
+		ImageSetRotation,
+		DestroyAllVisual,
+		ShowAllVisual,
+		HideAllVisual,
+	};
+}
