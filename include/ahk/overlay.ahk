@@ -50,6 +50,9 @@ DestroyAllVisual_func	:= DllCall("GetProcAddress", UInt, hModule, Str, "DestroyA
 ShowAllVisual_func		:= DllCall("GetProcAddress", UInt, hModule, Str, "ShowAllVisual")
 HideAllVisual_func 		:= DllCall("GetProcAddress", UInt, hModule, Str, "HideAllVisual")
 
+GetFrameRate_func 		:= DllCall("GetProcAddress", UInt, hModule, Str, "GetFrameRate")
+GetScreenSpecs_func 	:= DllCall("GetProcAddress", UInt, hModule, Str, "GetScreenSpecs")
+
 Init()
 {
 	global Init_func
@@ -286,6 +289,20 @@ HideAllVisual()
 {
 	global HideAllVisual_func
 	res := DllCall(HideAllVisual_func )
+	return res
+}
+
+GetFrameRate()
+{
+	global GetFrameRate_func
+	res := DllCall(GetFrameRate_func )
+	return res
+}
+
+GetScreenSpecs(ByRef width, ByRef height)
+{
+	global GetScreenSpecs_func
+	res := DllCall(GetScreenSpecs_func, IntP, width, IntP, height)
 	return res
 }
 

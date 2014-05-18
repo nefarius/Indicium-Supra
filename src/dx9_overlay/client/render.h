@@ -37,3 +37,6 @@ EXPORT int ImageSetRotation(int id, int rotation);
 EXPORT int DestroyAllVisual();
 EXPORT int ShowAllVisual();
 EXPORT int HideAllVisual();
+
+EXPORT int GetFrameRate();
+EXPORT int GetScreenSpecs(int& width, int& height);

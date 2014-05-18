@@ -86,6 +86,9 @@ void initGame()
 	PaketHandler[PipeMessages::ShowAllVisual] = boost::bind(ShowAllVisual, _1, _2, _3);
 	PaketHandler[PipeMessages::HideAllVisual] = boost::bind(HideAllVisual, _1, _2, _3);
 
+	PaketHandler[PipeMessages::GetFrameRate] = boost::bind(GetFrameRate, _1, _2, _3);
+	PaketHandler[PipeMessages::GetScreenSpecs] = boost::bind(GetScreenSpecs, _1, _2, _3);
+
 	new namedpipeserver("Overlay_Server", [&](namedpipeserver::LPPIPEINSTANCE pp, bitstream *bsIn, bitstream *bsOut)
 	{
 		short eMessage;

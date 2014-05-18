@@ -428,3 +428,13 @@ void HideAllVisual(PipeMessages::ePipeMessages _id, bitstream *bsIn, bitstream *
 {
 	g_renderer.HideAll();
 }
+
+void GetFrameRate(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
+{
+	*bsOut << g_renderer.GetFrameRate();
+}
+
+void GetScreenSpecs(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut)
+{
+	*bsOut << g_renderer.GetScreenWidth() << g_renderer.GetScreenHeight();
+}

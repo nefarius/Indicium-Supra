@@ -4,6 +4,7 @@
 #include "renderbase.h"
 
 #include <boost/range/algorithm.hpp>
+#include <boost/date_time.hpp>
 
 renderer::RenderObjects	renderer::_RenderObjects;
 boost::mutex			renderer::_mtx;
@@ -45,6 +46,30 @@ bool renderer::Remove(int id)
 void renderer::Draw(IDirect3DDevice9 *pDevice)
 {
 	boost::lock_guard<boost::mutex> l(_mtx);
+
+	static DWORD dwFrames = 0;
+	static boost::posix_time::ptime TimeNow;
+	static boost::posix_time::ptime TimeLast = boost::posix_time::microsec_clock::local_time();
+	static DWORD dwElapsedTime = 0;
+
+	dwFrames++;
+	TimeNow = boost::posix_time::microsec_clock::local_time();
+	dwElapsedTime = (TimeNow - TimeLast).total_milliseconds();
+
+	if (dwElapsedTime >= 500)
+	{
+		float fFPS = (((float) dwFrames) * 1000.0f) / ((float) dwElapsedTime);
+		_frameRate = (int) fFPS;
+		dwFrames = 0;
+		TimeLast = TimeNow;
+	}
+
+	D3DVIEWPORT9 viewPort;
+	pDevice->GetViewport(&viewPort);
+
+	_width = viewPort.Width;
+	_height = viewPort.Height;
+
 
 	if(_RenderObjects.empty())
 		return;
@@ -150,4 +175,19 @@ void renderer::DestroyAll()
 
 		it->second->Destroy();
 	}
+}
+
+int renderer::GetFrameRate() const
+{
+	return _frameRate;
+}
+
+int renderer::GetScreenWidth() const
+{
+	return _width;
+}
+
+int renderer::GetScreenHeight() const
+{
+	return _height;
 }

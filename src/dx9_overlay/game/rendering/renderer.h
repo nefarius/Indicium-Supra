@@ -39,12 +39,21 @@ public:
 	void HideAll();
 	void DestroyAll();
 
+	int GetFrameRate() const;
+
+	int GetScreenWidth() const;
+	int GetScreenHeight() const;
+
 	boost::mutex& RenderMutex() 
 	{ 
 		return _mtx;
 	}
 
 private:
+	int _frameRate;
+	int _width;
+	int _height;
+
 	static RenderObjects	_RenderObjects;
 	static boost::mutex		_mtx;
 };

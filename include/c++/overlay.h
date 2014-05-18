@@ -38,5 +38,8 @@ IMPORT int DestroyAllVisual();
 IMPORT int ShowAllVisual();
 IMPORT int HideAllVisual();
 
+IMPORT int GetFrameRate();
+IMPORT int GetScreenSpecs(int& width, int& height);
+
 IMPORT int  Init();
-IMPORT void	SetParam(const char *_szParamName, const char *_szParamValue);
+IMPORT void SetParam(const char *_szParamName, const char *_szParamValue);

@@ -37,5 +37,7 @@ namespace PipeMessages
 		DestroyAllVisual,
 		ShowAllVisual,
 		HideAllVisual,
+		GetFrameRate,
+		GetScreenSpecs
 	};
 }

@@ -41,3 +41,6 @@ void ImageSetRotation(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *b
 void DestroyAllVisual(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut);
 void ShowAllVisual(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut);
 void HideAllVisual(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut);
+
+void GetFrameRate(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut);
+void GetScreenSpecs(PipeMessages::ePipeMessages, bitstream *bsIn, bitstream *bsOut);

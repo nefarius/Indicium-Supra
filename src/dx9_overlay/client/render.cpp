@@ -576,3 +576,38 @@ EXPORT int HideAllVisual()
 
 	return 0;
 }
+
+EXPORT int GetFrameRate()
+{
+	SERVER_CHECK(-1)
+
+	bitstream bsIn, bsOut;
+
+	bsIn << (short) PipeMessages::GetFrameRate;
+
+	if (namedpipeclient("Overlay_Server", &bsIn, &bsOut).Success())
+	{
+		int iRet;
+		bsOut.Read(iRet);
+		return iRet;
+	}
+
+	return -1;
+}
+
+EXPORT int GetScreenSpecs(int& width, int& height)
+{
+	SERVER_CHECK(0)
+
+	bitstream bsIn, bsOut;
+
+	bsIn << (short) PipeMessages::GetScreenSpecs;
+
+	if (namedpipeclient("Overlay_Server", &bsIn, &bsOut).Success())
+	{
+		bsOut >> width >> height;
+		return 1;
+	}
+
+	return 0;
+}
