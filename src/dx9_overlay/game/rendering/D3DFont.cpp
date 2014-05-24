@@ -354,9 +354,10 @@ HRESULT CD3DFont::GetTextExtent(const TCHAR* strText, SIZE* pSize)
 			std::vector<char> _costumColor;
 			while (*strText != '}')
 			{
-				bool numeric = (*strText >= '0' && *strText <= '9') || (*strText >= 'A' && *strText <= 'F');
+				char ch = toupper(*strText);
+				bool numeric = (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'F');
 				if (numeric){
-					_costumColor.push_back(*strText);
+					_costumColor.push_back(ch);
 				}
 				strText++;
 			}
@@ -451,9 +452,10 @@ HRESULT CD3DFont::DrawText(FLOAT sx, FLOAT sy, DWORD dwColor,
 			std::vector<char> _costumColor;
 			while (*strText != '}')
 			{
-				bool numeric = (*strText >= '0' && *strText <= '9') || (*strText >= 'A' && *strText <= 'F');
+				char ch = toupper(*strText);
+				bool numeric = (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'F');
 				if (numeric){
-					_costumColor.push_back(*strText);
+					_costumColor.push_back(ch);
 				}
 				strText++;
 			}
