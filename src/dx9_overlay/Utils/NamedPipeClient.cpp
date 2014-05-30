@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-CNamedPipeClient::CNamedPipeClient(const char *Pipe, CBitStream *bsIn, CBitStream *bsOut) :
+CNamedPipeClient::CNamedPipeClient(const char *Pipe, CBitStream& bsIn, CBitStream& bsOut) :
 m_bSuccess(false)
 {
 	char szData[BUFSIZE] = { 0 };
@@ -13,9 +13,9 @@ m_bSuccess(false)
 
 	sprintf(szPipe, "\\\\.\\pipe\\%s", Pipe);
 
-	if (CallNamedPipe(szPipe, (LPVOID)bsIn->GetData(), bsIn->GetNumberOfBytesUsed(), szData, sizeof(szData), &dwReaded, TIME_OUT))
+	if (CallNamedPipe(szPipe, (LPVOID)bsIn.GetData(), bsIn.GetNumberOfBytesUsed(), szData, sizeof(szData), &dwReaded, TIME_OUT))
 	{
-		bsOut->SetData(szData, sizeof(szData));
+		bsOut.SetData(szData, sizeof(szData));
 		m_bSuccess = true;
 	}
 }

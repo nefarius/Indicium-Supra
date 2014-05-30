@@ -8,7 +8,7 @@ class CBitStream;
 class CNamedPipeClient
 {
 public:
-	CNamedPipeClient(const char *szPipe, CBitStream *bsIn, CBitStream *bsOut);
+	CNamedPipeClient(const char *szPipe, CBitStream& bsIn, CBitStream& bsOut);
 
 	bool Success() const;
 private:

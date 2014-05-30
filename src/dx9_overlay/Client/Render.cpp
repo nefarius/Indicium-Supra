@@ -19,7 +19,7 @@ EXPORT int TextCreate(char *Font, int FontSize, bool bBold, bool bItalic, int x,
 	bsIn << PipeMessages::TextCreate << std::string(Font) << FontSize << bBold << bItalic << x << y << color << std::string(text);
 	bsIn << bShadow << bShow;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return -1;
@@ -33,7 +33,7 @@ EXPORT int TextDestroy(int Id)
 
 	bsIn << PipeMessages::TextDestroy << Id;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -47,7 +47,7 @@ EXPORT int TextSetShadow(int id, bool b)
 
 	bsIn << PipeMessages::TextSetShadow << id << b;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -61,7 +61,7 @@ EXPORT int TextSetShown(int id, bool b)
 
 	bsIn << PipeMessages::TextSetShown << id << b;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -75,7 +75,7 @@ EXPORT int TextSetColor(int id, unsigned int color)
 
 	bsIn << PipeMessages::TextSetColor << id << color;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -89,7 +89,7 @@ EXPORT int TextSetPos(int id, int x, int y)
 
 	bsIn << PipeMessages::TextSetPos << id << x << y;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -103,7 +103,7 @@ EXPORT int TextSetString(int id, char *str)
 
 	bsIn << PipeMessages::TextSetString << id << std::string(str);
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -117,7 +117,7 @@ EXPORT int TextUpdate(int id, char *Font, int FontSize, bool bBold, bool bItalic
 
 	bsIn << PipeMessages::TextUpdate << id << std::string(Font) << FontSize << bBold << bItalic;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -131,7 +131,7 @@ EXPORT int BoxCreate(int x, int y, int w, int h, unsigned int dwColor, bool bSho
 
 	bsIn << PipeMessages::BoxCreate << x << y << w << h << dwColor << bShow;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return -1;
@@ -145,7 +145,7 @@ EXPORT int BoxDestroy(int id)
 
 	bsIn << PipeMessages::BoxDestroy << id;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -159,7 +159,7 @@ EXPORT int BoxSetShown(int id, bool bShown)
 
 	bsIn << PipeMessages::BoxSetShown << id << bShown;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -173,7 +173,7 @@ EXPORT int BoxSetBorder(int id, int height, bool bShown)
 
 	bsIn << PipeMessages::BoxSetBorder << id << height << bShown;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -187,7 +187,7 @@ EXPORT int BoxSetBorderColor(int id, unsigned int dwColor)
 
 	bsIn << PipeMessages::BoxSetBorderColor << id << dwColor;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -201,7 +201,7 @@ EXPORT int BoxSetColor(int id, unsigned int dwColor)
 
 	bsIn << PipeMessages::BoxSetColor << id << dwColor;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -215,7 +215,7 @@ EXPORT int BoxSetHeight(int id, int height)
 
 	bsIn << PipeMessages::BoxSetHeight << id << height;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -229,7 +229,7 @@ EXPORT int BoxSetPos(int id, int x, int y)
 
 	bsIn << PipeMessages::BoxSetPos << id << x << y;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -243,7 +243,7 @@ EXPORT int BoxSetWidth(int id, int width)
 
 	bsIn << PipeMessages::BoxSetWidth << id << width;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -257,7 +257,7 @@ EXPORT int LineCreate(int x1, int y1, int x2, int y2, int width, unsigned int co
 
 	bsIn << PipeMessages::LineCreate << x1 << y1 << x2 << y2 << width << color << bShow;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return -1;
@@ -271,7 +271,7 @@ EXPORT int LineDestroy(int id)
 
 	bsIn << PipeMessages::LineDestroy << id;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -285,7 +285,7 @@ EXPORT int LineSetShown(int id, bool bShown)
 
 	bsIn << PipeMessages::LineSetShown << id << bShown;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -299,7 +299,7 @@ EXPORT int LineSetColor(int id, unsigned int color)
 
 	bsIn << PipeMessages::LineSetColor << id << color;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -313,7 +313,7 @@ EXPORT int LineSetWidth(int id, int width)
 
 	bsIn << PipeMessages::LineSetWidth << id << width;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 	
 	return 0;
@@ -327,7 +327,7 @@ EXPORT int LineSetPos(int id, int x1, int y1, int x2, int y2)
 
 	bsIn << PipeMessages::LineSetPos << id << x1 << y1 << x2 << y2;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -345,7 +345,7 @@ EXPORT int ImageCreate(char *path, int x, int y, int rotation, int align, bool b
 
 	bsIn << PipeMessages::ImageCreate << abs_path << x << y << rotation << align << bShow;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return -1;
@@ -359,7 +359,7 @@ EXPORT int ImageDestroy(int id)
 
 	bsIn << PipeMessages::ImageDestroy << id;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 	
 	return 0;
@@ -373,7 +373,7 @@ EXPORT int ImageSetShown(int id, bool bShown)
 
 	bsIn << PipeMessages::ImageSetShown << id << bShown;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -387,7 +387,7 @@ EXPORT int ImageSetAlign(int id, int align)
 
 	bsIn << PipeMessages::ImageSetAlign << id << align;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -401,7 +401,7 @@ EXPORT int ImageSetPos(int id, int x, int y)
 
 	bsIn << PipeMessages::ImageSetPos << id << x << y;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return 0;
@@ -415,7 +415,7 @@ EXPORT int ImageSetRotation(int id, int rotation)
 
 	bsIn << PipeMessages::ImageSetRotation << id << rotation;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 	
 	return 0;
@@ -429,7 +429,7 @@ EXPORT int DestroyAllVisual()
 
 	bsIn << PipeMessages::DestroyAllVisual;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		return 1;
 
 	return 0;
@@ -443,7 +443,7 @@ EXPORT int ShowAllVisual()
 
 	bsIn << PipeMessages::ShowAllVisual;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		return 1;
 
 	return 0;
@@ -457,7 +457,7 @@ EXPORT int HideAllVisual()
 
 	bsIn << PipeMessages::HideAllVisual;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		return 1;
 
 	return 0;
@@ -471,7 +471,7 @@ EXPORT int GetFrameRate()
 
 	bsIn << PipeMessages::GetFrameRate;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 		BITSTREAM_RET(int);
 
 	return -1;
@@ -485,7 +485,7 @@ EXPORT int GetScreenSpecs(int& width, int& height)
 
 	bsIn << PipeMessages::GetScreenSpecs;
 
-	if (CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success())
+	if (CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success())
 	{
 		bsOut >> width >> height;
 		return 1;
