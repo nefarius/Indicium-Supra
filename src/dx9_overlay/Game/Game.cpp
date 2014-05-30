@@ -44,7 +44,7 @@ void initGame()
 		return g_resetHook.callOrig(dev, pp);
 	});
 
-	typedef std::map< PipeMessages::ePipeMessages, boost::function<void(CBitStream&, CBitStream&)> > MessagePaketHandler;
+	typedef std::map<PipeMessages, boost::function<void(CBitStream&, CBitStream&)> > MessagePaketHandler;
 	MessagePaketHandler PaketHandler;
 
 
@@ -94,14 +94,14 @@ void initGame()
 
 		try
 		{
-			auto it = PaketHandler.find((PipeMessages::ePipeMessages)eMessage);
+			auto it = PaketHandler.find((PipeMessages)eMessage);
 			if (it == PaketHandler.end())
 				return;
 
-			if (!PaketHandler[(PipeMessages::ePipeMessages)eMessage])
+			if (!PaketHandler[(PipeMessages)eMessage])
 				return;
 
-			PaketHandler[(PipeMessages::ePipeMessages)eMessage](bsIn, bsOut);
+			PaketHandler[(PipeMessages)eMessage](bsIn, bsOut);
 		}
 		catch (...)
 		{

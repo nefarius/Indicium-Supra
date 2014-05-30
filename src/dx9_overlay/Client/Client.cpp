@@ -10,13 +10,13 @@
 
 #include <boost/algorithm/string.hpp>
 
-struct sParamInfo
+struct stParamInfo
 {
 	std::string szParamName;
 	std::string szParamValue;
 };
 
-sParamInfo g_paramArray[3] =
+stParamInfo g_paramArray[3] =
 {
 	"process", "",
 	"window", "",
@@ -27,7 +27,7 @@ bool IsServerAvailable()
 {
 	CBitStream bsIn, bsOut;
 
-	bsIn << (short) PipeMessages::Ping;
+	bsIn << PipeMessages::Ping;
 
 	return CNamedPipeClient("Overlay_Server", &bsIn, &bsOut).Success();
 }
