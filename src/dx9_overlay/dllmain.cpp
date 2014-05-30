@@ -3,8 +3,8 @@
 
 #include "dllmain.h"
 
-#include <utils/windows.h>
-#include <game/game.h>
+#include <Utils/Windows.h>
+#include <Game/Game.h>
 
 HANDLE g_hDllHandle = 0;
 

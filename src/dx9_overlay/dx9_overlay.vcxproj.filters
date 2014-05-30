@@ -2,136 +2,136 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="game\game.cpp">
-      <Filter>game</Filter>
+    <ClCompile Include="Client\Client.cpp">
+      <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="client\client.cpp">
-      <Filter>client</Filter>
+    <ClCompile Include="Client\Render.cpp">
+      <Filter>Client</Filter>
     </ClCompile>
-    <ClCompile Include="game\rendering\box.cpp">
-      <Filter>game\rendering</Filter>
+    <ClCompile Include="Game\Rendering\Box.cpp">
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="game\rendering\D3DFont.cpp">
-      <Filter>game\rendering</Filter>
+    <ClCompile Include="Game\Rendering\D3DFont.cpp">
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="game\rendering\dx_utils.cpp">
-      <Filter>game\rendering</Filter>
+    <ClCompile Include="Game\Rendering\dx_utils.cpp">
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="game\rendering\image.cpp">
-      <Filter>game\rendering</Filter>
+    <ClCompile Include="Game\Rendering\Image.cpp">
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="game\rendering\line.cpp">
-      <Filter>game\rendering</Filter>
+    <ClCompile Include="Game\Rendering\Line.cpp">
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="game\rendering\renderbase.cpp">
-      <Filter>game\rendering</Filter>
+    <ClCompile Include="Game\Rendering\RenderBase.cpp">
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="game\rendering\renderer.cpp">
-      <Filter>game\rendering</Filter>
+    <ClCompile Include="Game\Rendering\Renderer.cpp">
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="game\rendering\text.cpp">
-      <Filter>game\rendering</Filter>
+    <ClCompile Include="Game\Rendering\Text.cpp">
+      <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="game\messagehandler.cpp">
-      <Filter>game</Filter>
+    <ClCompile Include="Game\Game.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="utils\misc.cpp">
-      <Filter>utils</Filter>
+    <ClCompile Include="Game\Messagehandler.cpp">
+      <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="utils\namedpipeclient.cpp">
-      <Filter>utils</Filter>
+    <ClCompile Include="Utils\Misc.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="utils\namedpipeserver.cpp">
-      <Filter>utils</Filter>
+    <ClCompile Include="Utils\NamedPipeClient.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="utils\pattern.cpp">
-      <Filter>utils</Filter>
+    <ClCompile Include="Utils\NamedPipeServer.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="client\render.cpp">
-      <Filter>client</Filter>
+    <ClCompile Include="Utils\Pattern.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="game">
-      <UniqueIdentifier>{cd0420a0-7f6c-4057-b791-e3d61d9c24ca}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="client">
+    <Filter Include="Client">
       <UniqueIdentifier>{bba86b6d-8571-4a75-b67a-40abb9ad0000}</UniqueIdentifier>
     </Filter>
-    <Filter Include="game\rendering">
+    <Filter Include="Game">
+      <UniqueIdentifier>{cd0420a0-7f6c-4057-b791-e3d61d9c24ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Rendering">
       <UniqueIdentifier>{13d9c7aa-01e3-429c-b233-9963d359d701}</UniqueIdentifier>
     </Filter>
-    <Filter Include="utils">
-      <UniqueIdentifier>{73d3675a-a6ac-4c93-ac87-a1d4d500dcc9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="shared">
+    <Filter Include="Shared">
       <UniqueIdentifier>{3b5d3b0a-16b2-4805-a0a8-4cf8445aec66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{73d3675a-a6ac-4c93-ac87-a1d4d500dcc9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="game\game.h">
-      <Filter>game</Filter>
-    </ClInclude>
-    <ClInclude Include="client\client.h">
-      <Filter>client</Filter>
-    </ClInclude>
     <ClInclude Include="dllmain.h" />
-    <ClInclude Include="game\rendering\box.h">
-      <Filter>game\rendering</Filter>
+    <ClInclude Include="Client\Client.h">
+      <Filter>Client</Filter>
     </ClInclude>
-    <ClInclude Include="game\rendering\D3DFont.h">
-      <Filter>game\rendering</Filter>
+    <ClInclude Include="Client\Render.h">
+      <Filter>Client</Filter>
     </ClInclude>
-    <ClInclude Include="game\rendering\dx_utils.h">
-      <Filter>game\rendering</Filter>
+    <ClInclude Include="Game\Rendering\Box.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="game\rendering\image.h">
-      <Filter>game\rendering</Filter>
+    <ClInclude Include="Game\Rendering\D3DFont.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="game\rendering\line.h">
-      <Filter>game\rendering</Filter>
+    <ClInclude Include="Game\Rendering\dx_utils.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="game\rendering\renderbase.h">
-      <Filter>game\rendering</Filter>
+    <ClInclude Include="Game\Rendering\Image.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="game\rendering\renderer.h">
-      <Filter>game\rendering</Filter>
+    <ClInclude Include="Game\Rendering\Line.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="game\rendering\text.h">
-      <Filter>game\rendering</Filter>
+    <ClInclude Include="Game\Rendering\RenderBase.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="game\messagehandler.h">
-      <Filter>game</Filter>
+    <ClInclude Include="Game\Rendering\Renderer.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="shared\pipemessages.h">
-      <Filter>shared</Filter>
+    <ClInclude Include="Game\Rendering\Text.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="utils\algorithm.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="Game\Game.h">
+      <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="utils\bitstream.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="Game\Messagehandler.h">
+      <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="utils\hook.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="Shared\PipeMessages.h">
+      <Filter>Shared</Filter>
     </ClInclude>
-    <ClInclude Include="utils\misc.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="Utils\algorithm.h">
+      <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\namedpipeclient.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="Utils\Bitstream.h">
+      <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\namedpipeserver.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="Utils\Hook.h">
+      <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\pattern.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="Utils\Misc.h">
+      <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\windows.h">
-      <Filter>utils</Filter>
+    <ClInclude Include="Utils\NamedPipeClient.h">
+      <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="client\render.h">
-      <Filter>client</Filter>
+    <ClInclude Include="Utils\NamedPipeServer.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Pattern.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Windows.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
