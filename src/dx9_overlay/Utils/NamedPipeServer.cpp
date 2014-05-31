@@ -1,6 +1,8 @@
 #include "NamedPipeServer.h"
 #include "Bitstream.h"
 
+#include <Shared/Config.h>
+
 #include <boost/thread.hpp>
 
 #define CONNECTING_STATE	0 
@@ -41,12 +43,12 @@ void CNamedPipeServer::DisconnectAndReconnect(DWORD dwIdx)
 	m_Pipes[dwIdx].m_dwState = m_Pipes[dwIdx].m_fPendingIO ? CONNECTING_STATE : READING_STATE;
 
 }
-CNamedPipeServer::CNamedPipeServer(const char *pipe, boost::function<void(CBitStream&, CBitStream&)> func) : m_cbCallback(func), m_thread(0)
+CNamedPipeServer::CNamedPipeServer(boost::function<void(CBitStream&, CBitStream&)> func) : m_cbCallback(func), m_thread(0)
 {
 	memset(m_szPipe, 0, sizeof(m_szPipe));
 	memset(m_Pipes, 0, sizeof(m_Pipes));
 
-	sprintf_s(m_szPipe, "\\\\.\\pipe\\%s", pipe);
+	sprintf_s(m_szPipe, "\\\\.\\pipe\\%s", g_strPipeName);
 
 	for (int i = 0; i < MAX_CLIENTS; i++)
 	{

@@ -29,7 +29,7 @@ bool IsServerAvailable()
 
 	bsIn << PipeMessages::Ping;
 
-	return CNamedPipeClient("Overlay_Server", bsIn, bsOut).Success();
+	return CNamedPipeClient(bsIn, bsOut).Success();
 }
 
 EXPORT void SetParam(char *_szParamName, char *_szParamValue)

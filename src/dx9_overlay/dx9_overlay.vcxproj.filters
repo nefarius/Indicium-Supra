@@ -61,11 +61,11 @@
     <Filter Include="Game\Rendering">
       <UniqueIdentifier>{13d9c7aa-01e3-429c-b233-9963d359d701}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shared">
-      <UniqueIdentifier>{3b5d3b0a-16b2-4805-a0a8-4cf8445aec66}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utils">
       <UniqueIdentifier>{73d3675a-a6ac-4c93-ac87-a1d4d500dcc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{3b5d3b0a-16b2-4805-a0a8-4cf8445aec66}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +132,9 @@
     </ClInclude>
     <ClInclude Include="Utils\Windows.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared\Config.h">
+      <Filter>Shared</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

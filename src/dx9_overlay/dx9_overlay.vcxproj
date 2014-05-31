@@ -117,6 +117,7 @@
     <ClInclude Include="Game\Rendering\RenderBase.h" />
     <ClInclude Include="Game\Rendering\Renderer.h" />
     <ClInclude Include="Game\Rendering\Text.h" />
+    <ClInclude Include="Shared\Config.h" />
     <ClInclude Include="Shared\PipeMessages.h" />
     <ClInclude Include="Utils\algorithm.h" />
     <ClInclude Include="Utils\Bitstream.h" />

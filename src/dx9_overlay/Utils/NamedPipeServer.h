@@ -13,7 +13,6 @@ class CBitStream;
 
 class CNamedPipeServer
 {
-public:
 	typedef struct
 	{
 		OVERLAPPED	m_Overlapped;
@@ -26,7 +25,8 @@ public:
 		BOOL		m_fPendingIO;
 	} PIPEINSTANCE, *LPPIPEINSTANCE;
 
-	CNamedPipeServer(const char *pipe, boost::function<void(CBitStream&, CBitStream&)> func);
+public:
+	CNamedPipeServer(boost::function<void(CBitStream&, CBitStream&)> func);
 	~CNamedPipeServer();
 
 private:

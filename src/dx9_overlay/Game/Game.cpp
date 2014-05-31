@@ -10,6 +10,8 @@
 
 #include <d3dx9.h>
 
+#define BIND(T) PaketHandler[PipeMessages::T] = boost::bind(T, _1, _2);
+
 CHook<CCallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
 CHook<CCallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
 
@@ -47,65 +49,63 @@ void initGame()
 	typedef std::map<PipeMessages, boost::function<void(CBitStream&, CBitStream&)> > MessagePaketHandler;
 	MessagePaketHandler PaketHandler;
 
+	BIND(TextCreate);
+	BIND(TextDestroy);
+	BIND(TextSetShadow);
+	BIND(TextSetShown);
+	BIND(TextSetColor);
+	BIND(TextSetPos);
+	BIND(TextSetString);
+	BIND(TextUpdate);
 
-	PaketHandler[PipeMessages::TextCreate] = boost::bind(TextCreate, _1, _2);
-	PaketHandler[PipeMessages::TextDestroy] = boost::bind(TextDestroy, _1, _2);
-	PaketHandler[PipeMessages::TextSetShadow] = boost::bind(TextSetShadow, _1, _2);
-	PaketHandler[PipeMessages::TextSetShown] = boost::bind(TextSetShown, _1, _2);
-	PaketHandler[PipeMessages::TextSetColor] = boost::bind(TextSetColor, _1, _2);
-	PaketHandler[PipeMessages::TextSetPos] = boost::bind(TextSetPos, _1, _2);
-	PaketHandler[PipeMessages::TextSetString] = boost::bind(TextSetString, _1, _2);
-	PaketHandler[PipeMessages::TextUpdate] = boost::bind(TextUpdate, _1, _2);
+	BIND(BoxCreate);
+	BIND(BoxDestroy);
+	BIND(BoxSetShown);
+	BIND(BoxSetBorder);
+	BIND(BoxSetBorderColor);
+	BIND(BoxSetColor);
+	BIND(BoxSetHeight);
+	BIND(BoxSetPos);
+	BIND(BoxSetWidth);
 
-	PaketHandler[PipeMessages::BoxCreate] = boost::bind(BoxCreate, _1, _2);
-	PaketHandler[PipeMessages::BoxDestroy] = boost::bind(BoxDestroy, _1, _2);
-	PaketHandler[PipeMessages::BoxSetShown] = boost::bind(BoxSetShown, _1, _2);
-	PaketHandler[PipeMessages::BoxSetBorder] = boost::bind(BoxSetBorder, _1, _2);
-	PaketHandler[PipeMessages::BoxSetBorderColor] = boost::bind(BoxSetBorderColor, _1, _2);
-	PaketHandler[PipeMessages::BoxSetColor] = boost::bind(BoxSetColor, _1, _2);
-	PaketHandler[PipeMessages::BoxSetHeight] = boost::bind(BoxSetHeight, _1, _2);
-	PaketHandler[PipeMessages::BoxSetPos] = boost::bind(BoxSetPos, _1, _2);
-	PaketHandler[PipeMessages::BoxSetWidth] = boost::bind(BoxSetWidth, _1, _2);
+	BIND(LineCreate);
+	BIND(LineDestroy);
+	BIND(LineSetShown);
+	BIND(LineSetColor);
+	BIND(LineSetWidth);
+	BIND(LineSetPos);
 
-	PaketHandler[PipeMessages::LineCreate] = boost::bind(LineCreate, _1, _2);
-	PaketHandler[PipeMessages::LineDestroy] = boost::bind(LineDestroy, _1, _2);
-	PaketHandler[PipeMessages::LineSetShown] = boost::bind(LineSetShown, _1, _2);
-	PaketHandler[PipeMessages::LineSetColor] = boost::bind(LineSetColor, _1, _2);
-	PaketHandler[PipeMessages::LineSetWidth] = boost::bind(LineSetWidth, _1, _2);
-	PaketHandler[PipeMessages::LineSetPos] = boost::bind(LineSetPos, _1, _2);
+	BIND(ImageCreate);
+	BIND(ImageDestroy);
+	BIND(ImageSetShown);
+	BIND(ImageSetAlign);
+	BIND(ImageSetPos);
+	BIND(ImageSetRotation);
 
-	PaketHandler[PipeMessages::ImageCreate] = boost::bind(ImageCreate, _1, _2);
-	PaketHandler[PipeMessages::ImageDestroy] = boost::bind(ImageDestroy, _1, _2);
-	PaketHandler[PipeMessages::ImageSetShown] = boost::bind(ImageSetShown, _1, _2);
-	PaketHandler[PipeMessages::ImageSetAlign] = boost::bind(ImageSetAlign, _1, _2);
-	PaketHandler[PipeMessages::ImageSetPos] = boost::bind(ImageSetPos, _1, _2);
-	PaketHandler[PipeMessages::ImageSetRotation] = boost::bind(ImageSetRotation, _1, _2);
+	BIND(DestroyAllVisual);
+	BIND(ShowAllVisual);
+	BIND(HideAllVisual);
 
-	PaketHandler[PipeMessages::DestroyAllVisual] = boost::bind(DestroyAllVisual, _1, _2);
-	PaketHandler[PipeMessages::ShowAllVisual] = boost::bind(ShowAllVisual, _1, _2);
-	PaketHandler[PipeMessages::HideAllVisual] = boost::bind(HideAllVisual, _1, _2);
+	BIND(GetFrameRate);
+	BIND(GetScreenSpecs);
 
-	PaketHandler[PipeMessages::GetFrameRate] = boost::bind(GetFrameRate, _1, _2);
-	PaketHandler[PipeMessages::GetScreenSpecs] = boost::bind(GetScreenSpecs, _1, _2);
-
-	new CNamedPipeServer("Overlay_Server", [&](CBitStream& bsIn, CBitStream& bsOut)
+	new CNamedPipeServer([&](CBitStream& bsIn, CBitStream& bsOut)
 	{
-		BITSTREAM_READ(bsIn, short, eMessage);
+		BITSTREAM_READ(bsIn, PipeMessages, eMessage);
 
 		try
 		{
-			auto it = PaketHandler.find((PipeMessages)eMessage);
+			auto it = PaketHandler.find(eMessage);
 			if (it == PaketHandler.end())
 				return;
 
-			if (!PaketHandler[(PipeMessages)eMessage])
+			if (!PaketHandler[eMessage])
 				return;
 
-			PaketHandler[(PipeMessages)eMessage](bsIn, bsOut);
+			PaketHandler[eMessage](bsIn, bsOut);
 		}
 		catch (...)
 		{
-
 		}
 	});
 
