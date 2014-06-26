@@ -8,13 +8,14 @@ Usage:
 2) Change PROC_NAME to desired process name
 3) Run script and DX application (in any order)
 
-Hitting the 1 key will exit the script, hitting 2 will toggle the text on/off
+Hitting ALT+X will exit the script, hitting ALT+T will toggle the text on/off
 */
 
 #SingleInstance, force
 #NoEnv
 
 PROC_NAME := "GFXTest.exe"
+
 overlay_ids := {}
 text_visible := 1
 
@@ -27,15 +28,16 @@ WatchProcess(PROC_NAME)
 
 return
 
-; Quit script hotkey
-~1::
+; Quit script hotkey: ALT+X
+~!x::
 GuiClose:
+	soundbeep
 	DestroyOverlays()
 	ExitApp
 	return
 
-; Toggle text overlay hotkey
-~2::
+; Toggle text overlay hotkey - ALT+T
+~!t::
 	text_visible := 1 - text_visible
 	TextSetShown(overlay_ids.text,text_visible)
 	return
@@ -66,7 +68,7 @@ WatchProcess(name){
 CreateOverlays(){
 	ret := {}
 	ret.text := TextCreate("Arial", 25, false, false, 100, 100, 0xFFFFFFFF, "Hello {ffff00}World", true, true)
-	ret.box := BoxCreate(200, 200, 200, 200, 0x10FFFFFF, true)
+	ret.box := BoxCreate(200, 200, 200, 200, 0xFFFFFFFF, true)
 	return ret
 }
 
