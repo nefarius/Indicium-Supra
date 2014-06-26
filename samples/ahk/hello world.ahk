@@ -1,8 +1,6 @@
 ﻿/*
 DX9-Overlay-API AutoHotkey "Hello World" script
 
-modified by evilC
-
 By default, injects to the GFXTest application by evolution536 and learn_more from here: http://www.unknowncheats.me/forum/general-programming-and-reversing/105528-gfxtest-lightweight-graphics-testing-application.html
 
 Usage:
