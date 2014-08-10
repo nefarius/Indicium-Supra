@@ -91,26 +91,62 @@ EXPORT int Init()
 		return 0;
 	}
 
-	LPTHREAD_START_ROUTINE pFunc = (LPTHREAD_START_ROUTINE) GetProcAddress(GetModuleHandleA("kernel32.dll"), "LoadLibraryA");
-	if (pFunc == NULL)
+	DWORD dwBase = 0;
+
+	// Load DLL-file
 	{
-		VirtualFreeEx(hHandle, pAddr, strlen(szDLLPath) + 1, MEM_RELEASE);
-		CloseHandle(hHandle);
-		return 0;
-	}
+		LPTHREAD_START_ROUTINE pFunc = (LPTHREAD_START_ROUTINE) GetProcAddress(GetModuleHandleA("kernel32.dll"), "LoadLibraryA");
+		if (pFunc == NULL)
+		{
+			VirtualFreeEx(hHandle, pAddr, strlen(szDLLPath) + 1, MEM_RELEASE);
+			CloseHandle(hHandle);
+			return 0;
+		}
 
-	HANDLE hThread = CreateRemoteThread(hHandle, 0, 0, pFunc, pAddr, 0, 0);
-	if (hThread == NULL || hThread == INVALID_HANDLE_VALUE)
+		HANDLE hThread = CreateRemoteThread(hHandle, 0, 0, pFunc, pAddr, 0, 0);
+		if (hThread == NULL || hThread == INVALID_HANDLE_VALUE)
+		{
+			VirtualFreeEx(hHandle, pAddr, strlen(szDLLPath) + 1, MEM_RELEASE);
+			CloseHandle(hHandle);
+			return 0;
+		}
+
+		WaitForSingleObject(hThread, INFINITE);
+		GetExitCodeThread(hThread, &dwBase);
+		VirtualFreeEx(hHandle, pAddr, strlen(szDLLPath) + 1, MEM_RELEASE);
+		CloseHandle(hThread);
+	}
+	
+	// Start Remote-IPC
 	{
-		VirtualFreeEx(hHandle, pAddr, strlen(szDLLPath) + 1, MEM_RELEASE);
+		if (dwBase == 0)
+		{
+			CloseHandle(hHandle);
+			return 0;
+		}
+			
+
+		DWORD pFunc = (DWORD) GetProcAddress((HMODULE) g_hDllHandle, "enable");
+		pFunc -= (DWORD) g_hDllHandle;
+		pFunc += (DWORD) dwBase;
+
+		if (pFunc == NULL)
+		{
+			CloseHandle(hHandle);
+			return 0;
+		}
+
+		HANDLE hThread = CreateRemoteThread(hHandle, 0, 0, (LPTHREAD_START_ROUTINE) pFunc, 0, 0, 0);
+		if (hThread == NULL || hThread == INVALID_HANDLE_VALUE)
+		{
+			CloseHandle(hHandle);
+			return 0;
+		}
+
+		WaitForSingleObject(hThread, INFINITE);
+		CloseHandle(hThread);
 		CloseHandle(hHandle);
-		return 0;
+
+		return 1;
 	}
-
-	WaitForSingleObject(hThread, INFINITE);
-	VirtualFreeEx(hHandle, pAddr, strlen(szDLLPath) + 1, MEM_RELEASE);
-	CloseHandle(hThread);
-	CloseHandle(hHandle);
-
-	return 1;
 }

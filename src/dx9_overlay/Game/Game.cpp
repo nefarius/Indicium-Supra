@@ -16,12 +16,18 @@ CHook<CCallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONS
 CHook<CCallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
 
 CRenderer g_pRenderer;
+bool g_bEnabled = false;
+
+extern "C" __declspec(dllexport) void enable()
+{
+	g_bEnabled = true;
+}
 
 void initGame()
 {
 	HMODULE hMod = NULL;
 
-	while ((hMod = GetModuleHandle("d3d9.dll")) == NULL)
+	while ((hMod = GetModuleHandle("d3d9.dll")) == NULL || g_bEnabled == false)
 		Sleep(200);
 
 	DWORD *vtbl = 0;
