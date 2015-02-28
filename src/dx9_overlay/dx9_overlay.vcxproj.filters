@@ -41,16 +41,18 @@
     <ClCompile Include="Utils\Misc.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\NamedPipeClient.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils\NamedPipeServer.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Utils\Pattern.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\Bitstream.cpp" />
+    <ClCompile Include="Utils\PipeClient.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\PipeServer.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\Bitstream.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -122,12 +124,6 @@
     <ClInclude Include="Utils\Misc.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\NamedPipeClient.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\NamedPipeServer.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\Pattern.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -136,6 +132,12 @@
     </ClInclude>
     <ClInclude Include="Shared\Config.h">
       <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\PipeClient.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\PipeServer.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

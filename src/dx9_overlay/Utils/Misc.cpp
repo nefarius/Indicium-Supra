@@ -5,7 +5,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-unsigned long GetProcIdByWindowName(const std::string& windName)
+unsigned long procIdByWindowName(const std::string& windName)
 {
 	DWORD dwPID = 0;
 	HWND wHandle = 0;
@@ -17,7 +17,7 @@ unsigned long GetProcIdByWindowName(const std::string& windName)
 	return dwPID;
 }
 
-unsigned long GetProcIdByProcName(const std::string& procName)
+unsigned long procIdByProcName(const std::string& procName)
 {
 	PROCESSENTRY32 entry;
 	DWORD dwPID = 0;

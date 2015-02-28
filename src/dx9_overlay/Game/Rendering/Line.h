@@ -3,10 +3,10 @@
 
 #include "RenderBase.h"
 
-class CLine : public CRenderBase
+class Line : public RenderBase
 {
 public:
-	CLine(CRenderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow);
+	Line(Renderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow);
 
 	void setPos(int x1,int y1,int x2,int y2);
 	void setWidth(int width);
@@ -27,13 +27,11 @@ protected:
 	virtual void firstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
 
 private:
-	int					m_X1, m_X2,
-						m_Y1, m_Y2,
-						m_Width;
+	int	m_X1, m_X2, m_Y1, m_Y2, m_Width;
 
-	bool				m_bShow;
+	bool m_bShow;
 
-	D3DCOLOR			m_Color;
+	D3DCOLOR m_Color;
 
-	LPD3DXLINE			m_Line;
+	LPD3DXLINE m_Line;
 };

@@ -1,17 +1,16 @@
 #pragma once
 #include <d3dx9.h>
 
-#include <boost/container/map.hpp>
-
-#include <boost/thread.hpp>
 #include <memory>
 #include <map>
+#include <functional>
+#include <mutex>
 
-class CRenderBase;
+class RenderBase;
 
-class CRenderer
+class Renderer
 {
-	typedef std::shared_ptr<CRenderBase> SharedRenderObject;
+	typedef std::shared_ptr<RenderBase> SharedRenderObject;
 	typedef std::map<int, SharedRenderObject> RenderObjects;
 
 public:
@@ -19,7 +18,8 @@ public:
 
 	bool remove(int id);
 
-	template<typename T> std::shared_ptr<T> get(int id)
+	template<typename T> 
+	std::shared_ptr<T> get(int id)
 	{
 		if(_renderObjects.empty())
 			return nullptr;
@@ -30,7 +30,18 @@ public:
 		if(_renderObjects[id]->_isMarkedForDeletion)
 			return nullptr;
 
-		return std::dynamic_pointer_cast<T, CRenderBase>(_renderObjects[id]);
+		return std::dynamic_pointer_cast<T, RenderBase>(_renderObjects[id]);
+	}
+
+	template<typename T> 
+	void execute(int id, std::function<void(std::shared_ptr<T>)> successor = nullptr, std::function<void()> error = nullptr)
+	{
+		auto obj = get<T>(id);
+		if (obj && successor)
+			return successor(obj);
+		
+		if (error)
+			return error();
 	}
 
 	void draw(IDirect3DDevice9 *pDevice);
@@ -45,14 +56,12 @@ public:
 	int screenWidth() const;
 	int screenHeight() const;
 
-	boost::mutex& renderMutex();
+	std::recursive_mutex& renderMutex();
 
 private:
-	int _frameRate;
-	int _width;
-	int _height;
+	int _frameRate, _width, _height;
 
 	static RenderObjects _renderObjects;
-	static boost::mutex	 _mtx;
+	static std::recursive_mutex _mtx;
 };
 

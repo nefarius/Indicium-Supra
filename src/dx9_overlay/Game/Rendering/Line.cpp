@@ -1,7 +1,7 @@
 #include "Line.h"
 
-CLine::CLine(CRenderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow)
-	: CRenderBase(renderer), m_Line(NULL)
+Line::Line(Renderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow)
+	: RenderBase(renderer), m_Line(NULL)
 {
 	setPos(x1,y1,x2,y2);
 	setWidth(width);
@@ -9,40 +9,31 @@ CLine::CLine(CRenderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR
 	setShown(bShow);
 }
 
-void CLine::setPos(int x1,int y1,int x2,int y2)
+void Line::setPos(int x1,int y1,int x2,int y2)
 {
 	m_X1 = x1, m_X2 = x2;
 	m_Y1 = y1, m_Y2 = y2;
 }
 
-void CLine::setWidth(int width)
+void Line::setWidth(int width)
 {
 	m_Width = width;
 }
 
-void CLine::setColor(D3DCOLOR color)
+void Line::setColor(D3DCOLOR color)
 {
 	m_Color = color;
 }
 
-void CLine::setShown(bool show)
+void Line::setShown(bool show)
 {
 	m_bShow = show;
 }
 
-void CLine::draw(IDirect3DDevice9 *pDevice)
+void Line::draw(IDirect3DDevice9 *pDevice)
 {
 	if(!m_bShow || m_Line == NULL)
 		return;
-
-	D3DVIEWPORT9 view;
-	pDevice->GetViewport(&view);
-
-	float fFactor[4] = 
-	{ 
-		(float)m_X1/(float)800, (float)m_X2/(float)800,
-		(float)m_Y1/(float)600, (float)m_Y2/(float)600				
-	};
 
 	D3DXVECTOR2	LinePos[2];
 
@@ -51,16 +42,16 @@ void CLine::draw(IDirect3DDevice9 *pDevice)
 
 	m_Line->Begin();
 
-	LinePos[0].x = (float)view.Width  * fFactor[0];
-	LinePos[0].y = (float)view.Height * fFactor[2];
-	LinePos[1].x = (float)view.Width  * fFactor[1];
-	LinePos[1].y = (float)view.Height * fFactor[3];
+	LinePos[0].x = (float)calculatedXPos(pDevice, m_X1);
+	LinePos[0].y = (float)calculatedYPos(pDevice, m_Y1);
+	LinePos[1].x = (float)calculatedXPos(pDevice, m_X2);
+	LinePos[1].y = (float)calculatedYPos(pDevice, m_Y2);
 
 	m_Line->Draw(LinePos,2,m_Color);
 	m_Line->End();	
 }
 
-void CLine::reset(IDirect3DDevice9 *pDevice)
+void Line::reset(IDirect3DDevice9 *pDevice)
 {
 	if(m_Line)
 	{
@@ -69,17 +60,17 @@ void CLine::reset(IDirect3DDevice9 *pDevice)
 	}
 }
 
-void CLine::show()
+void Line::show()
 {
 	setShown(true);
 }
 
-void CLine::hide()
+void Line::hide()
 {
 	setShown(false);
 }
 
-void CLine::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
+void Line::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 {
 	if(m_Line)
 	{
@@ -88,12 +79,12 @@ void CLine::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 	}
 }
 
-bool CLine::canBeDeleted()
+bool Line::canBeDeleted()
 {
 	return (m_Line == NULL) ? true : false;
 }
 
-bool CLine::loadResource(IDirect3DDevice9 *pDevice)
+bool Line::loadResource(IDirect3DDevice9 *pDevice)
 {
 	if(m_Line)
 	{
@@ -106,7 +97,7 @@ bool CLine::loadResource(IDirect3DDevice9 *pDevice)
 	return m_Line != NULL;
 }
 
-void CLine::firstDrawAfterReset(IDirect3DDevice9 *pDevice)
+void Line::firstDrawAfterReset(IDirect3DDevice9 *pDevice)
 {
 
 }

@@ -1,12 +1,12 @@
 #include "Windows.h"
-#include "NamedPipeClient.h"
+#include "PipeClient.h"
 #include "Bitstream.h"
 
 #include <Shared/Config.h>
 
 #include <iostream>
 
-CNamedPipeClient::CNamedPipeClient(CSerializer& bsIn, CSerializer& bsOut) :
+PipeClient::PipeClient(Serializer& bsIn, Serializer& bsOut) :
 m_bSuccess(false)
 {
 	char szData[BUFSIZE] = { 0 };
@@ -22,7 +22,7 @@ m_bSuccess(false)
 	}
 }
 
-bool CNamedPipeClient::Success() const
+bool PipeClient::success() const
 {
 	return m_bSuccess;
 }

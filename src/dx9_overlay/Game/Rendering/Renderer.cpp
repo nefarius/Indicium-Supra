@@ -6,12 +6,12 @@
 #include <boost/range/algorithm.hpp>
 #include <boost/date_time.hpp>
 
-CRenderer::RenderObjects	CRenderer::_renderObjects;
-boost::mutex			CRenderer::_mtx;
+Renderer::RenderObjects	Renderer::_renderObjects;
+std::recursive_mutex Renderer::_mtx;
 
-int CRenderer::add(SharedRenderObject Object)
+int Renderer::add(SharedRenderObject Object)
 {
-	boost::lock_guard<boost::mutex> l(_mtx);
+	std::lock_guard<std::recursive_mutex> l(_mtx);
 
 	int id = 0;
 
@@ -25,9 +25,9 @@ int CRenderer::add(SharedRenderObject Object)
 	return id;
 }
 
-bool CRenderer::remove(int id)
+bool Renderer::remove(int id)
 {
-	boost::lock_guard<boost::mutex> l(_mtx);
+	std::lock_guard<std::recursive_mutex> l(_mtx);
 
 	if(_renderObjects.empty())
 		return false;
@@ -43,9 +43,9 @@ bool CRenderer::remove(int id)
 	return true;
 }
 
-void CRenderer::draw(IDirect3DDevice9 *pDevice)
+void Renderer::draw(IDirect3DDevice9 *pDevice)
 {
-	boost::lock_guard<boost::mutex> l(_mtx);
+	std::lock_guard<std::recursive_mutex> l(_mtx);
 
 	static DWORD dwFrames = 0;
 	static boost::posix_time::ptime TimeNow;
@@ -115,9 +115,9 @@ void CRenderer::draw(IDirect3DDevice9 *pDevice)
 	}
 }
 
-void CRenderer::reset(IDirect3DDevice9 *pDevice)
+void Renderer::reset(IDirect3DDevice9 *pDevice)
 {
-	boost::lock_guard<boost::mutex> l(_mtx);
+	std::lock_guard<std::recursive_mutex> l(_mtx);
 
 	if(_renderObjects.empty())
 		return;
@@ -129,9 +129,9 @@ void CRenderer::reset(IDirect3DDevice9 *pDevice)
 	}
 }
 
-void CRenderer::showAll()
+void Renderer::showAll()
 {
-	boost::lock_guard<boost::mutex> l(_mtx);
+	std::lock_guard<std::recursive_mutex> l(_mtx);
 
 	if(_renderObjects.empty())
 		return;
@@ -145,9 +145,9 @@ void CRenderer::showAll()
 	}
 }
 
-void CRenderer::hideAll()
+void Renderer::hideAll()
 {
-	boost::lock_guard<boost::mutex> l(_mtx);
+	std::lock_guard<std::recursive_mutex> l(_mtx);
 
 	if(_renderObjects.empty())
 		return;
@@ -161,9 +161,9 @@ void CRenderer::hideAll()
 	}
 }
 
-void CRenderer::destroyAll()
+void Renderer::destroyAll()
 {
-	boost::lock_guard<boost::mutex> l(_mtx);
+	std::lock_guard<std::recursive_mutex> l(_mtx);
 
 	if(_renderObjects.empty())
 		return;
@@ -177,22 +177,22 @@ void CRenderer::destroyAll()
 	}
 }
 
-int CRenderer::frameRate() const
+int Renderer::frameRate() const
 {
 	return _frameRate;
 }
 
-int CRenderer::screenWidth() const
+int Renderer::screenWidth() const
 {
 	return _width;
 }
 
-int CRenderer::screenHeight() const
+int Renderer::screenHeight() const
 {
 	return _height;
 }
 
-boost::mutex& CRenderer::renderMutex()
+std::recursive_mutex& Renderer::renderMutex()
 {
 	return _mtx;
 }

@@ -1,28 +1,46 @@
 #include "RenderBase.h"
 
-CRenderBase::CRenderBase(CRenderer *renderer)
+int RenderBase::xCalculator = 800;
+int RenderBase::yCalculator = 600;
+
+RenderBase::RenderBase(Renderer *renderer)
 	: _renderer(renderer), _isMarkedForDeletion(false), _resourceChanged(false), _hasToBeInitialised(true), _firstDrawAfterReset(false)
 {
 }
 
-CRenderBase::~CRenderBase()
+RenderBase::~RenderBase()
 {
 }
 
-void CRenderBase::destroy()
+void RenderBase::destroy()
 {
 	if(!_isMarkedForDeletion)
-	{
 		_isMarkedForDeletion = true;
-	}	
 }
 
-void CRenderBase::changeResource()
+void RenderBase::changeResource()
 {
 	_resourceChanged = true;
 }
 
-CRenderer *CRenderBase::renderer()
+int RenderBase::calculatedXPos(IDirect3DDevice9 *pDevice, int x)
+{
+	D3DVIEWPORT9 view;
+	pDevice->GetViewport(&view);
+
+	return (int)(((float)x / (float)xCalculator) * (float)view.Width);
+}
+
+int RenderBase::calculatedYPos(IDirect3DDevice9 *pDevice, int y)
+{
+	D3DVIEWPORT9 view;
+	pDevice->GetViewport(&view);
+
+	return (int)(((float)y / (float)yCalculator) * (float)view.Height);
+}
+
+Renderer *RenderBase::renderer()
 {
 	return _renderer;
 }
+

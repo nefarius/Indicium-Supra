@@ -53,6 +53,8 @@ HideAllVisual_func 		:= DllCall("GetProcAddress", UInt, hModule, Str, "HideAllVi
 GetFrameRate_func 		:= DllCall("GetProcAddress", UInt, hModule, Str, "GetFrameRate")
 GetScreenSpecs_func 	:= DllCall("GetProcAddress", UInt, hModule, Str, "GetScreenSpecs")
 
+SetCalculationRatio_func:= DllCall("GetProcAddress", UInt, hModule, Str, "SetCalculationRatio")
+
 Init()
 {
 	global Init_func
@@ -303,6 +305,13 @@ GetScreenSpecs(ByRef width, ByRef height)
 {
 	global GetScreenSpecs_func
 	res := DllCall(GetScreenSpecs_func, IntP, width, IntP, height)
+	return res
+}
+
+SetCalculationRatio(width, height)
+{
+	global SetCalculationRatio_func
+	res := DllCall(SetCalculationRatio_func, Int, width, Int, height);
 	return res
 }
 

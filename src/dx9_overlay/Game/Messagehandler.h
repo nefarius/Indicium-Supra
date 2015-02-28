@@ -4,42 +4,44 @@
 
 #include <boost/bind.hpp>
 
-void TextCreate(CSerializer& bsIn, CSerializer& bsOut);
-void TextDestroy(CSerializer& bsIn, CSerializer& bsOut);
-void TextSetShadow(CSerializer& bsIn, CSerializer& bsOut);
-void TextSetShown(CSerializer& bsIn, CSerializer& bsOut);
-void TextSetColor(CSerializer& bsIn, CSerializer& bsOut);
-void TextSetPos(CSerializer& bsIn, CSerializer& bsOut);
-void TextSetString(CSerializer& bsIn, CSerializer& bsOut);
-void TextUpdate(CSerializer& bsIn, CSerializer& bsOut);
+void TextCreate(Serializer& bsIn, Serializer& bsOut);
+void TextDestroy(Serializer& bsIn, Serializer& bsOut);
+void TextSetShadow(Serializer& bsIn, Serializer& bsOut);
+void TextSetShown(Serializer& bsIn, Serializer& bsOut);
+void TextSetColor(Serializer& bsIn, Serializer& bsOut);
+void TextSetPos(Serializer& bsIn, Serializer& bsOut);
+void TextSetString(Serializer& bsIn, Serializer& bsOut);
+void TextUpdate(Serializer& bsIn, Serializer& bsOut);
 
-void BoxCreate(CSerializer& bsIn, CSerializer& bsOut);
-void BoxDestroy(CSerializer& bsIn, CSerializer& bsOut);
-void BoxSetShown(CSerializer& bsIn, CSerializer& bsOut);
-void BoxSetBorder(CSerializer& bsIn, CSerializer& bsOut);
-void BoxSetBorderColor(CSerializer& bsIn, CSerializer& bsOut);
-void BoxSetColor(CSerializer& bsIn, CSerializer& bsOut);
-void BoxSetHeight(CSerializer& bsIn, CSerializer& bsOut);
-void BoxSetPos(CSerializer& bsIn, CSerializer& bsOut);
-void BoxSetWidth(CSerializer& bsIn, CSerializer& bsOut);
+void BoxCreate(Serializer& bsIn, Serializer& bsOut);
+void BoxDestroy(Serializer& bsIn, Serializer& bsOut);
+void BoxSetShown(Serializer& bsIn, Serializer& bsOut);
+void BoxSetBorder(Serializer& bsIn, Serializer& bsOut);
+void BoxSetBorderColor(Serializer& bsIn, Serializer& bsOut);
+void BoxSetColor(Serializer& bsIn, Serializer& bsOut);
+void BoxSetHeight(Serializer& bsIn, Serializer& bsOut);
+void BoxSetPos(Serializer& bsIn, Serializer& bsOut);
+void BoxSetWidth(Serializer& bsIn, Serializer& bsOut);
 
-void LineCreate(CSerializer& bsIn, CSerializer& bsOut);
-void LineDestroy(CSerializer& bsIn, CSerializer& bsOut);
-void LineSetShown(CSerializer& bsIn, CSerializer& bsOut);
-void LineSetColor(CSerializer& bsIn, CSerializer& bsOut);
-void LineSetWidth(CSerializer& bsIn, CSerializer& bsOut);
-void LineSetPos(CSerializer& bsIn, CSerializer& bsOut);
+void LineCreate(Serializer& bsIn, Serializer& bsOut);
+void LineDestroy(Serializer& bsIn, Serializer& bsOut);
+void LineSetShown(Serializer& bsIn, Serializer& bsOut);
+void LineSetColor(Serializer& bsIn, Serializer& bsOut);
+void LineSetWidth(Serializer& bsIn, Serializer& bsOut);
+void LineSetPos(Serializer& bsIn, Serializer& bsOut);
 
-void ImageCreate(CSerializer& bsIn, CSerializer& bsOut);
-void ImageDestroy(CSerializer& bsIn, CSerializer& bsOut);
-void ImageSetShown(CSerializer& bsIn, CSerializer& bsOut);
-void ImageSetAlign(CSerializer& bsIn, CSerializer& bsOut);
-void ImageSetPos(CSerializer& bsIn, CSerializer& bsOut);
-void ImageSetRotation(CSerializer& bsIn, CSerializer& bsOut);
+void ImageCreate(Serializer& bsIn, Serializer& bsOut);
+void ImageDestroy(Serializer& bsIn, Serializer& bsOut);
+void ImageSetShown(Serializer& bsIn, Serializer& bsOut);
+void ImageSetAlign(Serializer& bsIn, Serializer& bsOut);
+void ImageSetPos(Serializer& bsIn, Serializer& bsOut);
+void ImageSetRotation(Serializer& bsIn, Serializer& bsOut);
 
-void DestroyAllVisual(CSerializer& bsIn, CSerializer& bsOut);
-void ShowAllVisual(CSerializer& bsIn, CSerializer& bsOut);
-void HideAllVisual(CSerializer& bsIn, CSerializer& bsOut);
+void DestroyAllVisual(Serializer& bsIn, Serializer& bsOut);
+void ShowAllVisual(Serializer& bsIn, Serializer& bsOut);
+void HideAllVisual(Serializer& bsIn, Serializer& bsOut);
 
-void GetFrameRate(CSerializer& bsIn, CSerializer& bsOut);
-void GetScreenSpecs(CSerializer& bsIn, CSerializer& bsOut);
+void GetFrameRate(Serializer& bsIn, Serializer& bsOut);
+void GetScreenSpecs(Serializer& bsIn, Serializer& bsOut);
+
+void SetCalculationRatio(Serializer& bsIn, Serializer& bsOut);

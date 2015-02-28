@@ -9,9 +9,9 @@
 #define PIPE_TIMEOUT	5000
 
 namespace boost { class thread; }
-class CSerializer;
+class Serializer;
 
-class CNamedPipeServer
+class PipeServer
 {
 	typedef struct
 	{
@@ -26,20 +26,20 @@ class CNamedPipeServer
 	} PIPEINSTANCE, *LPPIPEINSTANCE;
 
 public:
-	CNamedPipeServer(boost::function<void(CSerializer&, CSerializer&)> func);
-	~CNamedPipeServer();
+	PipeServer(boost::function<void(Serializer&, Serializer&)> func);
+	~PipeServer();
 
 private:
-	void Thread();
-	BOOL ConnectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo);
-	void DisconnectAndReconnect(DWORD dwIdx);
+	void thread();
+	BOOL connectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo);
+	void disconnectAndReconnect(DWORD dwIdx);
 
-	PIPEINSTANCE	m_Pipes[MAX_CLIENTS];
-	HANDLE			m_hEvents[MAX_CLIENTS];
+	PIPEINSTANCE m_Pipes[MAX_CLIENTS];
+	HANDLE m_hEvents[MAX_CLIENTS];
 
-	char			m_szPipe[MAX_PATH];
+	char m_szPipe[MAX_PATH];
 
-	boost::thread	*m_thread;
-	boost::function<void(CSerializer&, CSerializer&)> m_cbCallback;
+	boost::thread *m_thread;
+	boost::function<void(Serializer&, Serializer&)> m_cbCallback;
 };
 

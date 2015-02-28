@@ -5,10 +5,10 @@
 #include "D3DFont.h"
 #include "RenderBase.h"
 
-class CText : public CRenderBase
+class Text : public RenderBase
 {
 public:
-	CText(CRenderer *renderer, const char *font,int iFontSize,bool Bold,bool Italic,int x,int y,D3DCOLOR color,const char *text, bool bShadow, bool bShow);
+	Text(Renderer *renderer, const char *font, int iFontSize, bool Bold, bool Italic, int x, int y, D3DCOLOR color, const char *text, bool bShadow, bool bShow);
 
 	bool updateText(const char *Font,int FontSize,bool Bold,bool Italic);
 	void setText(const char *str);

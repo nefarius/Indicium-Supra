@@ -25,11 +25,11 @@ stParamInfo g_paramArray[3] =
 
 bool IsServerAvailable()
 {
-	CSerializer bsIn, bsOut;
+	Serializer bsIn, bsOut;
 
 	bsIn << PipeMessages::Ping;
 
-	return CNamedPipeClient(bsIn, bsOut).Success();
+	return PipeClient(bsIn, bsOut).success();
 }
 
 EXPORT void SetParam(char *_szParamName, char *_szParamValue)
@@ -61,12 +61,12 @@ EXPORT int Init()
 	if (!atoi(GetParam("use_window").c_str()))
 	{
 		std::string szSearchName = GetParam("process");
-		dwPId = GetProcIdByProcName(szSearchName);
+		dwPId = procIdByProcName(szSearchName);
 	}
 	else
 	{
 		std::string szSearchName = GetParam("window");
-		dwPId = GetProcIdByWindowName(szSearchName);
+		dwPId = procIdByWindowName(szSearchName);
 	}
 
 	if (dwPId == 0)

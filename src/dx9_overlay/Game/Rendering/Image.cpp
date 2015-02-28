@@ -1,8 +1,8 @@
 #include "Image.h"
 #include "dx_utils.h"
 
-CImage::CImage(CRenderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
-	: CRenderBase(renderer), m_pSprite(NULL), m_pTexture(NULL)
+Image::Image(Renderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
+	: RenderBase(renderer), m_pSprite(NULL), m_pTexture(NULL)
 {
 	setFilePath(file_path);
 	setPos(x, y);
@@ -11,32 +11,32 @@ CImage::CImage(CRenderer *renderer, const std::string& file_path, int x, int y, 
 	setShown(bShow);
 }
 
-void CImage::setFilePath(const std::string & path)
+void Image::setFilePath(const std::string & path)
 {
 	m_filePath = path;
 }
 
-void CImage::setPos(int x, int y)
+void Image::setPos(int x, int y)
 {
 	m_x = x, m_y = y;
 }
 
-void CImage::setRotation(int rotation)
+void Image::setRotation(int rotation)
 {
 	m_rotation = rotation;
 }
 
-void CImage::setAlign(int align)
+void Image::setAlign(int align)
 {
 	m_align = align;
 }
 
-void CImage::setShown(bool show)
+void Image::setShown(bool show)
 {
 	m_bShow = show;
 }
 
-bool CImage::updateImage(const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
+bool Image::updateImage(const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
 {
 	setFilePath(file_path);
 	setPos(x, y);
@@ -49,23 +49,19 @@ bool CImage::updateImage(const std::string& file_path, int x, int y, int rotatio
 	return true;
 }
 
-void CImage::draw(IDirect3DDevice9 *pDevice)
+void Image::draw(IDirect3DDevice9 *pDevice)
 {
 	if(!m_bShow)
 		return;
 
-	D3DVIEWPORT9 view;
-	pDevice->GetViewport(&view);
-
-	float fFactor[2] = { (float)m_x/(float)800, (float)m_y/(float)600 };
+	int x = calculatedXPos(pDevice, m_x);
+	int y = calculatedYPos(pDevice, m_y);
 
 	if(m_pTexture && m_pSprite)
-	{
-		Drawing::DrawSprite(m_pSprite, m_pTexture, view.Width * fFactor[0], view.Height * fFactor[1], m_rotation, m_align);
-	}
+		Drawing::DrawSprite(m_pSprite, m_pTexture, x, y, m_rotation, m_align);
 }
 
-void CImage::reset(IDirect3DDevice9 *pDevice)
+void Image::reset(IDirect3DDevice9 *pDevice)
 {
 	if(m_pSprite)
 	{
@@ -75,18 +71,18 @@ void CImage::reset(IDirect3DDevice9 *pDevice)
 }
 
 
-void CImage::show()
+void Image::show()
 {
 	setShown(true);
 }
 
-void CImage::hide()
+void Image::hide()
 {
 	setShown(false);
 }
 
 
-void CImage::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
+void Image::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 {
 	if(m_pSprite)
 	{
@@ -101,12 +97,12 @@ void CImage::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 	}
 }
 
-bool CImage::canBeDeleted()
+bool Image::canBeDeleted()
 {
 	return (m_pTexture == NULL && m_pSprite == NULL);
 }
 
-bool CImage::loadResource(IDirect3DDevice9 *pDevice)
+bool Image::loadResource(IDirect3DDevice9 *pDevice)
 {
 	if(m_pSprite)
 	{
@@ -126,7 +122,7 @@ bool CImage::loadResource(IDirect3DDevice9 *pDevice)
 	return (m_pTexture != NULL && m_pSprite != NULL);
 }
 
-void CImage::firstDrawAfterReset(IDirect3DDevice9 *pDevice)
+void Image::firstDrawAfterReset(IDirect3DDevice9 *pDevice)
 {
 
 }

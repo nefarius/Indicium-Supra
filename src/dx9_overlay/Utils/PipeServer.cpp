@@ -1,4 +1,4 @@
-#include "NamedPipeServer.h"
+#include "PipeServer.h"
 #include "Bitstream.h"
 
 #include <Shared/Config.h>
@@ -9,7 +9,7 @@
 #define READING_STATE		1 
 #define WRITING_STATE		2 
 
-BOOL CNamedPipeServer::ConnectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo)
+BOOL PipeServer::connectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo)
 {
 	BOOL fConnected, fPendingIO = FALSE;
 
@@ -36,14 +36,14 @@ BOOL CNamedPipeServer::ConnectToNewClient(HANDLE hPipe, LPOVERLAPPED lpo)
 	return fPendingIO;
 }
 
-void CNamedPipeServer::DisconnectAndReconnect(DWORD dwIdx)
+void PipeServer::disconnectAndReconnect(DWORD dwIdx)
 {
 	DisconnectNamedPipe(m_Pipes[dwIdx].m_hPipe);
-	m_Pipes[dwIdx].m_fPendingIO = ConnectToNewClient(m_Pipes[dwIdx].m_hPipe, &m_Pipes[dwIdx].m_Overlapped);
+	m_Pipes[dwIdx].m_fPendingIO = connectToNewClient(m_Pipes[dwIdx].m_hPipe, &m_Pipes[dwIdx].m_Overlapped);
 	m_Pipes[dwIdx].m_dwState = m_Pipes[dwIdx].m_fPendingIO ? CONNECTING_STATE : READING_STATE;
 
 }
-CNamedPipeServer::CNamedPipeServer(boost::function<void(CSerializer&, CSerializer&)> func) : m_cbCallback(func), m_thread(0)
+PipeServer::PipeServer(boost::function<void(Serializer&, Serializer&)> func) : m_cbCallback(func), m_thread(0)
 {
 	memset(m_szPipe, 0, sizeof(m_szPipe));
 	memset(m_Pipes, 0, sizeof(m_Pipes));
@@ -57,15 +57,15 @@ CNamedPipeServer::CNamedPipeServer(boost::function<void(CSerializer&, CSerialize
 		m_Pipes[i].m_hPipe = CreateNamedPipeA(m_szPipe, PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
 			MAX_CLIENTS, BUFSIZE, BUFSIZE, PIPE_TIMEOUT, NULL);
 
-		m_Pipes[i].m_fPendingIO = ConnectToNewClient(m_Pipes[i].m_hPipe, &m_Pipes[i].m_Overlapped);
+		m_Pipes[i].m_fPendingIO = connectToNewClient(m_Pipes[i].m_hPipe, &m_Pipes[i].m_Overlapped);
 		m_Pipes[i].m_dwState = m_Pipes[i].m_fPendingIO ? CONNECTING_STATE : READING_STATE;
 	}
 
-	m_thread = new boost::thread(boost::bind(&CNamedPipeServer::Thread, this));
+	m_thread = new boost::thread(boost::bind(&PipeServer::thread, this));
 }
 
 
-CNamedPipeServer::~CNamedPipeServer(void)
+PipeServer::~PipeServer(void)
 {
 	if (m_thread)
 	{
@@ -77,7 +77,7 @@ CNamedPipeServer::~CNamedPipeServer(void)
 	}
 }
 
-void CNamedPipeServer::Thread()
+void PipeServer::thread()
 {
 	BOOL bSuccess;
 	DWORD dwRet;
@@ -106,7 +106,7 @@ void CNamedPipeServer::Thread()
 			case READING_STATE:
 				if (!bSuccess || dwRet == 0)
 				{
-					DisconnectAndReconnect(idx);
+					disconnectAndReconnect(idx);
 					continue;
 				}
 				m_Pipes[idx].m_dwRead = dwRet;
@@ -115,7 +115,7 @@ void CNamedPipeServer::Thread()
 			case WRITING_STATE:
 				if (!bSuccess || dwRet != m_Pipes[idx].m_dwToWrite)
 				{
-					DisconnectAndReconnect(idx);
+					disconnectAndReconnect(idx);
 					continue;
 				}
 				m_Pipes[idx].m_dwState = READING_STATE;
@@ -142,11 +142,11 @@ void CNamedPipeServer::Thread()
 				m_Pipes[idx].m_fPendingIO = TRUE;
 				continue;
 			}
-			DisconnectAndReconnect(idx);
+			disconnectAndReconnect(idx);
 			break;
 		case WRITING_STATE:
-			CSerializer bsIn(m_Pipes[idx].m_szRequest, m_Pipes[idx].m_dwRead);
-			CSerializer bsOut;
+			Serializer bsIn(m_Pipes[idx].m_szRequest, m_Pipes[idx].m_dwRead);
+			Serializer bsOut;
 
 			m_cbCallback(bsIn, bsOut);
 
@@ -168,7 +168,7 @@ void CNamedPipeServer::Thread()
 				m_Pipes[idx].m_fPendingIO = true;
 				continue;
 			}
-			DisconnectAndReconnect(idx);
+			disconnectAndReconnect(idx);
 			break;
 		}
 	}

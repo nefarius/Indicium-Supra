@@ -5,24 +5,24 @@
 
 #include <type_traits>
 
-enum class CCallConvention{
+enum class CallConvention{
 	stdcall_t, cdecl_t
 };
 
-template<CCallConvention cc, typename retn, typename convention, typename ...args> struct convention;
+template<CallConvention cc, typename retn, typename convention, typename ...args> struct convention;
 
 template<typename retn, typename ...args>
-struct convention<CCallConvention::stdcall_t, retn, args...> {
+struct convention<CallConvention::stdcall_t, retn, args...> {
 	typedef retn(__stdcall *type)(args...);
 };
 
 template<typename retn, typename ...args>
-struct convention<CCallConvention::cdecl_t, retn, args...> {
+struct convention<CallConvention::cdecl_t, retn, args...> {
 	typedef retn(__cdecl *type)(args...);
 };
 
 
-template<CCallConvention cc, typename retn, typename ...args> class CHook
+template<CallConvention cc, typename retn, typename ...args> class Hook
 {
 	typedef typename convention<cc, retn, args...>::type type;
 
@@ -31,12 +31,12 @@ template<CCallConvention cc, typename retn, typename ...args> class CHook
 
 	bool _isApplied;
 public:
-	CHook() : _isApplied(false), _orig(0), _detour(0) { }
+	Hook() : _isApplied(false), _orig(0), _detour(0) { }
 
 	template<typename T>
-	CHook(T pFunc, type detour) : apply<T>(pFunc, detour) { }
+	Hook(T pFunc, type detour) : apply<T>(pFunc, detour) { }
 
-	~CHook(){
+	~Hook(){
 		remove();
 	}
 

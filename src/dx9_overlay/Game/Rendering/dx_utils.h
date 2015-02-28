@@ -22,5 +22,5 @@ namespace Drawing
 
 	void InitFont(LPDIRECT3DDEVICE9 pDevice, const char *str, int size, DWORD dwFlags, CD3DFont **pFont);
 	void ResetFont(CD3DFont **pFont);
-	void DrawFont(CD3DFont **pFont, float fXPos, float fYPos, DWORD dwColor, const char* strText, DWORD dwFlags = 0L, DWORD dwBackgroundColor = 0L);
+	void DrawFont(CD3DFont **pFont, int x, int y, DWORD dwColor, const char* strText, DWORD dwFlags = 0L, DWORD dwBackgroundColor = 0L);
 }

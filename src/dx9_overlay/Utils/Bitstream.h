@@ -8,7 +8,7 @@
 
 #define SERIALIZATION_READ(S, T, V) T V; S >> V;
 
-class CSerializer
+class Serializer
 {
 	boost::shared_ptr<boost::archive::text_oarchive> _oa;
 	boost::shared_ptr<boost::archive::text_iarchive> _ia;
@@ -17,11 +17,11 @@ class CSerializer
 	std::string _ss_str;
 
 public:
-	CSerializer();
+	Serializer();
 
-	CSerializer(const char * const _data, const unsigned int len);
+	Serializer(const char * const _data, const unsigned int len);
 
-	~CSerializer();
+	~Serializer();
 
 	const char *GetData();
 
@@ -57,13 +57,13 @@ public:
 		}
 	}
 
-	template<class T> CSerializer& operator<<(const T& t)
+	template<class T> Serializer& operator<<(const T& t)
 	{
 		Write<T>(t);
 		return *this;
 	}
 
-	template<class T> CSerializer& operator>>(T& t)
+	template<class T> Serializer& operator>>(T& t)
 	{
 		Read<T>(t);
 		return *this;

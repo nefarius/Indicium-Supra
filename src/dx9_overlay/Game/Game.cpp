@@ -1,7 +1,7 @@
 #include <Utils/Windows.h>
 #include <Utils/Hook.h>
 #include <Utils/Pattern.h>
-#include <Utils/NamedPipeServer.h>
+#include <Utils/PipeServer.h>
 
 #include "Game.h"
 #include "Messagehandler.h"
@@ -12,10 +12,10 @@
 
 #define BIND(T) PaketHandler[PipeMessages::T] = boost::bind(T, _1, _2);
 
-CHook<CCallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
-CHook<CCallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
 
-CRenderer g_pRenderer;
+Renderer g_pRenderer;
 bool g_bEnabled = false;
 
 extern "C" __declspec(dllexport) void enable()
@@ -52,7 +52,7 @@ void initGame()
 		return g_resetHook.callOrig(dev, pp);
 	});
 
-	typedef std::map<PipeMessages, boost::function<void(CSerializer&, CSerializer&)> > MessagePaketHandler;
+	typedef std::map<PipeMessages, boost::function<void(Serializer&, Serializer&)> > MessagePaketHandler;
 	MessagePaketHandler PaketHandler;
 
 	BIND(TextCreate);
@@ -95,7 +95,7 @@ void initGame()
 	BIND(GetFrameRate);
 	BIND(GetScreenSpecs);
 
-	new CNamedPipeServer([&](CSerializer& bsIn, CSerializer& bsOut)
+	new PipeServer([&](Serializer& bsIn, Serializer& bsOut)
 	{
 		SERIALIZATION_READ(bsIn, PipeMessages, eMessage);
 

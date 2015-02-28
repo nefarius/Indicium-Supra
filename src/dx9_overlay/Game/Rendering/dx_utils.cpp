@@ -107,10 +107,10 @@ void Drawing::ResetFont(class CD3DFont **pFont)
 	}
 }
 
-void Drawing::DrawFont(CD3DFont **pFont, float fXPos, float fYPos, DWORD dwColor, const char* strText, DWORD dwFlags, DWORD dwBackgroundColor)
+void Drawing::DrawFont(CD3DFont **pFont, int x, int y, DWORD dwColor, const char* strText, DWORD dwFlags, DWORD dwBackgroundColor)
 {
 	if (pFont)
 		if (*pFont)
-			(*pFont)->DrawText(fXPos, fYPos, dwColor, strText, dwFlags);
+			(*pFont)->DrawText((float)x, (float)y, dwColor, strText, dwFlags);
 	
 }

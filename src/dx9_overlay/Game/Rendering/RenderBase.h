@@ -1,14 +1,17 @@
 #pragma once
 #include "Renderer.h"
 
-class CRenderBase
+class RenderBase
 {
-	friend class CRenderer;
+	friend class Renderer;
 public:
-	CRenderBase(CRenderer *render);
-	virtual ~CRenderBase(void);
+	RenderBase(Renderer *render);
+	virtual ~RenderBase(void);
 
 	void destroy();
+
+	static int xCalculator;
+	static int yCalculator;
 
 protected:
 	virtual void draw(IDirect3DDevice9 *pDevice)  = 0;
@@ -27,14 +30,14 @@ protected:
 
 	void changeResource();
 
-	CRenderer *renderer();
+	int calculatedXPos(IDirect3DDevice9 *pDevice, int x);
+	int calculatedYPos(IDirect3DDevice9 *pDevice, int y);
+
+	Renderer *renderer();
 
 private:
-	bool		_hasToBeInitialised;
-	bool		_isMarkedForDeletion;
-	bool		_resourceChanged;
-	bool		_firstDrawAfterReset;
+	bool _hasToBeInitialised, _isMarkedForDeletion, _resourceChanged, _firstDrawAfterReset;
 
-	CRenderer *	_renderer;
+	Renderer *	_renderer;
 };
 

@@ -41,5 +41,7 @@ IMPORT int HideAllVisual();
 IMPORT int GetFrameRate();
 IMPORT int GetScreenSpecs(int& width, int& height);
 
+IMPORT int SetCalculationRatio(int width, int height);
+
 IMPORT int  Init();
 IMPORT void SetParam(const char *_szParamName, const char *_szParamValue);

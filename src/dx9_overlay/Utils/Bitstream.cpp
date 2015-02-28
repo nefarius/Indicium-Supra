@@ -1,6 +1,6 @@
 #include "Bitstream.h"
 
-CSerializer::CSerializer()
+Serializer::Serializer()
 {
 	try
 	{
@@ -12,7 +12,7 @@ CSerializer::CSerializer()
 	}
 }
 
-CSerializer::CSerializer(const char * const _data, const unsigned int len) : _ss(std::string(_data, len))
+Serializer::Serializer(const char * const _data, const unsigned int len) : _ss(std::string(_data, len))
 {
 	try
 	{
@@ -24,7 +24,7 @@ CSerializer::CSerializer(const char * const _data, const unsigned int len) : _ss
 	}
 }
 
-CSerializer::~CSerializer()
+Serializer::~Serializer()
 {
 	try
 	{
@@ -36,18 +36,18 @@ CSerializer::~CSerializer()
 	}
 }
 
-const char * CSerializer::GetData()
+const char * Serializer::GetData()
 {
 	_ss_str = _ss.str();
 	return _ss_str.c_str();
 }
 
-int CSerializer::GetNumberOfBytesUsed() const
+int Serializer::GetNumberOfBytesUsed() const
 {
 	return _ss.str().length();
 }
 
-void CSerializer::SetData(const char *szData, const size_t size)
+void Serializer::SetData(const char *szData, const size_t size)
 {
 	_ss = std::stringstream(std::string(szData, size));
 

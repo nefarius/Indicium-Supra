@@ -3,10 +3,10 @@
 
 #include "RenderBase.h"
 
-class CBox : public CRenderBase
+class Box : public RenderBase
 {
 public:
-	CBox(CRenderer *renderer, int x, int y, int w, int h, D3DCOLOR color, bool show);
+	Box(Renderer *renderer, int x, int y, int w, int h, D3DCOLOR color, bool show);
 
 	void setPos(int x,int y);
 	void setBorderColor(D3DCOLOR dwColor);
@@ -31,16 +31,8 @@ protected:
 	virtual void firstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
 
 private:
-	bool				m_bShown,
-						m_bBorderShown;
-
-	D3DCOLOR			m_dwBoxColor,
-						m_dwBorderColor;
-
-	DWORD				m_dwBorderWidth,
-						m_dwBoxWidth,
-						m_dwBoxHeight;
-
-	int					m_iX,
-						m_iY;
+	bool m_bShown, m_bBorderShown;
+	D3DCOLOR m_dwBoxColor, m_dwBorderColor;
+	DWORD m_dwBorderWidth, m_dwBoxWidth, m_dwBoxHeight;
+	int	m_iX, m_iY;
 };

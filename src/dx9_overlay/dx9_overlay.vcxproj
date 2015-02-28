@@ -101,8 +101,8 @@
     <ClCompile Include="Game\Rendering\Text.cpp" />
     <ClCompile Include="Utils\Bitstream.cpp" />
     <ClCompile Include="Utils\Misc.cpp" />
-    <ClCompile Include="Utils\NamedPipeClient.cpp" />
-    <ClCompile Include="Utils\NamedPipeServer.cpp" />
+    <ClCompile Include="Utils\PipeClient.cpp" />
+    <ClCompile Include="Utils\PipeServer.cpp" />
     <ClCompile Include="Utils\Pattern.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -125,8 +125,8 @@
     <ClInclude Include="Utils\Bitstream.h" />
     <ClInclude Include="Utils\Hook.h" />
     <ClInclude Include="Utils\Misc.h" />
-    <ClInclude Include="Utils\NamedPipeClient.h" />
-    <ClInclude Include="Utils\NamedPipeServer.h" />
+    <ClInclude Include="Utils\PipeClient.h" />
+    <ClInclude Include="Utils\PipeServer.h" />
     <ClInclude Include="Utils\Pattern.h" />
     <ClInclude Include="Utils\Windows.h" />
   </ItemGroup>
