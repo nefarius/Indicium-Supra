@@ -43,7 +43,7 @@ void CNamedPipeServer::DisconnectAndReconnect(DWORD dwIdx)
 	m_Pipes[dwIdx].m_dwState = m_Pipes[dwIdx].m_fPendingIO ? CONNECTING_STATE : READING_STATE;
 
 }
-CNamedPipeServer::CNamedPipeServer(boost::function<void(CBitStream&, CBitStream&)> func) : m_cbCallback(func), m_thread(0)
+CNamedPipeServer::CNamedPipeServer(boost::function<void(CSerializer&, CSerializer&)> func) : m_cbCallback(func), m_thread(0)
 {
 	memset(m_szPipe, 0, sizeof(m_szPipe));
 	memset(m_Pipes, 0, sizeof(m_Pipes));
@@ -145,8 +145,8 @@ void CNamedPipeServer::Thread()
 			DisconnectAndReconnect(idx);
 			break;
 		case WRITING_STATE:
-			CBitStream bsIn(m_Pipes[idx].m_szRequest, m_Pipes[idx].m_dwRead, false);
-			CBitStream bsOut;
+			CSerializer bsIn(m_Pipes[idx].m_szRequest, m_Pipes[idx].m_dwRead);
+			CSerializer bsOut;
 
 			m_cbCallback(bsIn, bsOut);
 

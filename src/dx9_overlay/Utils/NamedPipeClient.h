@@ -3,12 +3,12 @@
 #define BUFSIZE	 4096
 #define TIME_OUT 100
 
-class CBitStream;
+class CSerializer;
 
 class CNamedPipeClient
 {
 public:
-	CNamedPipeClient(CBitStream& bsIn, CBitStream& bsOut);
+	CNamedPipeClient(CSerializer& bsIn, CSerializer& bsOut);
 
 	bool Success() const;
 private:

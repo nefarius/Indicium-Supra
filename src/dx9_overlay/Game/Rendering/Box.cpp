@@ -3,59 +3,59 @@
 
 CBox::CBox(CRenderer *renderer,  int x, int y, int w, int h, D3DCOLOR color, bool show) : CRenderBase(renderer), m_bShown(false)
 {
-	SetPos(x, y);
-	SetBoxWidth(w);
-	SetBoxHeight(h);
-	SetBoxColor(color);
-	SetShown(show);
+	setPos(x, y);
+	setBoxWidth(w);
+	setBoxHeight(h);
+	setBoxColor(color);
+	setShown(show);
 
-	SetBoxColor(color);
-	SetBorderWidth(0);
-	SetBorderShown(false);
+	setBoxColor(color);
+	setBorderWidth(0);
+	setBorderShown(false);
 }
 
 
-void CBox::SetPos(int x,int y)
+void CBox::setPos(int x,int y)
 {
 	m_iX = x, m_iY = y;
 }
 
-void CBox::SetBorderColor(D3DCOLOR dwColor)
+void CBox::setBorderColor(D3DCOLOR dwColor)
 {
 	m_dwBorderColor = dwColor;
 }
 
-void CBox::SetBoxColor(D3DCOLOR dwColor)
+void CBox::setBoxColor(D3DCOLOR dwColor)
 {
 	m_dwBoxColor = dwColor;
 }
 
-void CBox::SetBorderWidth(DWORD dwWidth)
+void CBox::setBorderWidth(DWORD dwWidth)
 {
 	m_dwBorderWidth = dwWidth;
 }
 
-void CBox::SetBoxWidth(DWORD dwWidth)
+void CBox::setBoxWidth(DWORD dwWidth)
 {
 	m_dwBoxWidth = dwWidth;
 }
 
-void CBox::SetBoxHeight(DWORD dwHeight)
+void CBox::setBoxHeight(DWORD dwHeight)
 {
 	m_dwBoxHeight = dwHeight;
 }
 
-void CBox::SetBorderShown(bool b)
+void CBox::setBorderShown(bool b)
 {
 	m_bBorderShown = b;
 }
 
-void CBox::SetShown(bool b)
+void CBox::setShown(bool b)
 {
 	m_bShown = b;
 }
 
-void CBox::Draw(IDirect3DDevice9 *pDevice)
+void CBox::draw(IDirect3DDevice9 *pDevice)
 {
 	if(!m_bShown)
 		return;
@@ -85,38 +85,38 @@ void CBox::Draw(IDirect3DDevice9 *pDevice)
 		Drawing::DrawRectangular(iX, iY, iBoxWidth, iBoxHeight, m_dwBorderWidth, m_dwBorderColor, pDevice);
 }
 
-void CBox::Reset(IDirect3DDevice9 *pDevice)
+void CBox::reset(IDirect3DDevice9 *pDevice)
 {
 	
 }
 
-void CBox::Show()
+void CBox::show()
 {
-	SetShown(true);
+	setShown(true);
 }
 
-void CBox::Hide()
+void CBox::hide()
 {
-	SetShown(false);
+	setShown(false);
 }
 
-void CBox::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
+void CBox::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 {
 	m_bShown = false;
 	m_bBorderShown = false;
 }
 
-bool CBox::CanBeDeleted()
+bool CBox::canBeDeleted()
 {
 	return true;
 }
 
-bool CBox::LoadResource(IDirect3DDevice9 *pDevice)
+bool CBox::loadResource(IDirect3DDevice9 *pDevice)
 {
 	return true;
 }
 
-void CBox::FirstDrawAfterReset(IDirect3DDevice9 *pDevice)
+void CBox::firstDrawAfterReset(IDirect3DDevice9 *pDevice)
 {
 	
 }

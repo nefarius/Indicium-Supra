@@ -8,23 +8,23 @@ class CLine : public CRenderBase
 public:
 	CLine(CRenderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow);
 
-	void SetPos(int x1,int y1,int x2,int y2);
-	void SetWidth(int width);
-	void SetColor(D3DCOLOR color);
-	void SetShown(bool show);
+	void setPos(int x1,int y1,int x2,int y2);
+	void setWidth(int width);
+	void setColor(D3DCOLOR color);
+	void setShown(bool show);
 
 protected:
-	virtual void Draw(IDirect3DDevice9 *pDevice) sealed;
-	virtual void Reset(IDirect3DDevice9 *pDevice) sealed;
+	virtual void draw(IDirect3DDevice9 *pDevice) sealed;
+	virtual void reset(IDirect3DDevice9 *pDevice) sealed;
 
-	virtual void Show() sealed;
-	virtual void Hide() sealed;
+	virtual void show() sealed;
+	virtual void hide() sealed;
 
-	virtual void ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice) sealed;
-	virtual bool CanBeDeleted() sealed;
+	virtual void releaseResourcesForDeletion(IDirect3DDevice9 *pDevice) sealed;
+	virtual bool canBeDeleted() sealed;
 
-	virtual bool LoadResource(IDirect3DDevice9 *pDevice) override sealed;
-	virtual void FirstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
+	virtual bool loadResource(IDirect3DDevice9 *pDevice) override sealed;
+	virtual void firstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
 
 private:
 	int					m_X1, m_X2,

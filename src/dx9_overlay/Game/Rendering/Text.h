@@ -10,25 +10,25 @@ class CText : public CRenderBase
 public:
 	CText(CRenderer *renderer, const char *font,int iFontSize,bool Bold,bool Italic,int x,int y,D3DCOLOR color,const char *text, bool bShadow, bool bShow);
 
-	bool UpdateText(const char *Font,int FontSize,bool Bold,bool Italic);
-	void SetText(const char *str);
-	void SetColor(D3DCOLOR color);
-	void SetPos(int x,int y);
-	void SetShown(bool bShow);
-	void SetShadow(bool bShadow);
+	bool updateText(const char *Font,int FontSize,bool Bold,bool Italic);
+	void setText(const char *str);
+	void setColor(D3DCOLOR color);
+	void setPos(int x,int y);
+	void setShown(bool bShow);
+	void setShadow(bool bShadow);
 
 protected:
-	virtual void Draw(IDirect3DDevice9 *pDevice) sealed;
-	virtual void Reset(IDirect3DDevice9 *pDevice) sealed;
+	virtual void draw(IDirect3DDevice9 *pDevice) sealed;
+	virtual void reset(IDirect3DDevice9 *pDevice) sealed;
 
-	virtual void Show() override sealed;
-	virtual void Hide() override sealed;
+	virtual void show() override sealed;
+	virtual void hide() override sealed;
 
-	virtual void ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice) override sealed;
-	virtual bool CanBeDeleted() override sealed;
+	virtual void releaseResourcesForDeletion(IDirect3DDevice9 *pDevice) override sealed;
+	virtual bool canBeDeleted() override sealed;
 
-	virtual bool LoadResource(IDirect3DDevice9 *pDevice) override sealed;
-	virtual void FirstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
+	virtual bool loadResource(IDirect3DDevice9 *pDevice) override sealed;
+	virtual void firstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
 
 private:
 	std::string			m_Text,

@@ -4,52 +4,52 @@
 CImage::CImage(CRenderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
 	: CRenderBase(renderer), m_pSprite(NULL), m_pTexture(NULL)
 {
-	SetFilePath(file_path);
-	SetPos(x, y);
-	SetRotation(rotation);
-	SetAlign(align);
-	SetShown(bShow);
+	setFilePath(file_path);
+	setPos(x, y);
+	setRotation(rotation);
+	setAlign(align);
+	setShown(bShow);
 }
 
-void CImage::SetFilePath(const std::string & path)
+void CImage::setFilePath(const std::string & path)
 {
 	m_filePath = path;
 }
 
-void CImage::SetPos(int x, int y)
+void CImage::setPos(int x, int y)
 {
 	m_x = x, m_y = y;
 }
 
-void CImage::SetRotation(int rotation)
+void CImage::setRotation(int rotation)
 {
 	m_rotation = rotation;
 }
 
-void CImage::SetAlign(int align)
+void CImage::setAlign(int align)
 {
 	m_align = align;
 }
 
-void CImage::SetShown(bool show)
+void CImage::setShown(bool show)
 {
 	m_bShow = show;
 }
 
-bool CImage::UpdateImage(const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
+bool CImage::updateImage(const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
 {
-	SetFilePath(file_path);
-	SetPos(x, y);
-	SetRotation(rotation);
-	SetAlign(align);
-	SetShown(bShow);
+	setFilePath(file_path);
+	setPos(x, y);
+	setRotation(rotation);
+	setAlign(align);
+	setShown(bShow);
 
-	ChangeResource();
+	changeResource();
 
 	return true;
 }
 
-void CImage::Draw(IDirect3DDevice9 *pDevice)
+void CImage::draw(IDirect3DDevice9 *pDevice)
 {
 	if(!m_bShow)
 		return;
@@ -65,7 +65,7 @@ void CImage::Draw(IDirect3DDevice9 *pDevice)
 	}
 }
 
-void CImage::Reset(IDirect3DDevice9 *pDevice)
+void CImage::reset(IDirect3DDevice9 *pDevice)
 {
 	if(m_pSprite)
 	{
@@ -75,18 +75,18 @@ void CImage::Reset(IDirect3DDevice9 *pDevice)
 }
 
 
-void CImage::Show()
+void CImage::show()
 {
-	SetShown(true);
+	setShown(true);
 }
 
-void CImage::Hide()
+void CImage::hide()
 {
-	SetShown(false);
+	setShown(false);
 }
 
 
-void CImage::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
+void CImage::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 {
 	if(m_pSprite)
 	{
@@ -101,12 +101,12 @@ void CImage::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 	}
 }
 
-bool CImage::CanBeDeleted()
+bool CImage::canBeDeleted()
 {
 	return (m_pTexture == NULL && m_pSprite == NULL);
 }
 
-bool CImage::LoadResource(IDirect3DDevice9 *pDevice)
+bool CImage::loadResource(IDirect3DDevice9 *pDevice)
 {
 	if(m_pSprite)
 	{
@@ -126,7 +126,7 @@ bool CImage::LoadResource(IDirect3DDevice9 *pDevice)
 	return (m_pTexture != NULL && m_pSprite != NULL);
 }
 
-void CImage::FirstDrawAfterReset(IDirect3DDevice9 *pDevice)
+void CImage::firstDrawAfterReset(IDirect3DDevice9 *pDevice)
 {
 
 }

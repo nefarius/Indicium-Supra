@@ -25,7 +25,7 @@ stParamInfo g_paramArray[3] =
 
 bool IsServerAvailable()
 {
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::Ping;
 

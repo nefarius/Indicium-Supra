@@ -50,6 +50,7 @@
     <ClCompile Include="Utils\Pattern.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\Bitstream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">

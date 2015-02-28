@@ -14,7 +14,7 @@ EXPORT int TextCreate(char *Font, int FontSize, bool bBold, bool bItalic, int x,
 {
 	SERVER_CHECK(-1)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::TextCreate << std::string(Font) << FontSize << bBold << bItalic << x << y << color << std::string(text);
 	bsIn << bShadow << bShow;
@@ -29,7 +29,7 @@ EXPORT int TextDestroy(int Id)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::TextDestroy << Id;
 
@@ -43,7 +43,7 @@ EXPORT int TextSetShadow(int id, bool b)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::TextSetShadow << id << b;
 
@@ -57,7 +57,7 @@ EXPORT int TextSetShown(int id, bool b)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::TextSetShown << id << b;
 
@@ -71,7 +71,7 @@ EXPORT int TextSetColor(int id, unsigned int color)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::TextSetColor << id << color;
 
@@ -85,7 +85,7 @@ EXPORT int TextSetPos(int id, int x, int y)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::TextSetPos << id << x << y;
 
@@ -99,7 +99,7 @@ EXPORT int TextSetString(int id, char *str)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::TextSetString << id << std::string(str);
 
@@ -113,7 +113,7 @@ EXPORT int TextUpdate(int id, char *Font, int FontSize, bool bBold, bool bItalic
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::TextUpdate << id << std::string(Font) << FontSize << bBold << bItalic;
 
@@ -127,7 +127,7 @@ EXPORT int BoxCreate(int x, int y, int w, int h, unsigned int dwColor, bool bSho
 {
 	SERVER_CHECK(-1)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::BoxCreate << x << y << w << h << dwColor << bShow;
 
@@ -141,7 +141,7 @@ EXPORT int BoxDestroy(int id)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::BoxDestroy << id;
 
@@ -155,7 +155,7 @@ EXPORT int BoxSetShown(int id, bool bShown)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::BoxSetShown << id << bShown;
 
@@ -169,7 +169,7 @@ EXPORT int BoxSetBorder(int id, int height, bool bShown)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::BoxSetBorder << id << height << bShown;
 
@@ -183,7 +183,7 @@ EXPORT int BoxSetBorderColor(int id, unsigned int dwColor)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::BoxSetBorderColor << id << dwColor;
 
@@ -197,7 +197,7 @@ EXPORT int BoxSetColor(int id, unsigned int dwColor)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::BoxSetColor << id << dwColor;
 
@@ -211,7 +211,7 @@ EXPORT int BoxSetHeight(int id, int height)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::BoxSetHeight << id << height;
 
@@ -225,7 +225,7 @@ EXPORT int BoxSetPos(int id, int x, int y)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::BoxSetPos << id << x << y;
 
@@ -239,7 +239,7 @@ EXPORT int BoxSetWidth(int id, int width)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::BoxSetWidth << id << width;
 
@@ -253,7 +253,7 @@ EXPORT int LineCreate(int x1, int y1, int x2, int y2, int width, unsigned int co
 {
 	SERVER_CHECK(-1)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::LineCreate << x1 << y1 << x2 << y2 << width << color << bShow;
 
@@ -267,7 +267,7 @@ EXPORT int LineDestroy(int id)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::LineDestroy << id;
 
@@ -281,7 +281,7 @@ EXPORT int LineSetShown(int id, bool bShown)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::LineSetShown << id << bShown;
 
@@ -295,7 +295,7 @@ EXPORT int LineSetColor(int id, unsigned int color)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::LineSetColor << id << color;
 
@@ -309,7 +309,7 @@ EXPORT int LineSetWidth(int id, int width)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::LineSetWidth << id << width;
 
@@ -323,7 +323,7 @@ EXPORT int LineSetPos(int id, int x1, int y1, int x2, int y2)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::LineSetPos << id << x1 << y1 << x2 << y2;
 
@@ -337,7 +337,7 @@ EXPORT int ImageCreate(char *path, int x, int y, int rotation, int align, bool b
 {
 	SERVER_CHECK(-1)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	std::string abs_path = boost::filesystem::absolute(path).string();
 	if (!boost::filesystem::exists(abs_path))
@@ -355,7 +355,7 @@ EXPORT int ImageDestroy(int id)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::ImageDestroy << id;
 
@@ -369,7 +369,7 @@ EXPORT int ImageSetShown(int id, bool bShown)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::ImageSetShown << id << bShown;
 
@@ -383,7 +383,7 @@ EXPORT int ImageSetAlign(int id, int align)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::ImageSetAlign << id << align;
 
@@ -397,7 +397,7 @@ EXPORT int ImageSetPos(int id, int x, int y)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::ImageSetPos << id << x << y;
 
@@ -411,7 +411,7 @@ EXPORT int ImageSetRotation(int id, int rotation)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::ImageSetRotation << id << rotation;
 
@@ -425,7 +425,7 @@ EXPORT int DestroyAllVisual()
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::DestroyAllVisual;
 
@@ -439,7 +439,7 @@ EXPORT int ShowAllVisual()
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::ShowAllVisual;
 
@@ -453,7 +453,7 @@ EXPORT int HideAllVisual()
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::HideAllVisual;
 
@@ -467,7 +467,7 @@ EXPORT int GetFrameRate()
 {
 	SERVER_CHECK(-1)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::GetFrameRate;
 
@@ -481,7 +481,7 @@ EXPORT int GetScreenSpecs(int& width, int& height)
 {
 	SERVER_CHECK(0)
 
-	CBitStream bsIn, bsOut;
+	CSerializer bsIn, bsOut;
 
 	bsIn << PipeMessages::GetScreenSpecs;
 

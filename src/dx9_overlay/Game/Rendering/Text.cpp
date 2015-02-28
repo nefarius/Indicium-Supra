@@ -4,11 +4,11 @@
 CText::CText(CRenderer *renderer, const char *font,int iFontSize,bool Bold,bool Italic,int x,int y,D3DCOLOR color,const char *text, bool bShadow, bool bShow)
 	: CRenderBase(renderer), m_D3DFont(NULL)
 {
-	SetPos(x,y);
-	SetColor(color);
-	SetText(text);
-	SetShadow(bShadow);
-	SetShown(bShow);
+	setPos(x,y);
+	setColor(color);
+	setText(text);
+	setShadow(bShadow);
+	setShown(bShow);
 
 	m_Font = font;
 	m_FontSize = iFontSize;
@@ -17,44 +17,44 @@ CText::CText(CRenderer *renderer, const char *font,int iFontSize,bool Bold,bool 
 }
 
 
-bool CText::UpdateText(const char *Font,int FontSize,bool Bold,bool Italic)
+bool CText::updateText(const char *Font,int FontSize,bool Bold,bool Italic)
 {
 	m_Font = Font;
 	m_FontSize = FontSize;
 	m_bBold = Bold;
 	m_bItalic = Italic;
 
-	ChangeResource();
+	changeResource();
 
 	return true;
 }
 
-void CText::SetText(const char *str)
+void CText::setText(const char *str)
 {
 	m_Text = str;
 }
 
-void CText::SetColor(D3DCOLOR color)
+void CText::setColor(D3DCOLOR color)
 {
 	m_Color = color;
 }
 
-void CText::SetPos(int x,int y)
+void CText::setPos(int x,int y)
 {
 	m_X = x, m_Y = y;
 }
 
-void CText::SetShown(bool bShown)
+void CText::setShown(bool bShown)
 {
 	m_bShown = bShown;
 }
 
-void CText::SetShadow(bool bShadow)
+void CText::setShadow(bool bShadow)
 {
 	m_bShadow = bShadow;
 }
 
-void CText::Draw(IDirect3DDevice9 *pDevice)
+void CText::draw(IDirect3DDevice9 *pDevice)
 {
 	if(!m_bShown)
 		return;
@@ -77,32 +77,32 @@ void CText::Draw(IDirect3DDevice9 *pDevice)
 	Drawing::DrawFont(&m_D3DFont, view.Width * fFactor[0], view.Height * fFactor[1], m_Color, m_Text.c_str(), D3DFONT_COLORTABLE);
 }
 
-void CText::Reset(IDirect3DDevice9 *pDevice)
+void CText::reset(IDirect3DDevice9 *pDevice)
 {
 	Drawing::ResetFont(&m_D3DFont);
 }
 
-void CText::Show()
+void CText::show()
 {
-	SetShown(true);
+	setShown(true);
 }
 
-void CText::Hide()
+void CText::hide()
 {
-	SetShown(false);
+	setShown(false);
 }
 
-void CText::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
+void CText::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 {
 	Drawing::ResetFont(&m_D3DFont);
 }
 
-bool CText::CanBeDeleted()
+bool CText::canBeDeleted()
 {
 	return (m_D3DFont == NULL) ? true : false;
 }
 
-bool CText::LoadResource(IDirect3DDevice9 *pDevice)
+bool CText::loadResource(IDirect3DDevice9 *pDevice)
 {
 	D3DVIEWPORT9 view;
 	pDevice->GetViewport(&view);
@@ -114,7 +114,7 @@ bool CText::LoadResource(IDirect3DDevice9 *pDevice)
 	return m_D3DFont != NULL;
 }
 
-void CText::FirstDrawAfterReset(IDirect3DDevice9 *pDevice)
+void CText::firstDrawAfterReset(IDirect3DDevice9 *pDevice)
 {
-	LoadResource(pDevice);
+	loadResource(pDevice);
 }

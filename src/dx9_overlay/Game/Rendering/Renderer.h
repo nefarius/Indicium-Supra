@@ -4,57 +4,55 @@
 #include <boost/container/map.hpp>
 
 #include <boost/thread.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
+#include <map>
 
 class CRenderBase;
 
 class CRenderer
 {
-	typedef boost::shared_ptr<CRenderBase> SharedRenderObject;
-	typedef boost::container::map<int, SharedRenderObject> RenderObjects;
+	typedef std::shared_ptr<CRenderBase> SharedRenderObject;
+	typedef std::map<int, SharedRenderObject> RenderObjects;
 
 public:
-	int  Add(SharedRenderObject Object);
+	int add(SharedRenderObject Object);
 
-	bool Remove(int id);
+	bool remove(int id);
 
-	template<typename T> boost::shared_ptr<T> Get(int id)
+	template<typename T> std::shared_ptr<T> get(int id)
 	{
-		if(_RenderObjects.empty())
+		if(_renderObjects.empty())
 			return nullptr;
 
-		if(_RenderObjects.find(id) == _RenderObjects.end())
+		if(_renderObjects.find(id) == _renderObjects.end())
 			return nullptr;
 
-		if(_RenderObjects[id]->_isMarkedForDeletion)
+		if(_renderObjects[id]->_isMarkedForDeletion)
 			return nullptr;
 
-		return boost::dynamic_pointer_cast<T, CRenderBase>(_RenderObjects[id]);
+		return std::dynamic_pointer_cast<T, CRenderBase>(_renderObjects[id]);
 	}
 
-	void Draw(IDirect3DDevice9 *pDevice);
-	void Reset(IDirect3DDevice9 *pDevice);
+	void draw(IDirect3DDevice9 *pDevice);
+	void reset(IDirect3DDevice9 *pDevice);
 
-	void ShowAll();
-	void HideAll();
-	void DestroyAll();
+	void showAll();
+	void hideAll();
+	void destroyAll();
 
-	int GetFrameRate() const;
+	int frameRate() const;
 
-	int GetScreenWidth() const;
-	int GetScreenHeight() const;
+	int screenWidth() const;
+	int screenHeight() const;
 
-	boost::mutex& RenderMutex() 
-	{ 
-		return _mtx;
-	}
+	boost::mutex& renderMutex();
 
 private:
 	int _frameRate;
 	int _width;
 	int _height;
 
-	static RenderObjects	_RenderObjects;
-	static boost::mutex		_mtx;
+	static RenderObjects _renderObjects;
+	static boost::mutex	 _mtx;
 };
 

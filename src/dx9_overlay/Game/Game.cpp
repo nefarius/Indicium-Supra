@@ -37,7 +37,7 @@ void initGame()
 	g_presentHook.apply(vtbl[17], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
 	{
 		__asm pushad
-		g_pRenderer.Draw(dev);
+		g_pRenderer.draw(dev);
 		__asm popad
 
 		return g_presentHook.callOrig(dev, a1, a2, a3, a4);
@@ -46,13 +46,13 @@ void initGame()
 	g_resetHook.apply(vtbl[16], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
 	{
 		__asm pushad
-		g_pRenderer.Reset(dev);
+		g_pRenderer.reset(dev);
 		__asm popad
 
 		return g_resetHook.callOrig(dev, pp);
 	});
 
-	typedef std::map<PipeMessages, boost::function<void(CBitStream&, CBitStream&)> > MessagePaketHandler;
+	typedef std::map<PipeMessages, boost::function<void(CSerializer&, CSerializer&)> > MessagePaketHandler;
 	MessagePaketHandler PaketHandler;
 
 	BIND(TextCreate);
@@ -95,9 +95,9 @@ void initGame()
 	BIND(GetFrameRate);
 	BIND(GetScreenSpecs);
 
-	new CNamedPipeServer([&](CBitStream& bsIn, CBitStream& bsOut)
+	new CNamedPipeServer([&](CSerializer& bsIn, CSerializer& bsOut)
 	{
-		BITSTREAM_READ(bsIn, PipeMessages, eMessage);
+		SERIALIZATION_READ(bsIn, PipeMessages, eMessage);
 
 		try
 		{

@@ -9,7 +9,7 @@ CRenderBase::~CRenderBase()
 {
 }
 
-void CRenderBase::Destroy()
+void CRenderBase::destroy()
 {
 	if(!_isMarkedForDeletion)
 	{
@@ -17,12 +17,12 @@ void CRenderBase::Destroy()
 	}	
 }
 
-void CRenderBase::ChangeResource()
+void CRenderBase::changeResource()
 {
 	_resourceChanged = true;
 }
 
-CRenderer *CRenderBase::Renderer()
+CRenderer *CRenderBase::renderer()
 {
 	return _renderer;
 }

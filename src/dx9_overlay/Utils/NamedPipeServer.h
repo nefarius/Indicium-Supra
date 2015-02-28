@@ -9,7 +9,7 @@
 #define PIPE_TIMEOUT	5000
 
 namespace boost { class thread; }
-class CBitStream;
+class CSerializer;
 
 class CNamedPipeServer
 {
@@ -26,7 +26,7 @@ class CNamedPipeServer
 	} PIPEINSTANCE, *LPPIPEINSTANCE;
 
 public:
-	CNamedPipeServer(boost::function<void(CBitStream&, CBitStream&)> func);
+	CNamedPipeServer(boost::function<void(CSerializer&, CSerializer&)> func);
 	~CNamedPipeServer();
 
 private:
@@ -40,6 +40,6 @@ private:
 	char			m_szPipe[MAX_PATH];
 
 	boost::thread	*m_thread;
-	boost::function<void(CBitStream&, CBitStream&)> m_cbCallback;
+	boost::function<void(CSerializer&, CSerializer&)> m_cbCallback;
 };
 

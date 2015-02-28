@@ -7,365 +7,407 @@
 #include "Rendering/Renderer.h"
 #include "Rendering/RenderBase.h"
 
-#define READ(X, Y) BITSTREAM_READ(bsIn, X, Y);
+#define READ(X, Y) SERIALIZATION_READ(bsIn, X, Y);
 #define WRITE(X) bsOut << X;
 
-void TextCreate(CBitStream& bsIn, CBitStream& bsOut)
+void TextCreate(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(std::string, Font); READ(int, FontSize); 
-	READ(bool, bBold); READ(bool, bItalic);
-	READ(int, x); READ(int, y);
+	READ(std::string, Font); 
+	READ(int, FontSize); 
+	READ(bool, bBold);
+	READ(bool, bItalic);
+	READ(int, x); 
+	READ(int, y);
 	READ(unsigned int, color);
 	READ(std::string, Text);
 	READ(bool, bShadow);
 	READ(bool, bShow);
 
-	boost::shared_ptr<CText> obj(new CText(&g_pRenderer, Font.c_str(), FontSize, bBold, bItalic, x, y, color, Text.c_str(), bShadow, bShow));
+	auto obj = std::make_shared<CText>(&g_pRenderer, Font.c_str(), FontSize, bBold, bItalic, x, y, color, Text.c_str(), bShadow, bShow);
 
-	WRITE(g_pRenderer.Add(obj));
+	WRITE(g_pRenderer.add(obj));
 }
 
-void TextDestroy(CBitStream& bsIn, CBitStream& bsOut)
+void TextDestroy(CSerializer& bsIn, CSerializer& bsOut)
 {
 	READ(int, id);
-	WRITE(int(g_pRenderer.Remove(id)));
+	WRITE(int(g_pRenderer.remove(id)));
 }
 
-void TextSetShadow(CBitStream& bsIn, CBitStream& bsOut)
+void TextSetShadow(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(bool, bShadow);
+	READ(int, id); 
+	READ(bool, bShadow);
 
-	auto obj = g_pRenderer.Get<CText>(id);
+	auto obj = g_pRenderer.get<CText>(id);
 	if (obj)
 	{
-		obj->SetShadow(bShadow);
+		obj->setShadow(bShadow);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void TextSetShown(CBitStream& bsIn, CBitStream& bsOut)
+void TextSetShown(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(bool, bShown);
+	READ(int, id); 
+	READ(bool, bShown);
 
-	auto obj = g_pRenderer.Get<CText>(id);
+	auto obj = g_pRenderer.get<CText>(id);
 	if (obj)
 	{
-		obj->SetShown(bShown);
+		obj->setShown(bShown);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void TextSetColor(CBitStream& bsIn, CBitStream& bsOut)
+void TextSetColor(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(unsigned int, color);
+	READ(int, id); 
+	READ(unsigned int, color);
 
-	auto obj = g_pRenderer.Get<CText>(id);
+	auto obj = g_pRenderer.get<CText>(id);
 	if (obj)
 	{
-		obj->SetColor(color);
+		obj->setColor(color);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void TextSetPos(CBitStream& bsIn, CBitStream& bsOut)
+void TextSetPos(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(int, x); READ(int, y);
+	READ(int, id); 
+	READ(int, x); 
+	READ(int, y);
 
-	auto obj = g_pRenderer.Get<CText>(id);
+	auto obj = g_pRenderer.get<CText>(id);
 	if (obj)
 	{
-		obj->SetPos(x, y);
+		obj->setPos(x, y);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void TextSetString(CBitStream& bsIn, CBitStream& bsOut)
+void TextSetString(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(std::string, str);
+	READ(int, id); 
+	READ(std::string, str);
 
-	auto obj = g_pRenderer.Get<CText>(id);
+	auto obj = g_pRenderer.get<CText>(id);
 	if (obj)
 	{
-		obj->SetText(str.c_str());
+		obj->setText(str.c_str());
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void TextUpdate(CBitStream& bsIn, CBitStream& bsOut)
+void TextUpdate(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(std::string, Font); READ(int, FontSize); 
-	READ(bool, bBold); READ(bool, bItalic);
+	READ(int, id); 
+	READ(std::string, Font); 
+	READ(int, FontSize); 
+	READ(bool, bBold); 
+	READ(bool, bItalic);
 
-	auto obj = g_pRenderer.Get<CText>(id);
+	auto obj = g_pRenderer.get<CText>(id);
 	if (obj)
 	{
-		WRITE(int(obj->UpdateText(Font.c_str(), FontSize, bBold, bItalic)));
+		WRITE(int(obj->updateText(Font.c_str(), FontSize, bBold, bItalic)));
 	}
 	else
 		WRITE((int) 0);
 }
 
-void BoxCreate(CBitStream& bsIn, CBitStream& bsOut)
+void BoxCreate(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, x); READ(int, y); READ(int, w); READ(int, h); READ(unsigned int, dwColor); READ(bool, bShow);
-
-	boost::shared_ptr<CBox> obj(new CBox(&g_pRenderer, x, y, w, h, dwColor, bShow));
-
-	WRITE(g_pRenderer.Add(obj));
-}
-
-void BoxDestroy(CBitStream& bsIn, CBitStream& bsOut)
-{
-	READ(int, id);
-	WRITE((int) g_pRenderer.Remove(id));
-}
-
-void BoxSetShown(CBitStream& bsIn, CBitStream& bsOut)
-{
-	READ(int, id); READ(bool, bShown);
-
-	auto obj = g_pRenderer.Get<CBox>(id);
-	if (obj)
-	{
-		obj->SetShown(bShown);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
-}
-
-void BoxSetBorder(CBitStream& bsIn, CBitStream& bsOut)
-{
-	READ(int, id); READ(int, height); READ(bool, bShown);
-
-	auto obj = g_pRenderer.Get<CBox>(id);
-	if (obj)
-	{
-		obj->SetBorderWidth(height);
-		obj->SetBorderShown(bShown);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
-}
-
-void BoxSetBorderColor(CBitStream& bsIn, CBitStream& bsOut)
-{
-	READ(int, id); READ(unsigned int, dwColor);
-
-	auto obj = g_pRenderer.Get<CBox>(id);
-	if (obj)
-	{
-		obj->SetBorderColor(dwColor);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
-}
-
-void BoxSetColor(CBitStream& bsIn, CBitStream& bsOut)
-{
-	READ(int, id); READ(unsigned int, dwColor);
-
-	auto obj = g_pRenderer.Get<CBox>(id);
-	if (obj)
-	{
-		obj->SetBoxColor(dwColor);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
-}
-
-void BoxSetHeight(CBitStream& bsIn, CBitStream& bsOut)
-{
-	READ(int, id); READ(int, height);
-
-	auto obj = g_pRenderer.Get<CBox>(id);
-	if (obj)
-	{
-		obj->SetBoxHeight(height);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
-}
-
-void BoxSetPos(CBitStream& bsIn, CBitStream& bsOut)
-{
-	READ(int, id); READ(int, x); READ(int, y);
-
-	auto obj = g_pRenderer.Get<CBox>(id);
-	if (obj)
-	{
-		obj->SetPos(x, y);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
-}
-
-void BoxSetWidth(CBitStream& bsIn, CBitStream& bsOut)
-{
-	READ(int, id); READ(int, width);
-
-	auto obj = g_pRenderer.Get<CBox>(id);
-	if (obj)
-	{
-		obj->SetBoxWidth(width);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
-}
-
-void LineCreate(CBitStream& bsIn, CBitStream& bsOut)
-{
-	READ(int, x1); READ(int, y1); READ(int, x2); READ(int, y2); READ(int, width); READ(unsigned int, color);
+	READ(int, x); 
+	READ(int, y); 
+	READ(int, w); 
+	READ(int, h); 
+	READ(unsigned int, dwColor); 
 	READ(bool, bShow);
 
-	boost::shared_ptr<CLine> obj(new CLine(&g_pRenderer, x1, y1, x2, y2, width, color, bShow));
-
-	WRITE(g_pRenderer.Add(obj));
+	WRITE(g_pRenderer.add(std::make_shared<CBox>(&g_pRenderer, x, y, w, h, dwColor, bShow)));
 }
 
-void LineDestroy(CBitStream& bsIn, CBitStream& bsOut)
+void BoxDestroy(CSerializer& bsIn, CSerializer& bsOut)
 {
 	READ(int, id);
-	WRITE((int) g_pRenderer.Remove(id));
+	WRITE((int) g_pRenderer.remove(id));
 }
 
-void LineSetShown(CBitStream& bsIn, CBitStream& bsOut)
+void BoxSetShown(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(bool, bShown);
+	READ(int, id); 
+	READ(bool, bShown);
 
-	auto obj = g_pRenderer.Get<CLine>(id);
+	auto obj = g_pRenderer.get<CBox>(id);
 	if (obj)
 	{
-		obj->SetShown(bShown);
+		obj->setShown(bShown);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void LineSetColor(CBitStream& bsIn, CBitStream& bsOut)
+void BoxSetBorder(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(unsigned int, color);
+	READ(int, id); 
+	READ(int, height); 
+	READ(bool, bShown);
 
-	auto obj = g_pRenderer.Get<CLine>(id);
+	auto obj = g_pRenderer.get<CBox>(id);
 	if (obj)
 	{
-		obj->SetColor(color);
+		obj->setBorderWidth(height);
+		obj->setBorderShown(bShown);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void LineSetWidth(CBitStream& bsIn, CBitStream& bsOut)
+void BoxSetBorderColor(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(int, width);
+	READ(int, id); 
+	READ(unsigned int, dwColor);
 
-	auto obj = g_pRenderer.Get<CLine>(id);
+	auto obj = g_pRenderer.get<CBox>(id);
 	if (obj)
 	{
-		obj->SetWidth(width);
+		obj->setBorderColor(dwColor);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void LineSetPos(CBitStream& bsIn, CBitStream& bsOut)
+void BoxSetColor(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(int, x1); READ(int, y1); READ(int, x2); READ(int, y2);
+	READ(int, id); 
+	READ(unsigned int, dwColor);
 
-	auto obj = g_pRenderer.Get<CLine>(id);
+	auto obj = g_pRenderer.get<CBox>(id);
 	if (obj)
 	{
-		obj->SetPos(x1, y1, x2, y2);
+		obj->setBoxColor(dwColor);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void ImageCreate(CBitStream& bsIn, CBitStream& bsOut)
+void BoxSetHeight(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(std::string, path); READ(int, x); READ(int, y); READ(int, rotation); READ(int, align); READ(bool, show);
+	READ(int, id); 
+	READ(int, height);
+
+	auto obj = g_pRenderer.get<CBox>(id);
+	if (obj)
+	{
+		obj->setBoxHeight(height);
+		WRITE(int(1));
+	}
+	else
+		WRITE(int(0));
+}
+
+void BoxSetPos(CSerializer& bsIn, CSerializer& bsOut)
+{
+	READ(int, id); 
+	READ(int, x); 
+	READ(int, y);
+
+	auto obj = g_pRenderer.get<CBox>(id);
+	if (obj)
+	{
+		obj->setPos(x, y);
+		WRITE(int(1));
+	}
+	else
+		WRITE(int(0));
+}
+
+void BoxSetWidth(CSerializer& bsIn, CSerializer& bsOut)
+{
+	READ(int, id); 
+	READ(int, width);
+
+	auto obj = g_pRenderer.get<CBox>(id);
+	if (obj)
+	{
+		obj->setBoxWidth(width);
+		WRITE(int(1));
+	}
+	else
+		WRITE(int(0));
+}
+
+void LineCreate(CSerializer& bsIn, CSerializer& bsOut)
+{
+	READ(int, x1); 
+	READ(int, y1); 
+	READ(int, x2); 
+	READ(int, y2); 
+	READ(int, width); 
+	READ(unsigned int, color);
+	READ(bool, bShow);
+
+	WRITE(g_pRenderer.add(std::make_shared<CLine>(&g_pRenderer, x1, y1, x2, y2, width, color, bShow)));
+}
+
+void LineDestroy(CSerializer& bsIn, CSerializer& bsOut)
+{
+	READ(int, id);
+	WRITE((int) g_pRenderer.remove(id));
+}
+
+void LineSetShown(CSerializer& bsIn, CSerializer& bsOut)
+{
+	READ(int, id); 
+	READ(bool, bShown);
+
+	auto obj = g_pRenderer.get<CLine>(id);
+	if (obj)
+	{
+		obj->setShown(bShown);
+		WRITE(int(1));
+	}
+	else
+		WRITE(int(0));
+}
+
+void LineSetColor(CSerializer& bsIn, CSerializer& bsOut)
+{
+	READ(int, id); 
+	READ(unsigned int, color);
+
+	auto obj = g_pRenderer.get<CLine>(id);
+	if (obj)
+	{
+		obj->setColor(color);
+		WRITE(int(1));
+	}
+	else
+		WRITE(int(0));
+}
+
+void LineSetWidth(CSerializer& bsIn, CSerializer& bsOut)
+{
+	READ(int, id); 
+	READ(int, width);
+
+	auto obj = g_pRenderer.get<CLine>(id);
+	if (obj)
+	{
+		obj->setWidth(width);
+		WRITE(int(1));
+	}
+	else
+		WRITE(int(0));
+}
+
+void LineSetPos(CSerializer& bsIn, CSerializer& bsOut)
+{
+	READ(int, id); 
+	READ(int, x1); 
+	READ(int, y1); 
+	READ(int, x2); 
+	READ(int, y2);
+
+	auto obj = g_pRenderer.get<CLine>(id);
+	if (obj)
+	{
+		obj->setPos(x1, y1, x2, y2);
+		WRITE(int(1));
+	}
+	else
+		WRITE(int(0));
+}
+
+void ImageCreate(CSerializer& bsIn, CSerializer& bsOut)
+{
+	READ(std::string, path); 
+	READ(int, x); 
+	READ(int, y); 
+	READ(int, rotation); 
+	READ(int, align); 
+	READ(bool, show);
 	
-	boost::shared_ptr<CImage> obj(new CImage(&g_pRenderer, path.c_str(), x, y, rotation, align, show));
-
-	WRITE(g_pRenderer.Add(obj));
+	WRITE(g_pRenderer.add(std::make_shared<CImage>(&g_pRenderer, path.c_str(), x, y, rotation, align, show)));
 }
 
-void ImageDestroy(CBitStream& bsIn, CBitStream& bsOut)
+void ImageDestroy(CSerializer& bsIn, CSerializer& bsOut)
 {
 	READ(int, id);
-	WRITE((int) g_pRenderer.Remove(id));
+	WRITE((int) g_pRenderer.remove(id));
 }
 
-void ImageSetShown(CBitStream& bsIn, CBitStream& bsOut)
+void ImageSetShown(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(bool, bShow);
+	READ(int, id); 
+	READ(bool, bShow);
 
-	auto obj = g_pRenderer.Get<CImage>(id);
+	auto obj = g_pRenderer.get<CImage>(id);
 	if (obj)
 	{
-		obj->SetShown(bShow);
+		obj->setShown(bShow);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void ImageSetAlign(CBitStream& bsIn, CBitStream& bsOut)
+void ImageSetAlign(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(int, align);
+	READ(int, id); 
+	READ(int, align);
 
-	auto obj = g_pRenderer.Get<CImage>(id);
+	auto obj = g_pRenderer.get<CImage>(id);
 	if (obj)
 	{
-		obj->SetAlign(align);
+		obj->setAlign(align);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void ImageSetPos(CBitStream& bsIn, CBitStream& bsOut)
+void ImageSetPos(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(int, x); READ(int, y);
+	READ(int, id); 
+	READ(int, x); 
+	READ(int, y);
 
-	auto obj = g_pRenderer.Get<CImage>(id);
+	auto obj = g_pRenderer.get<CImage>(id);
 	if (obj)
 	{
-		obj->SetPos(x, y);
+		obj->setPos(x, y);
 		WRITE(int(1));
 	}
 	else
 		WRITE(int(0));
 }
 
-void ImageSetRotation(CBitStream& bsIn, CBitStream& bsOut)
+void ImageSetRotation(CSerializer& bsIn, CSerializer& bsOut)
 {
-	READ(int, id); READ(int, rotation);
+	READ(int, id); 
+	READ(int, rotation);
 
-	auto obj = g_pRenderer.Get<CImage>(id);
+	auto obj = g_pRenderer.get<CImage>(id);
 	if (obj)
 	{
-		obj->SetRotation(rotation);
+		obj->setRotation(rotation);
 		WRITE(int(1));
 	}
 	else
@@ -373,27 +415,28 @@ void ImageSetRotation(CBitStream& bsIn, CBitStream& bsOut)
 }
 
 
-void DestroyAllVisual(CBitStream& bsIn, CBitStream& bsOut)
+void DestroyAllVisual(CSerializer& bsIn, CSerializer& bsOut)
 {
-	g_pRenderer.DestroyAll();
+	g_pRenderer.destroyAll();
 }
 
-void ShowAllVisual(CBitStream& bsIn, CBitStream& bsOut)
+void ShowAllVisual(CSerializer& bsIn, CSerializer& bsOut)
 {
-	g_pRenderer.ShowAll();
+	g_pRenderer.showAll();
 }
 
-void HideAllVisual(CBitStream& bsIn, CBitStream& bsOut)
+void HideAllVisual(CSerializer& bsIn, CSerializer& bsOut)
 {
-	g_pRenderer.HideAll();
+	g_pRenderer.hideAll();
 }
 
-void GetFrameRate(CBitStream& bsIn, CBitStream& bsOut)
+void GetFrameRate(CSerializer& bsIn, CSerializer& bsOut)
 {
-	WRITE(g_pRenderer.GetFrameRate());
+	WRITE(g_pRenderer.frameRate());
 }
 
-void GetScreenSpecs(CBitStream& bsIn, CBitStream& bsOut)
+void GetScreenSpecs(CSerializer& bsIn, CSerializer& bsOut)
 {
-	WRITE(g_pRenderer.GetScreenWidth()); WRITE(g_pRenderer.GetScreenHeight());
+	WRITE(g_pRenderer.screenWidth()); 
+	WRITE(g_pRenderer.screenHeight());
 }

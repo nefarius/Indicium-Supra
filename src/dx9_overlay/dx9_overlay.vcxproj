@@ -99,6 +99,7 @@
     <ClCompile Include="Game\Rendering\RenderBase.cpp" />
     <ClCompile Include="Game\Rendering\Renderer.cpp" />
     <ClCompile Include="Game\Rendering\Text.cpp" />
+    <ClCompile Include="Utils\Bitstream.cpp" />
     <ClCompile Include="Utils\Misc.cpp" />
     <ClCompile Include="Utils\NamedPipeClient.cpp" />
     <ClCompile Include="Utils\NamedPipeServer.cpp" />

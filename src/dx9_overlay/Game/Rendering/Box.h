@@ -8,27 +8,27 @@ class CBox : public CRenderBase
 public:
 	CBox(CRenderer *renderer, int x, int y, int w, int h, D3DCOLOR color, bool show);
 
-	void			SetPos(int x,int y);
-	void			SetBorderColor(D3DCOLOR dwColor);
-	void			SetBoxColor(D3DCOLOR dwColor);
-	void			SetBorderWidth(DWORD dwWidth);
-	void			SetBoxWidth(DWORD dwWidth);
-	void			SetBoxHeight(DWORD dwHeight);
-	void			SetBorderShown(bool b);
-	void			SetShown(bool b);
+	void setPos(int x,int y);
+	void setBorderColor(D3DCOLOR dwColor);
+	void setBoxColor(D3DCOLOR dwColor);
+	void setBorderWidth(DWORD dwWidth);
+	void setBoxWidth(DWORD dwWidth);
+	void setBoxHeight(DWORD dwHeight);
+	void setBorderShown(bool b);
+	void setShown(bool b);
 
 protected:
-	virtual void Draw(IDirect3DDevice9 *pDevice) sealed;
-	virtual void Reset(IDirect3DDevice9 *pDevice) sealed;
+	virtual void draw(IDirect3DDevice9 *pDevice) sealed;
+	virtual void reset(IDirect3DDevice9 *pDevice) sealed;
 
-	virtual void Show() sealed;
-	virtual void Hide() sealed;
+	virtual void show() sealed;
+	virtual void hide() sealed;
 
-	virtual void ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice) sealed;
-	virtual bool CanBeDeleted() sealed;
+	virtual void releaseResourcesForDeletion(IDirect3DDevice9 *pDevice) sealed;
+	virtual bool canBeDeleted() sealed;
 
-	virtual bool LoadResource(IDirect3DDevice9 *pDevice) override sealed;
-	virtual void FirstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
+	virtual bool loadResource(IDirect3DDevice9 *pDevice) override sealed;
+	virtual void firstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
 
 private:
 	bool				m_bShown,

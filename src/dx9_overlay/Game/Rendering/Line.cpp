@@ -3,34 +3,34 @@
 CLine::CLine(CRenderer *renderer, int x1,int y1,int x2,int y2,int width,D3DCOLOR color, bool bShow)
 	: CRenderBase(renderer), m_Line(NULL)
 {
-	SetPos(x1,y1,x2,y2);
-	SetWidth(width);
-	SetColor(color);
-	SetShown(bShow);
+	setPos(x1,y1,x2,y2);
+	setWidth(width);
+	setColor(color);
+	setShown(bShow);
 }
 
-void CLine::SetPos(int x1,int y1,int x2,int y2)
+void CLine::setPos(int x1,int y1,int x2,int y2)
 {
 	m_X1 = x1, m_X2 = x2;
 	m_Y1 = y1, m_Y2 = y2;
 }
 
-void CLine::SetWidth(int width)
+void CLine::setWidth(int width)
 {
 	m_Width = width;
 }
 
-void CLine::SetColor(D3DCOLOR color)
+void CLine::setColor(D3DCOLOR color)
 {
 	m_Color = color;
 }
 
-void CLine::SetShown(bool show)
+void CLine::setShown(bool show)
 {
 	m_bShow = show;
 }
 
-void CLine::Draw(IDirect3DDevice9 *pDevice)
+void CLine::draw(IDirect3DDevice9 *pDevice)
 {
 	if(!m_bShow || m_Line == NULL)
 		return;
@@ -60,7 +60,7 @@ void CLine::Draw(IDirect3DDevice9 *pDevice)
 	m_Line->End();	
 }
 
-void CLine::Reset(IDirect3DDevice9 *pDevice)
+void CLine::reset(IDirect3DDevice9 *pDevice)
 {
 	if(m_Line)
 	{
@@ -69,17 +69,17 @@ void CLine::Reset(IDirect3DDevice9 *pDevice)
 	}
 }
 
-void CLine::Show()
+void CLine::show()
 {
-	SetShown(true);
+	setShown(true);
 }
 
-void CLine::Hide()
+void CLine::hide()
 {
-	SetShown(false);
+	setShown(false);
 }
 
-void CLine::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
+void CLine::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 {
 	if(m_Line)
 	{
@@ -88,12 +88,12 @@ void CLine::ReleaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 	}
 }
 
-bool CLine::CanBeDeleted()
+bool CLine::canBeDeleted()
 {
 	return (m_Line == NULL) ? true : false;
 }
 
-bool CLine::LoadResource(IDirect3DDevice9 *pDevice)
+bool CLine::loadResource(IDirect3DDevice9 *pDevice)
 {
 	if(m_Line)
 	{
@@ -106,7 +106,7 @@ bool CLine::LoadResource(IDirect3DDevice9 *pDevice)
 	return m_Line != NULL;
 }
 
-void CLine::FirstDrawAfterReset(IDirect3DDevice9 *pDevice)
+void CLine::firstDrawAfterReset(IDirect3DDevice9 *pDevice)
 {
 
 }

@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-CNamedPipeClient::CNamedPipeClient(CBitStream& bsIn, CBitStream& bsOut) :
+CNamedPipeClient::CNamedPipeClient(CSerializer& bsIn, CSerializer& bsOut) :
 m_bSuccess(false)
 {
 	char szData[BUFSIZE] = { 0 };
