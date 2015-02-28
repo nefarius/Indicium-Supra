@@ -85,6 +85,9 @@ namespace DX9OverlayAPI
         public static extern int SetCalculationRatio(int width, int height);
 
         [DllImport(PATH, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int SetOverlayPriority(int id, int priority);
+
+        [DllImport(PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern int Init();
         [DllImport(PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetParam(string _szParamName, string _szParamValue);

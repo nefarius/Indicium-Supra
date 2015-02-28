@@ -447,3 +447,18 @@ void SetCalculationRatio(Serializer& bsIn, Serializer& bsOut)
 	RenderBase::xCalculator = width;
 	RenderBase::yCalculator = height;
 }
+
+void SetOverlayPriority(Serializer& bsIn, Serializer& bsOut)
+{
+	READ(int, id);
+	READ(int, priority);
+
+	auto obj = g_pRenderer.getAsBase(id);
+	if (obj)
+	{
+		obj->setPriority(priority);
+		WRITE(int(1));
+	}
+	else
+		WRITE(int(0));
+}

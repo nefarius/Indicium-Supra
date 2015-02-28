@@ -1,4 +1,5 @@
 #include <Utils/algorithm.h>
+#include <algorithm>
 
 #include "Renderer.h"
 #include "RenderBase.h"
@@ -43,33 +44,52 @@ bool Renderer::remove(int id)
 	return true;
 }
 
+std::shared_ptr<RenderBase> Renderer::getAsBase(int id)
+{
+	if (_renderObjects.empty())
+		return nullptr;
+
+	if (_renderObjects.find(id) == _renderObjects.end())
+		return nullptr;
+
+	if (_renderObjects[id]->_isMarkedForDeletion)
+		return nullptr;
+
+	return _renderObjects[id];
+}
+
 void Renderer::draw(IDirect3DDevice9 *pDevice)
 {
 	std::lock_guard<std::recursive_mutex> l(_mtx);
 
-	static DWORD dwFrames = 0;
-	static boost::posix_time::ptime TimeNow;
-	static boost::posix_time::ptime TimeLast = boost::posix_time::microsec_clock::local_time();
-	static DWORD dwElapsedTime = 0;
-
-	dwFrames++;
-	TimeNow = boost::posix_time::microsec_clock::local_time();
-	dwElapsedTime = (TimeNow - TimeLast).total_milliseconds();
-
-	if (dwElapsedTime >= 500)
+	// Read frame rate
 	{
-		float fFPS = (((float) dwFrames) * 1000.0f) / ((float) dwElapsedTime);
-		_frameRate = (int) fFPS;
-		dwFrames = 0;
-		TimeLast = TimeNow;
+		static DWORD dwFrames = 0;
+		static boost::posix_time::ptime TimeNow;
+		static boost::posix_time::ptime TimeLast = boost::posix_time::microsec_clock::local_time();
+		static DWORD dwElapsedTime = 0;
+	
+		dwFrames++;
+		TimeNow = boost::posix_time::microsec_clock::local_time();
+		dwElapsedTime = (TimeNow - TimeLast).total_milliseconds();
+	
+		if (dwElapsedTime >= 500)
+		{
+			float fFPS = (((float) dwFrames) * 1000.0f) / ((float) dwElapsedTime);
+			_frameRate = (int) fFPS;
+			dwFrames = 0;
+			TimeLast = TimeNow;
+		}
 	}
 
-	D3DVIEWPORT9 viewPort;
-	pDevice->GetViewport(&viewPort);
+	// Get frame's screen bounds
+	{
+		D3DVIEWPORT9 viewPort;
+		pDevice->GetViewport(&viewPort);
 
-	_width = viewPort.Width;
-	_height = viewPort.Height;
-
+		_width = viewPort.Width;
+		_height = viewPort.Height;
+	}
 
 	if(_renderObjects.empty())
 		return;
@@ -86,32 +106,43 @@ void Renderer::draw(IDirect3DDevice9 *pDevice)
 	});
 
 
-	for(auto it = _renderObjects.begin(); it != _renderObjects.end(); it ++)
+	// Push all render objects in a vector which will be sorted later
+	std::vector<SharedRenderObject> sortedObjects;
+	for (auto it = _renderObjects.begin(); it != _renderObjects.end(); it++)
+		sortedObjects.push_back(it->second);
+
+	// Sort render objects by priority
+	std::sort(sortedObjects.begin(), sortedObjects.end(), [](SharedRenderObject& i, SharedRenderObject& j){
+		return i->priority() < j->priority();
+	});
+
+	// Process sorted render objects
+	for (auto& i : sortedObjects)
 	{
-		if(it->second->_hasToBeInitialised)
+		if(i->_hasToBeInitialised)
 		{
-			if(!it->second->loadResource(pDevice))
+			if(!i->loadResource(pDevice))
 				continue;
 
-			it->second->_hasToBeInitialised = false;
+			i->_hasToBeInitialised = false;
 		}
 
-		if(it->second->_firstDrawAfterReset)
+		if(i->_firstDrawAfterReset)
 		{
-			it->second->firstDrawAfterReset(pDevice);
-			it->second->_firstDrawAfterReset = false;
+			i->firstDrawAfterReset(pDevice);
+			i->_firstDrawAfterReset = false;
 		}
 
-		if(it->second->_resourceChanged)
+		if(i->_resourceChanged)
 		{
-			it->second->releaseResourcesForDeletion(pDevice);
-			if(!it->second->loadResource(pDevice))
+			i->releaseResourcesForDeletion(pDevice);
+			if(!i->loadResource(pDevice))
 				continue;
 
-			it->second->_resourceChanged = false;
+			i->_resourceChanged = false;
 		}
 
-		it->second->draw(pDevice);
+		i->draw(pDevice);
 	}
 }
 

@@ -18,6 +18,16 @@ void RenderBase::destroy()
 		_isMarkedForDeletion = true;
 }
 
+void RenderBase::setPriority(int p)
+{
+	_priority = p;
+}
+
+int RenderBase::priority()
+{
+	return _priority;
+}
+
 void RenderBase::changeResource()
 {
 	_resourceChanged = true;
@@ -43,4 +53,5 @@ Renderer *RenderBase::renderer()
 {
 	return _renderer;
 }
+
 

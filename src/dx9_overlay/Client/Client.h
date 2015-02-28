@@ -12,7 +12,7 @@ if (!IsServerAvailable())	\
 	if (!Init())			\
 		return retn;		\
 	else					\
-		Sleep(100);			\
+		Sleep(250);			\
 }							\
 
 bool IsServerAvailable();

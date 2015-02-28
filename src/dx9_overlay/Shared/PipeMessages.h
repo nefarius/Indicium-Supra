@@ -37,5 +37,6 @@ enum class PipeMessages : short
 	HideAllVisual,
 	GetFrameRate,
 	GetScreenSpecs,
-	SetCalculationRatio
+	SetCalculationRatio,
+	SetOverlayPriority
 };

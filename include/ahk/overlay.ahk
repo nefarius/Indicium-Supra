@@ -55,6 +55,8 @@ GetScreenSpecs_func 	:= DllCall("GetProcAddress", UInt, hModule, Str, "GetScreen
 
 SetCalculationRatio_func:= DllCall("GetProcAddress", UInt, hModule, Str, "SetCalculationRatio")
 
+SetOverlayPriority_func := DllCall("GetProcAddress", UInt, hModule, Str, "SetOverlayPriority")
+
 Init()
 {
 	global Init_func
@@ -311,7 +313,14 @@ GetScreenSpecs(ByRef width, ByRef height)
 SetCalculationRatio(width, height)
 {
 	global SetCalculationRatio_func
-	res := DllCall(SetCalculationRatio_func, Int, width, Int, height);
+	res := DllCall(SetCalculationRatio_func, Int, width, Int, height)
+	return res
+}
+
+SetOverlayPriority(id, priority)
+{
+	global SetOverlayPriority_func
+	res := DllCall(SetOverlayPriority_func, Int, id, Int, priority)
 	return res
 }
 

@@ -33,6 +33,8 @@ public:
 		return std::dynamic_pointer_cast<T, RenderBase>(_renderObjects[id]);
 	}
 
+	std::shared_ptr<RenderBase> getAsBase(int id);
+
 	template<typename T> 
 	void execute(int id, std::function<void(std::shared_ptr<T>)> successor = nullptr, std::function<void()> error = nullptr)
 	{

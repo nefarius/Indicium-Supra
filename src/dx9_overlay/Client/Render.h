@@ -40,3 +40,6 @@ EXPORT int HideAllVisual();
 
 EXPORT int GetFrameRate();
 EXPORT int GetScreenSpecs(int& width, int& height);
+
+EXPORT int SetCalculationRatio(int width, int height);
+EXPORT int SetOverlayPriority(int id, int priority);

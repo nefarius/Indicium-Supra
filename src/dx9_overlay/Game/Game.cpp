@@ -95,6 +95,9 @@ void initGame()
 	BIND(GetFrameRate);
 	BIND(GetScreenSpecs);
 
+	BIND(SetCalculationRatio);
+	BIND(SetOverlayPriority);
+
 	new PipeServer([&](Serializer& bsIn, Serializer& bsOut)
 	{
 		SERIALIZATION_READ(bsIn, PipeMessages, eMessage);

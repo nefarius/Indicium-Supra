@@ -45,3 +45,5 @@ void GetFrameRate(Serializer& bsIn, Serializer& bsOut);
 void GetScreenSpecs(Serializer& bsIn, Serializer& bsOut);
 
 void SetCalculationRatio(Serializer& bsIn, Serializer& bsOut);
+
+void SetOverlayPriority(Serializer& bsIn, Serializer& bsOut);

@@ -5,13 +5,16 @@ class RenderBase
 {
 	friend class Renderer;
 public:
+	static int xCalculator;
+	static int yCalculator;
+
 	RenderBase(Renderer *render);
 	virtual ~RenderBase(void);
 
 	void destroy();
 
-	static int xCalculator;
-	static int yCalculator;
+	void setPriority(int p);
+	int priority();
 
 protected:
 	virtual void draw(IDirect3DDevice9 *pDevice)  = 0;
@@ -38,6 +41,8 @@ protected:
 private:
 	bool _hasToBeInitialised, _isMarkedForDeletion, _resourceChanged, _firstDrawAfterReset;
 
-	Renderer *	_renderer;
+	int _priority = 0;
+
+	Renderer *_renderer;
 };
 

@@ -43,5 +43,7 @@ IMPORT int GetScreenSpecs(int& width, int& height);
 
 IMPORT int SetCalculationRatio(int width, int height);
 
+IMPORT int SetOverlayPriority(int id, int priority);
+
 IMPORT int  Init();
 IMPORT void SetParam(const char *_szParamName, const char *_szParamValue);

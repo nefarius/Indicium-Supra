@@ -8,7 +8,7 @@
 
 #include <boost/filesystem.hpp>
 
-#define BITSTREAM_RET(T) { T retVal; bsOut >> retVal; return retVal; }
+#define SERIALIZER_RET(T) { T retVal; bsOut >> retVal; return retVal; }
 
 EXPORT int TextCreate(char *Font, int FontSize, bool bBold, bool bItalic, int x, int y, unsigned int color, char *text, bool bShadow, bool bShow)
 {
@@ -20,7 +20,7 @@ EXPORT int TextCreate(char *Font, int FontSize, bool bBold, bool bItalic, int x,
 	bsIn << bShadow << bShow;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return -1;
 }
@@ -34,7 +34,7 @@ EXPORT int TextDestroy(int Id)
 	bsIn << PipeMessages::TextDestroy << Id;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -48,7 +48,7 @@ EXPORT int TextSetShadow(int id, bool b)
 	bsIn << PipeMessages::TextSetShadow << id << b;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -62,7 +62,7 @@ EXPORT int TextSetShown(int id, bool b)
 	bsIn << PipeMessages::TextSetShown << id << b;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -76,7 +76,7 @@ EXPORT int TextSetColor(int id, unsigned int color)
 	bsIn << PipeMessages::TextSetColor << id << color;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -90,7 +90,7 @@ EXPORT int TextSetPos(int id, int x, int y)
 	bsIn << PipeMessages::TextSetPos << id << x << y;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -104,7 +104,7 @@ EXPORT int TextSetString(int id, char *str)
 	bsIn << PipeMessages::TextSetString << id << std::string(str);
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -118,7 +118,7 @@ EXPORT int TextUpdate(int id, char *Font, int FontSize, bool bBold, bool bItalic
 	bsIn << PipeMessages::TextUpdate << id << std::string(Font) << FontSize << bBold << bItalic;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -132,7 +132,7 @@ EXPORT int BoxCreate(int x, int y, int w, int h, unsigned int dwColor, bool bSho
 	bsIn << PipeMessages::BoxCreate << x << y << w << h << dwColor << bShow;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return -1;
 }
@@ -146,7 +146,7 @@ EXPORT int BoxDestroy(int id)
 	bsIn << PipeMessages::BoxDestroy << id;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -160,7 +160,7 @@ EXPORT int BoxSetShown(int id, bool bShown)
 	bsIn << PipeMessages::BoxSetShown << id << bShown;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -174,7 +174,7 @@ EXPORT int BoxSetBorder(int id, int height, bool bShown)
 	bsIn << PipeMessages::BoxSetBorder << id << height << bShown;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -188,7 +188,7 @@ EXPORT int BoxSetBorderColor(int id, unsigned int dwColor)
 	bsIn << PipeMessages::BoxSetBorderColor << id << dwColor;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -202,7 +202,7 @@ EXPORT int BoxSetColor(int id, unsigned int dwColor)
 	bsIn << PipeMessages::BoxSetColor << id << dwColor;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -216,7 +216,7 @@ EXPORT int BoxSetHeight(int id, int height)
 	bsIn << PipeMessages::BoxSetHeight << id << height;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -230,7 +230,7 @@ EXPORT int BoxSetPos(int id, int x, int y)
 	bsIn << PipeMessages::BoxSetPos << id << x << y;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -244,7 +244,7 @@ EXPORT int BoxSetWidth(int id, int width)
 	bsIn << PipeMessages::BoxSetWidth << id << width;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -258,7 +258,7 @@ EXPORT int LineCreate(int x1, int y1, int x2, int y2, int width, unsigned int co
 	bsIn << PipeMessages::LineCreate << x1 << y1 << x2 << y2 << width << color << bShow;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return -1;
 }
@@ -272,7 +272,7 @@ EXPORT int LineDestroy(int id)
 	bsIn << PipeMessages::LineDestroy << id;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -286,7 +286,7 @@ EXPORT int LineSetShown(int id, bool bShown)
 	bsIn << PipeMessages::LineSetShown << id << bShown;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -300,7 +300,7 @@ EXPORT int LineSetColor(int id, unsigned int color)
 	bsIn << PipeMessages::LineSetColor << id << color;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -314,7 +314,7 @@ EXPORT int LineSetWidth(int id, int width)
 	bsIn << PipeMessages::LineSetWidth << id << width;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 	
 	return 0;
 }
@@ -328,7 +328,7 @@ EXPORT int LineSetPos(int id, int x1, int y1, int x2, int y2)
 	bsIn << PipeMessages::LineSetPos << id << x1 << y1 << x2 << y2;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -346,7 +346,7 @@ EXPORT int ImageCreate(char *path, int x, int y, int rotation, int align, bool b
 	bsIn << PipeMessages::ImageCreate << abs_path << x << y << rotation << align << bShow;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return -1;
 }
@@ -360,7 +360,7 @@ EXPORT int ImageDestroy(int id)
 	bsIn << PipeMessages::ImageDestroy << id;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 	
 	return 0;
 }
@@ -374,7 +374,7 @@ EXPORT int ImageSetShown(int id, bool bShown)
 	bsIn << PipeMessages::ImageSetShown << id << bShown;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -388,7 +388,7 @@ EXPORT int ImageSetAlign(int id, int align)
 	bsIn << PipeMessages::ImageSetAlign << id << align;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -402,7 +402,7 @@ EXPORT int ImageSetPos(int id, int x, int y)
 	bsIn << PipeMessages::ImageSetPos << id << x << y;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return 0;
 }
@@ -416,7 +416,7 @@ EXPORT int ImageSetRotation(int id, int rotation)
 	bsIn << PipeMessages::ImageSetRotation << id << rotation;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 	
 	return 0;
 }
@@ -472,7 +472,7 @@ EXPORT int GetFrameRate()
 	bsIn << PipeMessages::GetFrameRate;
 
 	if (PipeClient(bsIn, bsOut).success())
-		BITSTREAM_RET(int);
+		SERIALIZER_RET(int);
 
 	return -1;
 }
@@ -503,4 +503,18 @@ EXPORT int SetCalculationRatio(int width, int height)
 	bsIn << PipeMessages::SetCalculationRatio << width << height;
 
 	return (int)PipeClient(bsIn, bsOut).success();
+}
+
+EXPORT int SetOverlayPriority(int id, int priority)
+{
+	SERVER_CHECK(0)
+
+	Serializer bsIn, bsOut;
+
+	bsIn << PipeMessages::SetOverlayPriority << id << priority;
+
+	if (PipeClient(bsIn, bsOut).success())
+		SERIALIZER_RET(int);
+
+	return 0;
 }
