@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-PipeClient::PipeClient(Serializer& bsIn, Serializer& bsOut) :
+PipeClient::PipeClient(Serializer& serializerIn, Serializer& serializerOut) :
 m_bSuccess(false)
 {
 	char szData[BUFSIZE] = { 0 };
@@ -15,9 +15,9 @@ m_bSuccess(false)
 
 	sprintf(szPipe, "\\\\.\\pipe\\%s", g_strPipeName);
 
-	if (CallNamedPipe(szPipe, (LPVOID)bsIn.GetData(), bsIn.GetNumberOfBytesUsed(), szData, sizeof(szData), &dwReaded, TIME_OUT))
+	if (CallNamedPipe(szPipe, (LPVOID)serializerIn.GetData(), serializerIn.GetNumberOfBytesUsed(), szData, sizeof(szData), &dwReaded, TIME_OUT))
 	{
-		bsOut.SetData(szData, sizeof(szData));
+		serializerOut.SetData(szData, sizeof(szData));
 		m_bSuccess = true;
 	}
 }

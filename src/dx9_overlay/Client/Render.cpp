@@ -8,18 +8,18 @@
 
 #include <boost/filesystem.hpp>
 
-#define SERIALIZER_RET(T) { T retVal; bsOut >> retVal; return retVal; }
+#define SERIALIZER_RET(T) { T retVal; serializerOut >> retVal; return retVal; }
 
 EXPORT int TextCreate(char *Font, int FontSize, bool bBold, bool bItalic, int x, int y, unsigned int color, char *text, bool bShadow, bool bShow)
 {
 	SERVER_CHECK(-1)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::TextCreate << std::string(Font) << FontSize << bBold << bItalic << x << y << color << std::string(text);
-	bsIn << bShadow << bShow;
+	serializerIn << PipeMessages::TextCreate << std::string(Font) << FontSize << bBold << bItalic << x << y << color << std::string(text);
+	serializerIn << bShadow << bShow;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return -1;
@@ -29,11 +29,11 @@ EXPORT int TextDestroy(int Id)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::TextDestroy << Id;
+	serializerIn << PipeMessages::TextDestroy << Id;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -43,11 +43,11 @@ EXPORT int TextSetShadow(int id, bool b)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::TextSetShadow << id << b;
+	serializerIn << PipeMessages::TextSetShadow << id << b;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -57,11 +57,11 @@ EXPORT int TextSetShown(int id, bool b)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::TextSetShown << id << b;
+	serializerIn << PipeMessages::TextSetShown << id << b;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -71,11 +71,11 @@ EXPORT int TextSetColor(int id, unsigned int color)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::TextSetColor << id << color;
+	serializerIn << PipeMessages::TextSetColor << id << color;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -85,11 +85,11 @@ EXPORT int TextSetPos(int id, int x, int y)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::TextSetPos << id << x << y;
+	serializerIn << PipeMessages::TextSetPos << id << x << y;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -99,11 +99,11 @@ EXPORT int TextSetString(int id, char *str)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::TextSetString << id << std::string(str);
+	serializerIn << PipeMessages::TextSetString << id << std::string(str);
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -113,11 +113,11 @@ EXPORT int TextUpdate(int id, char *Font, int FontSize, bool bBold, bool bItalic
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::TextUpdate << id << std::string(Font) << FontSize << bBold << bItalic;
+	serializerIn << PipeMessages::TextUpdate << id << std::string(Font) << FontSize << bBold << bItalic;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -127,11 +127,11 @@ EXPORT int BoxCreate(int x, int y, int w, int h, unsigned int dwColor, bool bSho
 {
 	SERVER_CHECK(-1)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::BoxCreate << x << y << w << h << dwColor << bShow;
+	serializerIn << PipeMessages::BoxCreate << x << y << w << h << dwColor << bShow;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return -1;
@@ -141,11 +141,11 @@ EXPORT int BoxDestroy(int id)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::BoxDestroy << id;
+	serializerIn << PipeMessages::BoxDestroy << id;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -155,11 +155,11 @@ EXPORT int BoxSetShown(int id, bool bShown)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::BoxSetShown << id << bShown;
+	serializerIn << PipeMessages::BoxSetShown << id << bShown;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -169,11 +169,11 @@ EXPORT int BoxSetBorder(int id, int height, bool bShown)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::BoxSetBorder << id << height << bShown;
+	serializerIn << PipeMessages::BoxSetBorder << id << height << bShown;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -183,11 +183,11 @@ EXPORT int BoxSetBorderColor(int id, unsigned int dwColor)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::BoxSetBorderColor << id << dwColor;
+	serializerIn << PipeMessages::BoxSetBorderColor << id << dwColor;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -197,11 +197,11 @@ EXPORT int BoxSetColor(int id, unsigned int dwColor)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::BoxSetColor << id << dwColor;
+	serializerIn << PipeMessages::BoxSetColor << id << dwColor;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -211,11 +211,11 @@ EXPORT int BoxSetHeight(int id, int height)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::BoxSetHeight << id << height;
+	serializerIn << PipeMessages::BoxSetHeight << id << height;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -225,11 +225,11 @@ EXPORT int BoxSetPos(int id, int x, int y)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::BoxSetPos << id << x << y;
+	serializerIn << PipeMessages::BoxSetPos << id << x << y;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -239,11 +239,11 @@ EXPORT int BoxSetWidth(int id, int width)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::BoxSetWidth << id << width;
+	serializerIn << PipeMessages::BoxSetWidth << id << width;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -253,11 +253,11 @@ EXPORT int LineCreate(int x1, int y1, int x2, int y2, int width, unsigned int co
 {
 	SERVER_CHECK(-1)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::LineCreate << x1 << y1 << x2 << y2 << width << color << bShow;
+	serializerIn << PipeMessages::LineCreate << x1 << y1 << x2 << y2 << width << color << bShow;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return -1;
@@ -267,11 +267,11 @@ EXPORT int LineDestroy(int id)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::LineDestroy << id;
+	serializerIn << PipeMessages::LineDestroy << id;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -281,11 +281,11 @@ EXPORT int LineSetShown(int id, bool bShown)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::LineSetShown << id << bShown;
+	serializerIn << PipeMessages::LineSetShown << id << bShown;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -295,11 +295,11 @@ EXPORT int LineSetColor(int id, unsigned int color)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::LineSetColor << id << color;
+	serializerIn << PipeMessages::LineSetColor << id << color;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -309,11 +309,11 @@ EXPORT int LineSetWidth(int id, int width)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::LineSetWidth << id << width;
+	serializerIn << PipeMessages::LineSetWidth << id << width;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 	
 	return 0;
@@ -323,11 +323,11 @@ EXPORT int LineSetPos(int id, int x1, int y1, int x2, int y2)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::LineSetPos << id << x1 << y1 << x2 << y2;
+	serializerIn << PipeMessages::LineSetPos << id << x1 << y1 << x2 << y2;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -337,15 +337,15 @@ EXPORT int ImageCreate(char *path, int x, int y, int rotation, int align, bool b
 {
 	SERVER_CHECK(-1)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
 	std::string abs_path = boost::filesystem::absolute(path).string();
 	if (!boost::filesystem::exists(abs_path))
 		return -2;
 
-	bsIn << PipeMessages::ImageCreate << abs_path << x << y << rotation << align << bShow;
+	serializerIn << PipeMessages::ImageCreate << abs_path << x << y << rotation << align << bShow;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return -1;
@@ -355,11 +355,11 @@ EXPORT int ImageDestroy(int id)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::ImageDestroy << id;
+	serializerIn << PipeMessages::ImageDestroy << id;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 	
 	return 0;
@@ -369,11 +369,11 @@ EXPORT int ImageSetShown(int id, bool bShown)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::ImageSetShown << id << bShown;
+	serializerIn << PipeMessages::ImageSetShown << id << bShown;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -383,11 +383,11 @@ EXPORT int ImageSetAlign(int id, int align)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::ImageSetAlign << id << align;
+	serializerIn << PipeMessages::ImageSetAlign << id << align;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -397,11 +397,11 @@ EXPORT int ImageSetPos(int id, int x, int y)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::ImageSetPos << id << x << y;
+	serializerIn << PipeMessages::ImageSetPos << id << x << y;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;
@@ -411,11 +411,11 @@ EXPORT int ImageSetRotation(int id, int rotation)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::ImageSetRotation << id << rotation;
+	serializerIn << PipeMessages::ImageSetRotation << id << rotation;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 	
 	return 0;
@@ -425,11 +425,11 @@ EXPORT int DestroyAllVisual()
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::DestroyAllVisual;
+	serializerIn << PipeMessages::DestroyAllVisual;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		return 1;
 
 	return 0;
@@ -439,11 +439,11 @@ EXPORT int ShowAllVisual()
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::ShowAllVisual;
+	serializerIn << PipeMessages::ShowAllVisual;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		return 1;
 
 	return 0;
@@ -453,11 +453,11 @@ EXPORT int HideAllVisual()
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::HideAllVisual;
+	serializerIn << PipeMessages::HideAllVisual;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		return 1;
 
 	return 0;
@@ -467,11 +467,11 @@ EXPORT int GetFrameRate()
 {
 	SERVER_CHECK(-1)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::GetFrameRate;
+	serializerIn << PipeMessages::GetFrameRate;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return -1;
@@ -481,13 +481,13 @@ EXPORT int GetScreenSpecs(int& width, int& height)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::GetScreenSpecs;
+	serializerIn << PipeMessages::GetScreenSpecs;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 	{
-		bsOut >> width >> height;
+		serializerOut >> width >> height;
 		return 1;
 	}
 
@@ -498,22 +498,22 @@ EXPORT int SetCalculationRatio(int width, int height)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::SetCalculationRatio << width << height;
+	serializerIn << PipeMessages::SetCalculationRatio << width << height;
 
-	return (int)PipeClient(bsIn, bsOut).success();
+	return (int)PipeClient(serializerIn, serializerOut).success();
 }
 
 EXPORT int SetOverlayPriority(int id, int priority)
 {
 	SERVER_CHECK(0)
 
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::SetOverlayPriority << id << priority;
+	serializerIn << PipeMessages::SetOverlayPriority << id << priority;
 
-	if (PipeClient(bsIn, bsOut).success())
+	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 
 	return 0;

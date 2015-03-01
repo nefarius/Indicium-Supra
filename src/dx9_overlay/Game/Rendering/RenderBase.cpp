@@ -33,20 +33,14 @@ void RenderBase::changeResource()
 	_resourceChanged = true;
 }
 
-int RenderBase::calculatedXPos(IDirect3DDevice9 *pDevice, int x)
+int RenderBase::calculatedXPos(int x)
 {
-	D3DVIEWPORT9 view;
-	pDevice->GetViewport(&view);
-
-	return (int)(((float)x / (float)xCalculator) * (float)view.Width);
+	return (int)(((float)x / (float)xCalculator) * (float)_renderer->screenWidth());
 }
 
-int RenderBase::calculatedYPos(IDirect3DDevice9 *pDevice, int y)
+int RenderBase::calculatedYPos(int y)
 {
-	D3DVIEWPORT9 view;
-	pDevice->GetViewport(&view);
-
-	return (int)(((float)y / (float)yCalculator) * (float)view.Height);
+	return (int)(((float)y / (float)yCalculator) * (float)_renderer->screenHeight());
 }
 
 Renderer *RenderBase::renderer()

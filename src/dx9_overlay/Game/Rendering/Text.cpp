@@ -59,8 +59,8 @@ void Text::draw(IDirect3DDevice9 *pDevice)
 	if(!m_bShown)
 		return;
 
-	int x = calculatedXPos(pDevice, m_X);
-	int y = calculatedYPos(pDevice, m_Y);
+	int x = calculatedXPos(m_X);
+	int y = calculatedYPos(m_Y);
 
 	if(m_bShadow)
 	{
@@ -102,7 +102,7 @@ bool Text::canBeDeleted()
 
 bool Text::loadResource(IDirect3DDevice9 *pDevice)
 {
-	int size = calculatedYPos(pDevice, m_FontSize);
+	int size = calculatedYPos(m_FontSize);
 
 	Drawing::InitFont(pDevice, m_Font.c_str(), size, (m_bBold)?D3DFONT_BOLD:0 | (m_bItalic)?D3DFONT_ITALIC:0 | D3DFONT_FILTERED, &m_D3DFont);
 

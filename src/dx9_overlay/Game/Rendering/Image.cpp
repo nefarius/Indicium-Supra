@@ -54,8 +54,8 @@ void Image::draw(IDirect3DDevice9 *pDevice)
 	if(!m_bShow)
 		return;
 
-	int x = calculatedXPos(pDevice, m_x);
-	int y = calculatedYPos(pDevice, m_y);
+	int x = calculatedXPos(m_x);
+	int y = calculatedYPos(m_y);
 
 	if(m_pTexture && m_pSprite)
 		Drawing::DrawSprite(m_pSprite, m_pTexture, x, y, m_rotation, m_align);

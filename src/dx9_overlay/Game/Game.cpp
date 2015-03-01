@@ -98,9 +98,9 @@ void initGame()
 	BIND(SetCalculationRatio);
 	BIND(SetOverlayPriority);
 
-	new PipeServer([&](Serializer& bsIn, Serializer& bsOut)
+	new PipeServer([&](Serializer& serializerIn, Serializer& serializerOut)
 	{
-		SERIALIZATION_READ(bsIn, PipeMessages, eMessage);
+		SERIALIZATION_READ(serializerIn, PipeMessages, eMessage);
 
 		try
 		{
@@ -111,7 +111,7 @@ void initGame()
 			if (!PaketHandler[eMessage])
 				return;
 
-			PaketHandler[eMessage](bsIn, bsOut);
+			PaketHandler[eMessage](serializerIn, serializerOut);
 		}
 		catch (...)
 		{

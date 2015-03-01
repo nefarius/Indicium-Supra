@@ -4,46 +4,46 @@
 
 #include <boost/bind.hpp>
 
-void TextCreate(Serializer& bsIn, Serializer& bsOut);
-void TextDestroy(Serializer& bsIn, Serializer& bsOut);
-void TextSetShadow(Serializer& bsIn, Serializer& bsOut);
-void TextSetShown(Serializer& bsIn, Serializer& bsOut);
-void TextSetColor(Serializer& bsIn, Serializer& bsOut);
-void TextSetPos(Serializer& bsIn, Serializer& bsOut);
-void TextSetString(Serializer& bsIn, Serializer& bsOut);
-void TextUpdate(Serializer& bsIn, Serializer& bsOut);
+void TextCreate(Serializer& serializerIn, Serializer& serializerOut);
+void TextDestroy(Serializer& serializerIn, Serializer& serializerOut);
+void TextSetShadow(Serializer& serializerIn, Serializer& serializerOut);
+void TextSetShown(Serializer& serializerIn, Serializer& serializerOut);
+void TextSetColor(Serializer& serializerIn, Serializer& serializerOut);
+void TextSetPos(Serializer& serializerIn, Serializer& serializerOut);
+void TextSetString(Serializer& serializerIn, Serializer& serializerOut);
+void TextUpdate(Serializer& serializerIn, Serializer& serializerOut);
 
-void BoxCreate(Serializer& bsIn, Serializer& bsOut);
-void BoxDestroy(Serializer& bsIn, Serializer& bsOut);
-void BoxSetShown(Serializer& bsIn, Serializer& bsOut);
-void BoxSetBorder(Serializer& bsIn, Serializer& bsOut);
-void BoxSetBorderColor(Serializer& bsIn, Serializer& bsOut);
-void BoxSetColor(Serializer& bsIn, Serializer& bsOut);
-void BoxSetHeight(Serializer& bsIn, Serializer& bsOut);
-void BoxSetPos(Serializer& bsIn, Serializer& bsOut);
-void BoxSetWidth(Serializer& bsIn, Serializer& bsOut);
+void BoxCreate(Serializer& serializerIn, Serializer& serializerOut);
+void BoxDestroy(Serializer& serializerIn, Serializer& serializerOut);
+void BoxSetShown(Serializer& serializerIn, Serializer& serializerOut);
+void BoxSetBorder(Serializer& serializerIn, Serializer& serializerOut);
+void BoxSetBorderColor(Serializer& serializerIn, Serializer& serializerOut);
+void BoxSetColor(Serializer& serializerIn, Serializer& serializerOut);
+void BoxSetHeight(Serializer& serializerIn, Serializer& serializerOut);
+void BoxSetPos(Serializer& serializerIn, Serializer& serializerOut);
+void BoxSetWidth(Serializer& serializerIn, Serializer& serializerOut);
 
-void LineCreate(Serializer& bsIn, Serializer& bsOut);
-void LineDestroy(Serializer& bsIn, Serializer& bsOut);
-void LineSetShown(Serializer& bsIn, Serializer& bsOut);
-void LineSetColor(Serializer& bsIn, Serializer& bsOut);
-void LineSetWidth(Serializer& bsIn, Serializer& bsOut);
-void LineSetPos(Serializer& bsIn, Serializer& bsOut);
+void LineCreate(Serializer& serializerIn, Serializer& serializerOut);
+void LineDestroy(Serializer& serializerIn, Serializer& serializerOut);
+void LineSetShown(Serializer& serializerIn, Serializer& serializerOut);
+void LineSetColor(Serializer& serializerIn, Serializer& serializerOut);
+void LineSetWidth(Serializer& serializerIn, Serializer& serializerOut);
+void LineSetPos(Serializer& serializerIn, Serializer& serializerOut);
 
-void ImageCreate(Serializer& bsIn, Serializer& bsOut);
-void ImageDestroy(Serializer& bsIn, Serializer& bsOut);
-void ImageSetShown(Serializer& bsIn, Serializer& bsOut);
-void ImageSetAlign(Serializer& bsIn, Serializer& bsOut);
-void ImageSetPos(Serializer& bsIn, Serializer& bsOut);
-void ImageSetRotation(Serializer& bsIn, Serializer& bsOut);
+void ImageCreate(Serializer& serializerIn, Serializer& serializerOut);
+void ImageDestroy(Serializer& serializerIn, Serializer& serializerOut);
+void ImageSetShown(Serializer& serializerIn, Serializer& serializerOut);
+void ImageSetAlign(Serializer& serializerIn, Serializer& serializerOut);
+void ImageSetPos(Serializer& serializerIn, Serializer& serializerOut);
+void ImageSetRotation(Serializer& serializerIn, Serializer& serializerOut);
 
-void DestroyAllVisual(Serializer& bsIn, Serializer& bsOut);
-void ShowAllVisual(Serializer& bsIn, Serializer& bsOut);
-void HideAllVisual(Serializer& bsIn, Serializer& bsOut);
+void DestroyAllVisual(Serializer& serializerIn, Serializer& serializerOut);
+void ShowAllVisual(Serializer& serializerIn, Serializer& serializerOut);
+void HideAllVisual(Serializer& serializerIn, Serializer& serializerOut);
 
-void GetFrameRate(Serializer& bsIn, Serializer& bsOut);
-void GetScreenSpecs(Serializer& bsIn, Serializer& bsOut);
+void GetFrameRate(Serializer& serializerIn, Serializer& serializerOut);
+void GetScreenSpecs(Serializer& serializerIn, Serializer& serializerOut);
 
-void SetCalculationRatio(Serializer& bsIn, Serializer& bsOut);
+void SetCalculationRatio(Serializer& serializerIn, Serializer& serializerOut);
 
-void SetOverlayPriority(Serializer& bsIn, Serializer& bsOut);
+void SetOverlayPriority(Serializer& serializerIn, Serializer& serializerOut);

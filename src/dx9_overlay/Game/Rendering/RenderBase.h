@@ -33,8 +33,8 @@ protected:
 
 	void changeResource();
 
-	int calculatedXPos(IDirect3DDevice9 *pDevice, int x);
-	int calculatedYPos(IDirect3DDevice9 *pDevice, int y);
+	int calculatedXPos(int x);
+	int calculatedYPos(int y);
 
 	Renderer *renderer();
 

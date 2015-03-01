@@ -145,16 +145,16 @@ void PipeServer::thread()
 			disconnectAndReconnect(idx);
 			break;
 		case WRITING_STATE:
-			Serializer bsIn(m_Pipes[idx].m_szRequest, m_Pipes[idx].m_dwRead);
-			Serializer bsOut;
+			Serializer serializerIn(m_Pipes[idx].m_szRequest, m_Pipes[idx].m_dwRead);
+			Serializer serializerOut;
 
-			m_cbCallback(bsIn, bsOut);
+			m_cbCallback(serializerIn, serializerOut);
 
 			memset(m_Pipes[idx].m_szReply, 0, BUFSIZE);
 			memset(m_Pipes[idx].m_szRequest, 0, BUFSIZE);
-			memcpy(m_Pipes[idx].m_szReply, bsOut.GetData(), bsOut.GetNumberOfBytesUsed());
+			memcpy(m_Pipes[idx].m_szReply, serializerOut.GetData(), serializerOut.GetNumberOfBytesUsed());
 
-			m_Pipes[idx].m_dwToWrite = bsOut.GetNumberOfBytesUsed();
+			m_Pipes[idx].m_dwToWrite = serializerOut.GetNumberOfBytesUsed();
 
 			bSuccess = WriteFile(m_Pipes[idx].m_hPipe, m_Pipes[idx].m_szReply, m_Pipes[idx].m_dwToWrite, &dwRet, &m_Pipes[idx].m_Overlapped);
 			if (bSuccess && dwRet == m_Pipes[idx].m_dwToWrite)

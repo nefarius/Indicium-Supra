@@ -42,10 +42,10 @@ void Line::draw(IDirect3DDevice9 *pDevice)
 
 	m_Line->Begin();
 
-	LinePos[0].x = (float)calculatedXPos(pDevice, m_X1);
-	LinePos[0].y = (float)calculatedYPos(pDevice, m_Y1);
-	LinePos[1].x = (float)calculatedXPos(pDevice, m_X2);
-	LinePos[1].y = (float)calculatedYPos(pDevice, m_Y2);
+	LinePos[0].x = (float)calculatedXPos(m_X1);
+	LinePos[0].y = (float)calculatedYPos(m_Y1);
+	LinePos[1].x = (float)calculatedXPos(m_X2);
+	LinePos[1].y = (float)calculatedYPos(m_Y2);
 
 	m_Line->Draw(LinePos,2,m_Color);
 	m_Line->End();	

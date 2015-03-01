@@ -25,11 +25,11 @@ stParamInfo g_paramArray[3] =
 
 bool IsServerAvailable()
 {
-	Serializer bsIn, bsOut;
+	Serializer serializerIn, serializerOut;
 
-	bsIn << PipeMessages::Ping;
+	serializerIn << PipeMessages::Ping;
 
-	return PipeClient(bsIn, bsOut).success();
+	return PipeClient(serializerIn, serializerOut).success();
 }
 
 EXPORT void SetParam(char *_szParamName, char *_szParamValue)

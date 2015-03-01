@@ -8,7 +8,7 @@ class Serializer;
 class PipeClient
 {
 public:
-	PipeClient(Serializer& bsIn, Serializer& bsOut);
+	PipeClient(Serializer& serializerIn, Serializer& serializerOut);
 
 	bool success() const;
 private:

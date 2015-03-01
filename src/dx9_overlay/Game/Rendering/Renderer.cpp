@@ -44,7 +44,7 @@ bool Renderer::remove(int id)
 	return true;
 }
 
-std::shared_ptr<RenderBase> Renderer::getAsBase(int id)
+std::shared_ptr<RenderBase> Renderer::get(int id)
 {
 	if (_renderObjects.empty())
 		return nullptr;

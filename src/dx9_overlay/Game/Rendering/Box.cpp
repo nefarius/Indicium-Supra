@@ -62,10 +62,10 @@ void Box::draw(IDirect3DDevice9 *pDevice)
 
 	RECT box; 
 
-	int iX = calculatedXPos(pDevice, m_iX);
-	int iY = calculatedYPos(pDevice, m_iY);
-	int iBoxWidth = calculatedXPos(pDevice, m_dwBoxWidth);
-	int iBoxHeight = calculatedYPos(pDevice, m_dwBoxHeight);
+	int iX = calculatedXPos(m_iX);
+	int iY = calculatedYPos(m_iY);
+	int iBoxWidth = calculatedXPos(m_dwBoxWidth);
+	int iBoxHeight = calculatedYPos(m_dwBoxHeight);
 
 	Drawing::DrawBox(iX, iY, iBoxWidth, iBoxHeight, m_dwBoxColor, pDevice);
 

@@ -19,7 +19,7 @@ public:
 	bool remove(int id);
 
 	template<typename T> 
-	std::shared_ptr<T> get(int id)
+	std::shared_ptr<T> getAs(int id)
 	{
 		if(_renderObjects.empty())
 			return nullptr;
@@ -33,12 +33,12 @@ public:
 		return std::dynamic_pointer_cast<T, RenderBase>(_renderObjects[id]);
 	}
 
-	std::shared_ptr<RenderBase> getAsBase(int id);
+	std::shared_ptr<RenderBase> get(int id);
 
 	template<typename T> 
 	void execute(int id, std::function<void(std::shared_ptr<T>)> successor = nullptr, std::function<void()> error = nullptr)
 	{
-		auto obj = get<T>(id);
+		auto obj = getAs<T>(id);
 		if (obj && successor)
 			return successor(obj);
 		

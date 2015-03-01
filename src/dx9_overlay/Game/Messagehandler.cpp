@@ -7,10 +7,10 @@
 #include "Rendering/Renderer.h"
 #include "Rendering/RenderBase.h"
 
-#define READ(X, Y) SERIALIZATION_READ(bsIn, X, Y);
-#define WRITE(X) bsOut << X;
+#define READ(X, Y) SERIALIZATION_READ(serializerIn, X, Y);
+#define WRITE(X) serializerOut << X;
 
-void TextCreate(Serializer& bsIn, Serializer& bsOut)
+void TextCreate(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(std::string, Font); 
 	READ(int, FontSize); 
@@ -26,18 +26,18 @@ void TextCreate(Serializer& bsIn, Serializer& bsOut)
 	WRITE(g_pRenderer.add(std::make_shared<Text>(&g_pRenderer, Font.c_str(), FontSize, bBold, bItalic, x, y, color, string.c_str(), bShadow, bShow)));
 }
 
-void TextDestroy(Serializer& bsIn, Serializer& bsOut)
+void TextDestroy(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id);
 	WRITE(int(g_pRenderer.remove(id)));
 }
 
-void TextSetShadow(Serializer& bsIn, Serializer& bsOut)
+void TextSetShadow(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(bool, bShadow);
 
-	auto obj = g_pRenderer.get<Text>(id);
+	auto obj = g_pRenderer.getAs<Text>(id);
 	if (obj)
 	{
 		obj->setShadow(bShadow);
@@ -47,12 +47,12 @@ void TextSetShadow(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void TextSetShown(Serializer& bsIn, Serializer& bsOut)
+void TextSetShown(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(bool, bShown);
 
-	auto obj = g_pRenderer.get<Text>(id);
+	auto obj = g_pRenderer.getAs<Text>(id);
 	if (obj)
 	{
 		obj->setShown(bShown);
@@ -62,12 +62,12 @@ void TextSetShown(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void TextSetColor(Serializer& bsIn, Serializer& bsOut)
+void TextSetColor(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(unsigned int, color);
 
-	auto obj = g_pRenderer.get<Text>(id);
+	auto obj = g_pRenderer.getAs<Text>(id);
 	if (obj)
 	{
 		obj->setColor(color);
@@ -77,13 +77,13 @@ void TextSetColor(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void TextSetPos(Serializer& bsIn, Serializer& bsOut)
+void TextSetPos(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, x); 
 	READ(int, y);
 
-	auto obj = g_pRenderer.get<Text>(id);
+	auto obj = g_pRenderer.getAs<Text>(id);
 	if (obj)
 	{
 		obj->setPos(x, y);
@@ -93,12 +93,12 @@ void TextSetPos(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void TextSetString(Serializer& bsIn, Serializer& bsOut)
+void TextSetString(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(std::string, str);
 
-	auto obj = g_pRenderer.get<Text>(id);
+	auto obj = g_pRenderer.getAs<Text>(id);
 	if (obj)
 	{
 		obj->setText(str.c_str());
@@ -108,7 +108,7 @@ void TextSetString(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void TextUpdate(Serializer& bsIn, Serializer& bsOut)
+void TextUpdate(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(std::string, Font); 
@@ -116,7 +116,7 @@ void TextUpdate(Serializer& bsIn, Serializer& bsOut)
 	READ(bool, bBold); 
 	READ(bool, bItalic);
 
-	auto obj = g_pRenderer.get<Text>(id);
+	auto obj = g_pRenderer.getAs<Text>(id);
 	if (obj)
 	{
 		WRITE(int(obj->updateText(Font.c_str(), FontSize, bBold, bItalic)));
@@ -125,7 +125,7 @@ void TextUpdate(Serializer& bsIn, Serializer& bsOut)
 		WRITE((int) 0);
 }
 
-void BoxCreate(Serializer& bsIn, Serializer& bsOut)
+void BoxCreate(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, x); 
 	READ(int, y); 
@@ -137,18 +137,18 @@ void BoxCreate(Serializer& bsIn, Serializer& bsOut)
 	WRITE(g_pRenderer.add(std::make_shared<Box>(&g_pRenderer, x, y, w, h, dwColor, bShow)));
 }
 
-void BoxDestroy(Serializer& bsIn, Serializer& bsOut)
+void BoxDestroy(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id);
 	WRITE((int) g_pRenderer.remove(id));
 }
 
-void BoxSetShown(Serializer& bsIn, Serializer& bsOut)
+void BoxSetShown(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(bool, bShown);
 
-	auto obj = g_pRenderer.get<Box>(id);
+	auto obj = g_pRenderer.getAs<Box>(id);
 	if (obj)
 	{
 		obj->setShown(bShown);
@@ -158,13 +158,13 @@ void BoxSetShown(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void BoxSetBorder(Serializer& bsIn, Serializer& bsOut)
+void BoxSetBorder(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, height); 
 	READ(bool, bShown);
 
-	auto obj = g_pRenderer.get<Box>(id);
+	auto obj = g_pRenderer.getAs<Box>(id);
 	if (obj)
 	{
 		obj->setBorderWidth(height);
@@ -175,12 +175,12 @@ void BoxSetBorder(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void BoxSetBorderColor(Serializer& bsIn, Serializer& bsOut)
+void BoxSetBorderColor(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(unsigned int, dwColor);
 
-	auto obj = g_pRenderer.get<Box>(id);
+	auto obj = g_pRenderer.getAs<Box>(id);
 	if (obj)
 	{
 		obj->setBorderColor(dwColor);
@@ -190,12 +190,12 @@ void BoxSetBorderColor(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void BoxSetColor(Serializer& bsIn, Serializer& bsOut)
+void BoxSetColor(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(unsigned int, dwColor);
 
-	auto obj = g_pRenderer.get<Box>(id);
+	auto obj = g_pRenderer.getAs<Box>(id);
 	if (obj)
 	{
 		obj->setBoxColor(dwColor);
@@ -205,12 +205,12 @@ void BoxSetColor(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void BoxSetHeight(Serializer& bsIn, Serializer& bsOut)
+void BoxSetHeight(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, height);
 
-	auto obj = g_pRenderer.get<Box>(id);
+	auto obj = g_pRenderer.getAs<Box>(id);
 	if (obj)
 	{
 		obj->setBoxHeight(height);
@@ -220,13 +220,13 @@ void BoxSetHeight(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void BoxSetPos(Serializer& bsIn, Serializer& bsOut)
+void BoxSetPos(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, x); 
 	READ(int, y);
 
-	auto obj = g_pRenderer.get<Box>(id);
+	auto obj = g_pRenderer.getAs<Box>(id);
 	if (obj)
 	{
 		obj->setPos(x, y);
@@ -236,12 +236,12 @@ void BoxSetPos(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void BoxSetWidth(Serializer& bsIn, Serializer& bsOut)
+void BoxSetWidth(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, width);
 
-	auto obj = g_pRenderer.get<Box>(id);
+	auto obj = g_pRenderer.getAs<Box>(id);
 	if (obj)
 	{
 		obj->setBoxWidth(width);
@@ -251,7 +251,7 @@ void BoxSetWidth(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void LineCreate(Serializer& bsIn, Serializer& bsOut)
+void LineCreate(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, x1); 
 	READ(int, y1); 
@@ -264,18 +264,18 @@ void LineCreate(Serializer& bsIn, Serializer& bsOut)
 	WRITE(g_pRenderer.add(std::make_shared<Line>(&g_pRenderer, x1, y1, x2, y2, width, color, bShow)));
 }
 
-void LineDestroy(Serializer& bsIn, Serializer& bsOut)
+void LineDestroy(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id);
 	WRITE((int) g_pRenderer.remove(id));
 }
 
-void LineSetShown(Serializer& bsIn, Serializer& bsOut)
+void LineSetShown(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(bool, bShown);
 
-	auto obj = g_pRenderer.get<Line>(id);
+	auto obj = g_pRenderer.getAs<Line>(id);
 	if (obj)
 	{
 		obj->setShown(bShown);
@@ -285,12 +285,12 @@ void LineSetShown(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void LineSetColor(Serializer& bsIn, Serializer& bsOut)
+void LineSetColor(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(unsigned int, color);
 
-	auto obj = g_pRenderer.get<Line>(id);
+	auto obj = g_pRenderer.getAs<Line>(id);
 	if (obj)
 	{
 		obj->setColor(color);
@@ -300,12 +300,12 @@ void LineSetColor(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void LineSetWidth(Serializer& bsIn, Serializer& bsOut)
+void LineSetWidth(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, width);
 
-	auto obj = g_pRenderer.get<Line>(id);
+	auto obj = g_pRenderer.getAs<Line>(id);
 	if (obj)
 	{
 		obj->setWidth(width);
@@ -315,7 +315,7 @@ void LineSetWidth(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void LineSetPos(Serializer& bsIn, Serializer& bsOut)
+void LineSetPos(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, x1); 
@@ -323,7 +323,7 @@ void LineSetPos(Serializer& bsIn, Serializer& bsOut)
 	READ(int, x2); 
 	READ(int, y2);
 
-	auto obj = g_pRenderer.get<Line>(id);
+	auto obj = g_pRenderer.getAs<Line>(id);
 	if (obj)
 	{
 		obj->setPos(x1, y1, x2, y2);
@@ -333,7 +333,7 @@ void LineSetPos(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void ImageCreate(Serializer& bsIn, Serializer& bsOut)
+void ImageCreate(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(std::string, path); 
 	READ(int, x); 
@@ -345,18 +345,18 @@ void ImageCreate(Serializer& bsIn, Serializer& bsOut)
 	WRITE(g_pRenderer.add(std::make_shared<Image>(&g_pRenderer, path.c_str(), x, y, rotation, align, show)));
 }
 
-void ImageDestroy(Serializer& bsIn, Serializer& bsOut)
+void ImageDestroy(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id);
 	WRITE((int) g_pRenderer.remove(id));
 }
 
-void ImageSetShown(Serializer& bsIn, Serializer& bsOut)
+void ImageSetShown(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(bool, bShow);
 
-	auto obj = g_pRenderer.get<Image>(id);
+	auto obj = g_pRenderer.getAs<Image>(id);
 	if (obj)
 	{
 		obj->setShown(bShow);
@@ -366,12 +366,12 @@ void ImageSetShown(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void ImageSetAlign(Serializer& bsIn, Serializer& bsOut)
+void ImageSetAlign(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, align);
 
-	auto obj = g_pRenderer.get<Image>(id);
+	auto obj = g_pRenderer.getAs<Image>(id);
 	if (obj)
 	{
 		obj->setAlign(align);
@@ -381,13 +381,13 @@ void ImageSetAlign(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void ImageSetPos(Serializer& bsIn, Serializer& bsOut)
+void ImageSetPos(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, x); 
 	READ(int, y);
 
-	auto obj = g_pRenderer.get<Image>(id);
+	auto obj = g_pRenderer.getAs<Image>(id);
 	if (obj)
 	{
 		obj->setPos(x, y);
@@ -397,12 +397,12 @@ void ImageSetPos(Serializer& bsIn, Serializer& bsOut)
 		WRITE(int(0));
 }
 
-void ImageSetRotation(Serializer& bsIn, Serializer& bsOut)
+void ImageSetRotation(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(int, rotation);
 
-	auto obj = g_pRenderer.get<Image>(id);
+	auto obj = g_pRenderer.getAs<Image>(id);
 	if (obj)
 	{
 		obj->setRotation(rotation);
@@ -413,33 +413,33 @@ void ImageSetRotation(Serializer& bsIn, Serializer& bsOut)
 }
 
 
-void DestroyAllVisual(Serializer& bsIn, Serializer& bsOut)
+void DestroyAllVisual(Serializer& serializerIn, Serializer& serializerOut)
 {
 	g_pRenderer.destroyAll();
 }
 
-void ShowAllVisual(Serializer& bsIn, Serializer& bsOut)
+void ShowAllVisual(Serializer& serializerIn, Serializer& serializerOut)
 {
 	g_pRenderer.showAll();
 }
 
-void HideAllVisual(Serializer& bsIn, Serializer& bsOut)
+void HideAllVisual(Serializer& serializerIn, Serializer& serializerOut)
 {
 	g_pRenderer.hideAll();
 }
 
-void GetFrameRate(Serializer& bsIn, Serializer& bsOut)
+void GetFrameRate(Serializer& serializerIn, Serializer& serializerOut)
 {
 	WRITE(g_pRenderer.frameRate());
 }
 
-void GetScreenSpecs(Serializer& bsIn, Serializer& bsOut)
+void GetScreenSpecs(Serializer& serializerIn, Serializer& serializerOut)
 {
 	WRITE(g_pRenderer.screenWidth()); 
 	WRITE(g_pRenderer.screenHeight());
 }
 
-void SetCalculationRatio(Serializer& bsIn, Serializer& bsOut)
+void SetCalculationRatio(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, width);
 	READ(int, height);
@@ -448,12 +448,12 @@ void SetCalculationRatio(Serializer& bsIn, Serializer& bsOut)
 	RenderBase::yCalculator = height;
 }
 
-void SetOverlayPriority(Serializer& bsIn, Serializer& bsOut)
+void SetOverlayPriority(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id);
 	READ(int, priority);
 
-	auto obj = g_pRenderer.getAsBase(id);
+	auto obj = g_pRenderer.get(id);
 	if (obj)
 	{
 		obj->setPriority(priority);
