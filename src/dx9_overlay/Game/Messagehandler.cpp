@@ -1,3 +1,5 @@
+#include <Utils/SafeBlock.h>
+
 #include "Messagehandler.h"
 #include "Game.h"
 #include "Rendering/Text.h"
@@ -36,15 +38,10 @@ void TextSetShadow(Serializer& serializerIn, Serializer& serializerOut)
 {
 	READ(int, id); 
 	READ(bool, bShadow);
-
-	auto obj = g_pRenderer.getAs<Text>(id);
-	if (obj)
-	{
-		obj->setShadow(bShadow);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	
+	WRITE(int(safeExecuteWithValidation([&](){ 
+		g_pRenderer.getAs<Text>(id)->setShadow(bShadow); 
+	})));
 }
 
 void TextSetShown(Serializer& serializerIn, Serializer& serializerOut)
@@ -52,14 +49,9 @@ void TextSetShown(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(bool, bShown);
 
-	auto obj = g_pRenderer.getAs<Text>(id);
-	if (obj)
-	{
-		obj->setShown(bShown);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Text>(id)->setShown(bShown);
+	})));
 }
 
 void TextSetColor(Serializer& serializerIn, Serializer& serializerOut)
@@ -67,14 +59,9 @@ void TextSetColor(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(unsigned int, color);
 
-	auto obj = g_pRenderer.getAs<Text>(id);
-	if (obj)
-	{
-		obj->setColor(color);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Text>(id)->setColor(color);
+	})));
 }
 
 void TextSetPos(Serializer& serializerIn, Serializer& serializerOut)
@@ -83,14 +70,9 @@ void TextSetPos(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, x); 
 	READ(int, y);
 
-	auto obj = g_pRenderer.getAs<Text>(id);
-	if (obj)
-	{
-		obj->setPos(x, y);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Text>(id)->setPos(x, y);
+	})));
 }
 
 void TextSetString(Serializer& serializerIn, Serializer& serializerOut)
@@ -98,14 +80,9 @@ void TextSetString(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(std::string, str);
 
-	auto obj = g_pRenderer.getAs<Text>(id);
-	if (obj)
-	{
-		obj->setText(str.c_str());
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Text>(id)->setText(str.c_str());
+	})));
 }
 
 void TextUpdate(Serializer& serializerIn, Serializer& serializerOut)
@@ -116,13 +93,9 @@ void TextUpdate(Serializer& serializerIn, Serializer& serializerOut)
 	READ(bool, bBold); 
 	READ(bool, bItalic);
 
-	auto obj = g_pRenderer.getAs<Text>(id);
-	if (obj)
-	{
-		WRITE(int(obj->updateText(Font.c_str(), FontSize, bBold, bItalic)));
-	}
-	else
-		WRITE((int) 0);
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Text>(id)->updateText(Font.c_str(), FontSize, bBold, bItalic);
+	})));
 }
 
 void BoxCreate(Serializer& serializerIn, Serializer& serializerOut)
@@ -148,14 +121,9 @@ void BoxSetShown(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(bool, bShown);
 
-	auto obj = g_pRenderer.getAs<Box>(id);
-	if (obj)
-	{
-		obj->setShown(bShown);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Box>(id)->setShown(bShown);
+	})));
 }
 
 void BoxSetBorder(Serializer& serializerIn, Serializer& serializerOut)
@@ -164,15 +132,10 @@ void BoxSetBorder(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, height); 
 	READ(bool, bShown);
 
-	auto obj = g_pRenderer.getAs<Box>(id);
-	if (obj)
-	{
-		obj->setBorderWidth(height);
-		obj->setBorderShown(bShown);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Box>(id)->setBorderWidth(height);
+		g_pRenderer.getAs<Box>(id)->setBorderShown(bShown);
+	})));
 }
 
 void BoxSetBorderColor(Serializer& serializerIn, Serializer& serializerOut)
@@ -180,14 +143,9 @@ void BoxSetBorderColor(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(unsigned int, dwColor);
 
-	auto obj = g_pRenderer.getAs<Box>(id);
-	if (obj)
-	{
-		obj->setBorderColor(dwColor);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Box>(id)->setBorderColor(dwColor);
+	})));
 }
 
 void BoxSetColor(Serializer& serializerIn, Serializer& serializerOut)
@@ -195,14 +153,9 @@ void BoxSetColor(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(unsigned int, dwColor);
 
-	auto obj = g_pRenderer.getAs<Box>(id);
-	if (obj)
-	{
-		obj->setBoxColor(dwColor);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Box>(id)->setBoxColor(dwColor);
+	})));
 }
 
 void BoxSetHeight(Serializer& serializerIn, Serializer& serializerOut)
@@ -210,14 +163,9 @@ void BoxSetHeight(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(int, height);
 
-	auto obj = g_pRenderer.getAs<Box>(id);
-	if (obj)
-	{
-		obj->setBoxHeight(height);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Box>(id)->setBoxHeight(height);
+	})));
 }
 
 void BoxSetPos(Serializer& serializerIn, Serializer& serializerOut)
@@ -226,14 +174,9 @@ void BoxSetPos(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, x); 
 	READ(int, y);
 
-	auto obj = g_pRenderer.getAs<Box>(id);
-	if (obj)
-	{
-		obj->setPos(x, y);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Box>(id)->setPos(x, y);
+	})));
 }
 
 void BoxSetWidth(Serializer& serializerIn, Serializer& serializerOut)
@@ -241,14 +184,9 @@ void BoxSetWidth(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(int, width);
 
-	auto obj = g_pRenderer.getAs<Box>(id);
-	if (obj)
-	{
-		obj->setBoxWidth(width);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Box>(id)->setBoxWidth(width);
+	})));
 }
 
 void LineCreate(Serializer& serializerIn, Serializer& serializerOut)
@@ -275,14 +213,9 @@ void LineSetShown(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(bool, bShown);
 
-	auto obj = g_pRenderer.getAs<Line>(id);
-	if (obj)
-	{
-		obj->setShown(bShown);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Line>(id)->setShown(bShown);
+	})));
 }
 
 void LineSetColor(Serializer& serializerIn, Serializer& serializerOut)
@@ -290,14 +223,9 @@ void LineSetColor(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(unsigned int, color);
 
-	auto obj = g_pRenderer.getAs<Line>(id);
-	if (obj)
-	{
-		obj->setColor(color);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Line>(id)->setColor(color);
+	})));
 }
 
 void LineSetWidth(Serializer& serializerIn, Serializer& serializerOut)
@@ -305,14 +233,9 @@ void LineSetWidth(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(int, width);
 
-	auto obj = g_pRenderer.getAs<Line>(id);
-	if (obj)
-	{
-		obj->setWidth(width);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Line>(id)->setWidth(width);
+	})));
 }
 
 void LineSetPos(Serializer& serializerIn, Serializer& serializerOut)
@@ -323,14 +246,9 @@ void LineSetPos(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, x2); 
 	READ(int, y2);
 
-	auto obj = g_pRenderer.getAs<Line>(id);
-	if (obj)
-	{
-		obj->setPos(x1, y1, x2, y2);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Line>(id)->setPos(x1, y1, x2, y2);
+	})));
 }
 
 void ImageCreate(Serializer& serializerIn, Serializer& serializerOut)
@@ -356,14 +274,9 @@ void ImageSetShown(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(bool, bShow);
 
-	auto obj = g_pRenderer.getAs<Image>(id);
-	if (obj)
-	{
-		obj->setShown(bShow);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Image>(id)->setShown(bShow);
+	})));
 }
 
 void ImageSetAlign(Serializer& serializerIn, Serializer& serializerOut)
@@ -371,14 +284,9 @@ void ImageSetAlign(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(int, align);
 
-	auto obj = g_pRenderer.getAs<Image>(id);
-	if (obj)
-	{
-		obj->setAlign(align);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Image>(id)->setAlign(align);
+	})));
 }
 
 void ImageSetPos(Serializer& serializerIn, Serializer& serializerOut)
@@ -387,14 +295,9 @@ void ImageSetPos(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, x); 
 	READ(int, y);
 
-	auto obj = g_pRenderer.getAs<Image>(id);
-	if (obj)
-	{
-		obj->setPos(x, y);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Image>(id)->setPos(x, y);
+	})));
 }
 
 void ImageSetRotation(Serializer& serializerIn, Serializer& serializerOut)
@@ -402,14 +305,9 @@ void ImageSetRotation(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id); 
 	READ(int, rotation);
 
-	auto obj = g_pRenderer.getAs<Image>(id);
-	if (obj)
-	{
-		obj->setRotation(rotation);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Image>(id)->setRotation(rotation);
+	})));
 }
 
 
@@ -453,12 +351,7 @@ void SetOverlayPriority(Serializer& serializerIn, Serializer& serializerOut)
 	READ(int, id);
 	READ(int, priority);
 
-	auto obj = g_pRenderer.get(id);
-	if (obj)
-	{
-		obj->setPriority(priority);
-		WRITE(int(1));
-	}
-	else
-		WRITE(int(0));
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.get(id)->setPriority(priority);
+	})));
 }

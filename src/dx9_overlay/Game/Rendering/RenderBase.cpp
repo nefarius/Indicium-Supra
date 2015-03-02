@@ -12,12 +12,6 @@ RenderBase::~RenderBase()
 {
 }
 
-void RenderBase::destroy()
-{
-	if(!_isMarkedForDeletion)
-		_isMarkedForDeletion = true;
-}
-
 void RenderBase::setPriority(int p)
 {
 	_priority = p;

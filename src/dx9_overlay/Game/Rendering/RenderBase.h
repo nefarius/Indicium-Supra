@@ -11,8 +11,6 @@ public:
 	RenderBase(Renderer *render);
 	virtual ~RenderBase(void);
 
-	void destroy();
-
 	void setPriority(int p);
 	int priority();
 

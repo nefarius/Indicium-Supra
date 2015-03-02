@@ -30,18 +30,11 @@ bool Renderer::remove(int id)
 {
 	std::lock_guard<std::recursive_mutex> l(_mtx);
 
-	if(_renderObjects.empty())
+	auto ptr = get(id);
+	if (!ptr)
 		return false;
 
-	if(_renderObjects.find(id) == _renderObjects.end())
-		return false;
-
-	auto ptr = _renderObjects[id];
-	if(ptr->_isMarkedForDeletion)
-		return false;
-
-	ptr->destroy();
-	return true;
+	return ptr->_isMarkedForDeletion = true;
 }
 
 std::shared_ptr<RenderBase> Renderer::get(int id)
@@ -94,6 +87,7 @@ void Renderer::draw(IDirect3DDevice9 *pDevice)
 	if(_renderObjects.empty())
 		return;
 
+	// Delete all objects from the map which are marked for deletion
 	erase_if(_renderObjects, [&](int id, SharedRenderObject obj) -> bool 
 	{
 		if(obj->_isMarkedForDeletion)
@@ -199,13 +193,8 @@ void Renderer::destroyAll()
 	if(_renderObjects.empty())
 		return;
 
-	for(auto it = _renderObjects.begin(); it != _renderObjects.end();it ++)
-	{
-		if(it->second->_isMarkedForDeletion)
-			continue;
-
-		it->second->destroy();
-	}
+	for(auto it = _renderObjects.begin(); it != _renderObjects.end(); it ++)
+		it->second->_isMarkedForDeletion = true;
 }
 
 int Renderer::frameRate() const

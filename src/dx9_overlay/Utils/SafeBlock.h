@@ -16,6 +16,20 @@ Ret safeExecute(Executer executer, T&&... args)
 	}
 }
 
+template<class Executer, typename ...T>
+bool safeExecuteWithValidation(Executer executer, T&&... args)
+{
+	try
+	{
+		executer(args...);
+		return true;
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
 template<typename T, typename ...Args>
 std::shared_ptr<T> safeMakeShared(Args&&... p)
 {
