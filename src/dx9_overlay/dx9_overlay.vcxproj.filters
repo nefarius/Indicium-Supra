@@ -50,7 +50,7 @@
     <ClCompile Include="Utils\PipeServer.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\Bitstream.cpp">
+    <ClCompile Include="Utils\Serializer.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
@@ -115,9 +115,6 @@
     <ClInclude Include="Utils\algorithm.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\Bitstream.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\Hook.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -137,6 +134,12 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\PipeServer.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\SafeBlock.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\Serializer.h">
       <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,5 @@
 #pragma once
-#include <Utils/Bitstream.h>
+#include <Utils/Serializer.h>
 #include <Shared/PipeMessages.h>
 
 #include <boost/bind.hpp>

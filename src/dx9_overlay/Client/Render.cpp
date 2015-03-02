@@ -1,7 +1,7 @@
 #include "Render.h"
 
 #include <Utils/Misc.h>
-#include <Utils/Bitstream.h>
+#include <Utils/Serializer.h>
 #include <Utils/PipeClient.h>
 #include <Utils/Windows.h>
 #include <Shared/PipeMessages.h>

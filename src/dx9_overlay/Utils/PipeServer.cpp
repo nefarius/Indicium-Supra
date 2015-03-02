@@ -1,5 +1,5 @@
 #include "PipeServer.h"
-#include "Bitstream.h"
+#include "Serializer.h"
 
 #include <Shared/Config.h>
 
@@ -152,9 +152,9 @@ void PipeServer::thread()
 
 			memset(m_Pipes[idx].m_szReply, 0, BUFSIZE);
 			memset(m_Pipes[idx].m_szRequest, 0, BUFSIZE);
-			memcpy(m_Pipes[idx].m_szReply, serializerOut.GetData(), serializerOut.GetNumberOfBytesUsed());
+			memcpy(m_Pipes[idx].m_szReply, serializerOut.data(), serializerOut.numberOfBytesUsed());
 
-			m_Pipes[idx].m_dwToWrite = serializerOut.GetNumberOfBytesUsed();
+			m_Pipes[idx].m_dwToWrite = serializerOut.numberOfBytesUsed();
 
 			bSuccess = WriteFile(m_Pipes[idx].m_hPipe, m_Pipes[idx].m_szReply, m_Pipes[idx].m_dwToWrite, &dwRet, &m_Pipes[idx].m_Overlapped);
 			if (bSuccess && dwRet == m_Pipes[idx].m_dwToWrite)

@@ -99,7 +99,7 @@
     <ClCompile Include="Game\Rendering\RenderBase.cpp" />
     <ClCompile Include="Game\Rendering\Renderer.cpp" />
     <ClCompile Include="Game\Rendering\Text.cpp" />
-    <ClCompile Include="Utils\Bitstream.cpp" />
+    <ClCompile Include="Utils\Serializer.cpp" />
     <ClCompile Include="Utils\Misc.cpp" />
     <ClCompile Include="Utils\PipeClient.cpp" />
     <ClCompile Include="Utils\PipeServer.cpp" />
@@ -122,12 +122,13 @@
     <ClInclude Include="Shared\Config.h" />
     <ClInclude Include="Shared\PipeMessages.h" />
     <ClInclude Include="Utils\algorithm.h" />
-    <ClInclude Include="Utils\Bitstream.h" />
+    <ClInclude Include="Utils\Serializer.h" />
     <ClInclude Include="Utils\Hook.h" />
     <ClInclude Include="Utils\Misc.h" />
     <ClInclude Include="Utils\PipeClient.h" />
     <ClInclude Include="Utils\PipeServer.h" />
     <ClInclude Include="Utils\Pattern.h" />
+    <ClInclude Include="Utils\SafeBlock.h" />
     <ClInclude Include="Utils\Windows.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

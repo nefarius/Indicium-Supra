@@ -2,7 +2,7 @@
 
 #include <Utils/Windows.h>
 #include <Utils/PipeClient.h>
-#include <Utils/Bitstream.h>
+#include <Utils/Serializer.h>
 
 #define EXPORT extern "C" __declspec(dllexport)
 

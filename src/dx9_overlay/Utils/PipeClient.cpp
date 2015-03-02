@@ -1,6 +1,6 @@
 #include "Windows.h"
 #include "PipeClient.h"
-#include "Bitstream.h"
+#include "Serializer.h"
 
 #include <Shared/Config.h>
 
@@ -15,9 +15,9 @@ m_bSuccess(false)
 
 	sprintf(szPipe, "\\\\.\\pipe\\%s", g_strPipeName);
 
-	if (CallNamedPipe(szPipe, (LPVOID)serializerIn.GetData(), serializerIn.GetNumberOfBytesUsed(), szData, sizeof(szData), &dwReaded, TIME_OUT))
+	if (CallNamedPipe(szPipe, (LPVOID)serializerIn.data(), serializerIn.numberOfBytesUsed(), szData, sizeof(szData), &dwReaded, TIME_OUT))
 	{
-		serializerOut.SetData(szData, sizeof(szData));
+		serializerOut.setData(szData, sizeof(szData));
 		m_bSuccess = true;
 	}
 }
