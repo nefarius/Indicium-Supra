@@ -1,7 +1,7 @@
 #include "Text.h"
 #include "dx_utils.h"
 
-Text::Text(Renderer *renderer, const char *font,int iFontSize,bool Bold,bool Italic,int x,int y,D3DCOLOR color,const char *text, bool bShadow, bool bShow)
+Text::Text(Renderer *renderer, const std::string& font,int iFontSize,bool Bold,bool Italic,int x,int y,D3DCOLOR color,const std::string& text, bool bShadow, bool bShow)
 	: RenderBase(renderer), m_D3DFont(NULL)
 {
 	setPos(x,y);
@@ -17,7 +17,7 @@ Text::Text(Renderer *renderer, const char *font,int iFontSize,bool Bold,bool Ita
 }
 
 
-bool Text::updateText(const char *Font,int FontSize,bool Bold,bool Italic)
+bool Text::updateText(const std::string& Font,int FontSize,bool Bold,bool Italic)
 {
 	m_Font = Font;
 	m_FontSize = FontSize;
@@ -29,7 +29,7 @@ bool Text::updateText(const char *Font,int FontSize,bool Bold,bool Italic)
 	return true;
 }
 
-void Text::setText(const char *str)
+void Text::setText(const std::string& str)
 {
 	m_Text = str;
 }

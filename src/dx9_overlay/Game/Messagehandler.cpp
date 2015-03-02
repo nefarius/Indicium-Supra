@@ -25,7 +25,7 @@ void TextCreate(Serializer& serializerIn, Serializer& serializerOut)
 	READ(bool, bShadow);
 	READ(bool, bShow);
 
-	WRITE(g_pRenderer.add(std::make_shared<Text>(&g_pRenderer, Font.c_str(), FontSize, bBold, bItalic, x, y, color, string.c_str(), bShadow, bShow)));
+	WRITE(g_pRenderer.add(std::make_shared<Text>(&g_pRenderer, Font, FontSize, bBold, bItalic, x, y, color, string, bShadow, bShow)));
 }
 
 void TextDestroy(Serializer& serializerIn, Serializer& serializerOut)
@@ -81,7 +81,7 @@ void TextSetString(Serializer& serializerIn, Serializer& serializerOut)
 	READ(std::string, str);
 
 	WRITE(int(safeExecuteWithValidation([&](){
-		g_pRenderer.getAs<Text>(id)->setText(str.c_str());
+		g_pRenderer.getAs<Text>(id)->setText(str);
 	})));
 }
 
@@ -94,7 +94,7 @@ void TextUpdate(Serializer& serializerIn, Serializer& serializerOut)
 	READ(bool, bItalic);
 
 	WRITE(int(safeExecuteWithValidation([&](){
-		g_pRenderer.getAs<Text>(id)->updateText(Font.c_str(), FontSize, bBold, bItalic);
+		g_pRenderer.getAs<Text>(id)->updateText(Font, FontSize, bBold, bItalic);
 	})));
 }
 

@@ -1,7 +1,8 @@
 #include "Box.h"
 #include "dx_utils.h"
 
-Box::Box(Renderer *renderer,  int x, int y, int w, int h, D3DCOLOR color, bool show) : RenderBase(renderer), m_bShown(false)
+Box::Box(Renderer *renderer,  int x, int y, int w, int h, D3DCOLOR color, bool show)
+	: RenderBase(renderer), m_bShown(false)
 {
 	setPos(x, y);
 	setBoxWidth(w);

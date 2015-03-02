@@ -8,10 +8,10 @@
 class Text : public RenderBase
 {
 public:
-	Text(Renderer *renderer, const char *font, int iFontSize, bool Bold, bool Italic, int x, int y, D3DCOLOR color, const char *text, bool bShadow, bool bShow);
+	Text(Renderer *renderer, const std::string& font, int iFontSize, bool Bold, bool Italic, int x, int y, D3DCOLOR color, const std::string& text, bool bShadow, bool bShow);
 
-	bool updateText(const char *Font,int FontSize,bool Bold,bool Italic);
-	void setText(const char *str);
+	bool updateText(const std::string& Font,int FontSize,bool Bold,bool Italic);
+	void setText(const std::string& str);
 	void setColor(D3DCOLOR color);
 	void setPos(int x,int y);
 	void setShown(bool bShow);
