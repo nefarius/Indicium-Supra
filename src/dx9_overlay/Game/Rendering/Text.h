@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 #include <d3dx9.h>
 
 #include "D3DFont.h"
@@ -31,20 +32,14 @@ protected:
 	virtual void firstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;
 
 private:
-	std::string			m_Text,
-						m_Font;
+	std::string	m_Text, m_Font;
+	int	m_X, m_Y, m_FontSize;
+	D3DCOLOR m_Color;
+	std::shared_ptr<CD3DFont> m_D3DFont;
+	bool m_bShown, m_bShadow, m_bItalic, m_bBold;
 
-	int					m_X,
-						m_Y,
-						m_FontSize;
-
-	D3DCOLOR			m_Color;
-
-	CD3DFont*			m_D3DFont;
-
-	bool				m_bShown,
-						m_bShadow,
-						m_bItalic,
-						m_bBold;					
+	void initFont(IDirect3DDevice9 *pDevice);
+	void resetFont();
+	bool drawText(int x, int y, DWORD dwColor, const std::string& strText, DWORD dwFlags = 0L);
 };
 

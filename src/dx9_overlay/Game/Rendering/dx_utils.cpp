@@ -78,39 +78,3 @@ void Drawing::DrawSprite(LPD3DXSPRITE SpriteInterface, LPDIRECT3DTEXTURE9 Textur
 	SpriteInterface->Draw(TextureInterface, NULL, NULL, &Vec, 0xFFFFFFFF);
 	SpriteInterface->End();
 }
-
-void Drawing::InitFont(LPDIRECT3DDEVICE9 pDevice, const char *str, int size, DWORD dwFlags, class CD3DFont **pFont)
-{
-	if(pFont)
-	{
-		if(*pFont)
-		{
-			delete *pFont;
-			*pFont = NULL;
-		}
-	}
-
-	(*pFont) = new CD3DFont(str, size, dwFlags);
-	(*pFont)->InitDeviceObjects(pDevice);
-	(*pFont)->RestoreDeviceObjects();
-}
-
-void Drawing::ResetFont(class CD3DFont **pFont)
-{
-	if (pFont){
-		if (*pFont)
-		{
-			delete *pFont;
-			*pFont = NULL;
-			pFont = NULL;
-		}
-	}
-}
-
-void Drawing::DrawFont(CD3DFont **pFont, int x, int y, DWORD dwColor, const char* strText, DWORD dwFlags, DWORD dwBackgroundColor)
-{
-	if (pFont)
-		if (*pFont)
-			(*pFont)->DrawText((float)x, (float)y, dwColor, strText, dwFlags);
-	
-}

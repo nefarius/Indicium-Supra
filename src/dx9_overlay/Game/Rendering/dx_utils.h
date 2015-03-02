@@ -19,8 +19,4 @@ namespace Drawing
 	void DrawPrimtive(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE PrimitiveType, UINT PrimitiveCount, CONST void* pVertexStreamZeroData, UINT VertexStreamZeroStride, DWORD FVF = DRAW_FVF);
 
 	void DrawSprite(LPD3DXSPRITE SpriteInterface, LPDIRECT3DTEXTURE9 TextureInterface, int PosX, int PosY, int Rotation, int Align);
-
-	void InitFont(LPDIRECT3DDEVICE9 pDevice, const char *str, int size, DWORD dwFlags, CD3DFont **pFont);
-	void ResetFont(CD3DFont **pFont);
-	void DrawFont(CD3DFont **pFont, int x, int y, DWORD dwColor, const char* strText, DWORD dwFlags = 0L, DWORD dwBackgroundColor = 0L);
 }
