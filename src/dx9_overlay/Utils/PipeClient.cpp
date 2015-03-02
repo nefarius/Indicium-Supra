@@ -13,7 +13,7 @@ m_bSuccess(false)
 	char szPipe[MAX_PATH + 1] = { 0 };
 	DWORD dwReaded;
 
-	sprintf(szPipe, "\\\\.\\pipe\\%s", g_strPipeName);
+	sprintf_s(szPipe, "\\\\.\\pipe\\%s", g_strPipeName);
 
 	if (CallNamedPipe(szPipe, (LPVOID)serializerIn.data(), serializerIn.numberOfBytesUsed(), szData, sizeof(szData), &dwReaded, TIME_OUT))
 	{

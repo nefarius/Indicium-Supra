@@ -64,7 +64,7 @@ void Renderer::draw(IDirect3DDevice9 *pDevice)
 	
 		dwFrames++;
 		TimeNow = boost::posix_time::microsec_clock::local_time();
-		dwElapsedTime = (TimeNow - TimeLast).total_milliseconds();
+		dwElapsedTime = (TimeNow - TimeLast).total_milliseconds() & 0xFFFFFFFF;
 	
 		if (dwElapsedTime >= 500)
 		{
