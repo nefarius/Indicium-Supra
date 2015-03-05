@@ -10,7 +10,7 @@
 
 #include <d3dx9.h>
 
-#define BIND(T) PaketHandler[PipeMessages::T] = boost::bind(T, _1, _2);
+#define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
 
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
@@ -52,7 +52,7 @@ void initGame()
 		return g_resetHook.callOrig(dev, pp);
 	});
 
-	typedef std::map<PipeMessages, boost::function<void(Serializer&, Serializer&)> > MessagePaketHandler;
+	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)> > MessagePaketHandler;
 	MessagePaketHandler PaketHandler;
 
 	BIND(TextCreate);

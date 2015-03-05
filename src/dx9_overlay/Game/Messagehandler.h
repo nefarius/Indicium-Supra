@@ -2,7 +2,7 @@
 #include <Utils/Serializer.h>
 #include <Shared/PipeMessages.h>
 
-#include <boost/bind.hpp>
+#include <functional>
 
 void TextCreate(Serializer& serializerIn, Serializer& serializerOut);
 void TextDestroy(Serializer& serializerIn, Serializer& serializerOut);
