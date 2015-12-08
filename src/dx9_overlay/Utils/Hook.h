@@ -23,6 +23,11 @@ struct convention<CallConvention::cdecl_t, retn, args...> {
 	typedef retn(__cdecl *type)(args...);
 };
 
+template <typename T>
+inline MH_STATUS MH_CreateHookEx(LPVOID pTarget, LPVOID pDetour, T** ppOriginal)
+{
+	return MH_CreateHook(pTarget, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
+}
 
 template<CallConvention cc, typename retn, typename ...args> class Hook
 {
@@ -46,8 +51,19 @@ public:
 	void apply(T pFunc, type detour)
 	{
 		_detour = detour;
-		MH_CreateHook((PBYTE)pFunc, (PBYTE)_detour, reinterpret_cast<LPVOID*>((PBYTE)_orig));
-		MH_EnableHook((PBYTE)_detour);
+		
+		if (MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_orig) != MH_OK)
+		{
+			BOOST_LOG_TRIVIAL(fatal) << "Couldn't create hook";
+			return;
+		}
+
+		if (MH_EnableHook((PBYTE)pFunc) != MH_OK)
+		{
+			BOOST_LOG_TRIVIAL(fatal) << "Couldn't enable hook";
+			return;
+		}
+
 		_isApplied = true;
 	}
 
