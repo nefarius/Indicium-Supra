@@ -9,8 +9,9 @@ namespace hello_world
 
         static void Main(string[] args)
         {
-            DX9Overlay.SetParam("use_window", "1"); // Use the window name to find the process
-            DX9Overlay.SetParam("window", "GTA:SA:MP"); // Set the window name
+            //DX9Overlay.SetParam("use_window", "1"); // Use the window name to find the process
+            //DX9Overlay.SetParam("window", "GTA:SA:MP"); // Set the window name
+            DX9Overlay.SetParam("process", "Terraria.exe");
 
             overlayText = DX9Overlay.TextCreate("Arial", 12, false, false, 200, 200, 0xFF00FFFF, "Hello world", true, true); // Initialize 'overlayText'
             if(overlayText == -1)

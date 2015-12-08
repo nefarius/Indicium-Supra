@@ -5,6 +5,8 @@
 
 #include <type_traits>
 
+#include <boost/log/trivial.hpp>
+
 enum class CallConvention{
 	stdcall_t, cdecl_t
 };
