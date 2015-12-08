@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Windows.h"
+#include <MinHook.h>
 
 #include <type_traits>
 
@@ -43,7 +44,8 @@ public:
 	void apply(T pFunc, type detour)
 	{
 		_detour = detour;
-		_orig = (type) DetourFunction((PBYTE) pFunc, (PBYTE) _detour);
+		MH_CreateHook((PBYTE)pFunc, (PBYTE)_detour, reinterpret_cast<LPVOID*>((PBYTE)_orig));
+		MH_EnableHook((PBYTE)_detour);
 		_isApplied = true;
 	}
 
@@ -53,7 +55,7 @@ public:
 			return false;
 
 		_isApplied = false;
-		return DetourRemove((PBYTE) _orig, (PBYTE) _detour) > 0;
+		return MH_DisableHook((PBYTE)_detour) == MH_OK;
 	}
 
 	retn callOrig(args... p)

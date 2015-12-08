@@ -10,6 +10,11 @@
 
 #include <d3dx9.h>
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/file.hpp>
+
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
 
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
@@ -23,12 +28,38 @@ extern "C" __declspec(dllexport) void enable()
 	g_bEnabled = true;
 }
 
+namespace logging = boost::log;
+namespace keywords = boost::log::keywords;
+
 void initGame()
 {
 	HMODULE hMod = NULL;
 
+	logging::add_file_log("dx9_overlay.log");
+	logging::add_file_log
+	(
+		keywords::file_name = "dx9_overlay.log",                                        /* file name pattern            */
+		keywords::auto_flush = true,
+		keywords::format = "[%TimeStamp%]: %Message%"                                 /* log record format            */
+	);
+
+	logging::core::get()->set_filter
+	(
+		logging::trivial::severity >= logging::trivial::info
+	);
+
 	while ((hMod = GetModuleHandle("d3d9.dll")) == NULL || g_bEnabled == false)
 		Sleep(200);
+
+	BOOST_LOG_TRIVIAL(info) << "d3d9.dll found, initializing hook engine";
+
+	if (MH_Initialize() != MH_OK)
+	{
+		BOOST_LOG_TRIVIAL(fatal) << "Couldn't initialize hook engine";
+		return;
+	}
+
+	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
 
 	DWORD *vtbl = 0;
 	DWORD dwDevice = findPattern((DWORD) hMod, 0x128000, (PBYTE)"\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86", "xx????xx????xx");

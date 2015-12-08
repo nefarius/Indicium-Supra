@@ -1,4 +1,3 @@
-#pragma comment(lib, "detours.lib")
 #pragma comment(lib,"d3dx9.lib")
 
 #include "dllmain.h"
