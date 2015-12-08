@@ -45,7 +45,8 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\..\bin\</OutDir>
     <TargetName>$(ProjectName)_d</TargetName>
-    <IncludePath>$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
+    <IncludePath>$(BOOST_ROOT);$(DXSDK)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
+    <LibraryPath>$(BOOST_ROOT)\stage\lib;$(DXSDK)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
