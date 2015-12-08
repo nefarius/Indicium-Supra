@@ -35,7 +35,6 @@ void initGame()
 {
 	HMODULE hMod = NULL;
 
-	logging::add_file_log("dx9_overlay.log");
 	logging::add_file_log
 	(
 		keywords::file_name = "dx9_overlay.log",                                        /* file name pattern            */
