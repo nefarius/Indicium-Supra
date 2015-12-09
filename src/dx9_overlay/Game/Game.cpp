@@ -50,7 +50,7 @@ void initGame()
 	while ((hMod = GetModuleHandle("d3d9.dll")) == NULL || g_bEnabled == false)
 		Sleep(200);
 
-	BOOST_LOG_TRIVIAL(info) << "d3d9.dll found, initializing hook engine";
+	BOOST_LOG_TRIVIAL(info) << "Library enabled, initializing hook engine";
 
 	if (MH_Initialize() != MH_OK)
 	{

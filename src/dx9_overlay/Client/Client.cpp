@@ -148,6 +148,7 @@ EXPORT int Init()
 	{
 		if (dwBase == 0)
 		{
+			BOOST_LOG_TRIVIAL(fatal) << "Remote thread terminated abnormally";
 			CloseHandle(hHandle);
 			return 0;
 		}
@@ -173,6 +174,8 @@ EXPORT int Init()
 		WaitForSingleObject(hThread, INFINITE);
 		CloseHandle(hThread);
 		CloseHandle(hHandle);
+
+		BOOST_LOG_TRIVIAL(info) << "Library enabled successfully";
 
 		return 1;
 	}
