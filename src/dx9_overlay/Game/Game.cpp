@@ -50,7 +50,79 @@ void initGame()
 	while ((hMod = GetModuleHandle("d3d9.dll")) == NULL || g_bEnabled == false)
 		Sleep(200);
 
-	BOOST_LOG_TRIVIAL(info) << "Library enabled, initializing hook engine";
+	BOOST_LOG_TRIVIAL(info) << "Library enabled";
+
+	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for Direct3DCreate9Ex...";
+
+	WNDCLASSEX window_class;
+	ZeroMemory(&window_class, sizeof(WNDCLASSEX));
+
+	window_class.cbSize = sizeof(WNDCLASSEX);
+	window_class.style = CS_HREDRAW | CS_VREDRAW;
+	window_class.lpfnWndProc = DefWindowProc;
+	window_class.lpszClassName = "TempDirectXOverlayWindow";
+
+	window_class.hInstance = GetModuleHandle(NULL);
+	if (window_class.hInstance == NULL)
+		BOOST_LOG_TRIVIAL(fatal) << "Could not get the instance handle";
+
+	if (!RegisterClassEx(&window_class))
+		BOOST_LOG_TRIVIAL(fatal) << "Could not get register the window class";
+
+	HWND temp_window = CreateWindow(window_class.lpszClassName, "Temporary DirectX Overlay Window", WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, window_class.hInstance, NULL);
+	if (temp_window == NULL)
+		BOOST_LOG_TRIVIAL(fatal) << "Could not get create the temporary window";
+
+	LPVOID Direct3DCreate9Ex = (LPVOID)GetProcAddress(hMod, "Direct3DCreate9Ex");
+	if (Direct3DCreate9Ex == NULL)
+		BOOST_LOG_TRIVIAL(fatal) << "Could not locate the Direct3DCreate9 procedure entry point";
+
+	IDirect3D9Ex *d3d9_ex;
+	HRESULT error_code = ((HRESULT(WINAPI *)(UINT, IDirect3D9Ex **)) Direct3DCreate9Ex)(D3D_SDK_VERSION, &d3d9_ex);
+	if (FAILED(error_code))
+		BOOST_LOG_TRIVIAL(fatal) << "Could not create the DirectX 9 interface";
+
+	D3DDISPLAYMODE display_mode;
+	if (FAILED(d3d9_ex->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &display_mode)))
+		BOOST_LOG_TRIVIAL(fatal) << "Could not determine the current display mode";
+
+	D3DPRESENT_PARAMETERS present_parameters;
+	ZeroMemory(&present_parameters, sizeof(D3DPRESENT_PARAMETERS));
+	present_parameters.Windowed = TRUE;
+	present_parameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
+	present_parameters.BackBufferFormat = display_mode.Format;
+
+	IDirect3DDevice9Ex *d3d9_device_ex;
+	error_code = d3d9_ex->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window, D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, NULL, &d3d9_device_ex);
+	if (FAILED(error_code))
+		BOOST_LOG_TRIVIAL(fatal) << "Could not create the Direct3D 9 device";
+
+#ifdef _M_IX86
+	UINT32 *vtableEx = *((UINT32 **)d3d9_device_ex);
+#else
+	UINT64 *vtableEx = *((UINT64 **)d3d9_device_ex);
+#endif
+
+	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
+
+	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
+
+	d3d9_device_ex->Release();
+	d3d9_ex->Release();
+
+	if (!DestroyWindow(temp_window))
+		BOOST_LOG_TRIVIAL(fatal) << "Could not release the temporary window";
+
+	if (!UnregisterClass(window_class.lpszClassName, window_class.hInstance))
+		BOOST_LOG_TRIVIAL(fatal) << "Could not release the window class";
+
+
+	DWORD *vtbl = 0;
+	DWORD dwDevice = findPattern((DWORD) hMod, 0x128000, (PBYTE)"\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86", "xx????xx????xx");
+	memcpy(&vtbl, (void *) (dwDevice + 0x2), 4);
+	
+
+	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
 
 	if (MH_Initialize() != MH_OK)
 	{
@@ -60,9 +132,7 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
 
-	DWORD *vtbl = 0;
-	DWORD dwDevice = findPattern((DWORD) hMod, 0x128000, (PBYTE)"\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86", "xx????xx????xx");
-	memcpy(&vtbl, (void *) (dwDevice + 0x2), 4);
+	
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
 
