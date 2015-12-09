@@ -26,6 +26,7 @@
 
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> g_presentExHook;
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
@@ -162,6 +163,16 @@ void initGame()
 
 		return g_resetHook.callOrig(dev, pp);
 	});
+
+	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
+
+	g_presentExHook.apply(vtableEx[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4, DWORD a5) -> HRESULT
+	{
+		// TODO: implement overlay
+
+		return g_presentExHook.callOrig(dev, a1, a2, a3, a4, a5);
+	});
+
 
 	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)> > MessagePaketHandler;
 	MessagePaketHandler PaketHandler;
