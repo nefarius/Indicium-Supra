@@ -27,6 +27,7 @@
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> g_presentExHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> g_resetExHook;
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
@@ -173,6 +174,17 @@ void initGame()
 		__asm popad
 
 		return g_presentExHook.callOrig(dev, a1, a2, a3, a4, a5);
+	});
+
+	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
+
+	g_resetExHook.apply(vtableEx[DX9X_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS *pp, D3DDISPLAYMODEEX *ppp) -> HRESULT
+	{
+		__asm pushad
+		g_pRenderer.reset(dev);
+		__asm popad
+
+		return g_resetExHook.callOrig(dev, pp, ppp);
 	});
 
 
