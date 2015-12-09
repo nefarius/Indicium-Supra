@@ -15,6 +15,13 @@
 #include <boost/log/expressions.hpp>
 #include <boost/log/utility/setup/file.hpp>
 
+#define DX9_VTABLE_RELEASE				0x02
+#define DX9_VTABLE_PRESENT				0x11
+#define DX9_VTABLE_RESET				0x10
+#define DX9_VTABLE_PRESENTEX			0x79
+#define DX9X_VTABLE_RESETEX				0x84
+#define DX9_VTABLE_SWAPCHAIN_PRESENT	0x03
+
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
 
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
