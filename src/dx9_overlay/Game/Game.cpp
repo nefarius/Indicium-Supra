@@ -64,6 +64,8 @@ void initGame()
 	DWORD dwDevice = findPattern((DWORD) hMod, 0x128000, (PBYTE)"\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86", "xx????xx????xx");
 	memcpy(&vtbl, (void *) (dwDevice + 0x2), 4);
 
+	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
+
 	g_presentHook.apply(vtbl[17], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
 	{
 		__asm pushad
@@ -72,6 +74,8 @@ void initGame()
 
 		return g_presentHook.callOrig(dev, a1, a2, a3, a4);
 	});
+
+	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Reset";
 
 	g_resetHook.apply(vtbl[16], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
 	{

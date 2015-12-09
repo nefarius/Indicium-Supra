@@ -66,6 +66,8 @@ public:
 			return;
 		}
 
+		BOOST_LOG_TRIVIAL(info) << "Hook created and enabled";
+
 		_isApplied = true;
 	}
 
