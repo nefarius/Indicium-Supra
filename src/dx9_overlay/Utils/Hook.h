@@ -33,12 +33,13 @@ template<CallConvention cc, typename retn, typename ...args> class Hook
 {
 	typedef typename convention<cc, retn, args...>::type type;
 
-	type _orig;
+	DWORD _orig;
+	type _trampoline;
 	type _detour;
 
 	bool _isApplied;
 public:
-	Hook() : _isApplied(false), _orig(0), _detour(0) { }
+	Hook() : _isApplied(false), _trampoline(0), _detour(0) { }
 
 	template<typename T>
 	Hook(T pFunc, type detour) : apply<T>(pFunc, detour) { }
@@ -51,8 +52,9 @@ public:
 	void apply(T pFunc, type detour)
 	{
 		_detour = detour;
+		_orig = pFunc;
 		
-		if (MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_orig) != MH_OK)
+		if (MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_trampoline) != MH_OK)
 		{
 			BOOST_LOG_TRIVIAL(fatal) << "Couldn't create hook";
 			return;
@@ -73,12 +75,12 @@ public:
 			return false;
 
 		_isApplied = false;
-		return MH_DisableHook((PBYTE)_detour) == MH_OK;
+		return MH_DisableHook((PBYTE)_orig) == MH_OK;
 	}
 
 	retn callOrig(args... p)
 	{
-		return _orig(p...);
+		return _trampoline(p...);
 	}
 
 	const bool isApplied() const {
