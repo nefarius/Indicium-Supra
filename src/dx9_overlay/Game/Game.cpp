@@ -168,7 +168,9 @@ void initGame()
 
 	g_presentExHook.apply(vtableEx[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4, DWORD a5) -> HRESULT
 	{
-		// TODO: implement overlay
+		__asm pushad
+		g_pRenderer.draw(dev);
+		__asm popad
 
 		return g_presentExHook.callOrig(dev, a1, a2, a3, a4, a5);
 	});
