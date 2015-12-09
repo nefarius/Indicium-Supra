@@ -28,6 +28,7 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST 
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> g_presentExHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> g_resetExHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DSWAPCHAIN9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_swapchainPresentHook;
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
@@ -114,8 +115,25 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
 
+
+	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for IDirect3DSwapChain9...";
+
+	IDirect3DSwapChain9 *swap_chain;
+	if (FAILED(d3d9_device_ex->GetSwapChain(0, &swap_chain)))
+		BOOST_LOG_TRIVIAL(fatal) << "Could not obtain the swap chain";
+
+#ifdef _M_IX86
+	UINT32 *swapchain_vtable = *((UINT32 **)swap_chain);
+#else
+	UINT64 *swapchain_vtable = *((UINT64 **)swap_chain);
+#endif
+
+	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
+
+
 	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
 
+	swap_chain->Release();
 	d3d9_device_ex->Release();
 	d3d9_ex->Release();
 
@@ -185,6 +203,22 @@ void initGame()
 		__asm popad
 
 		return g_resetExHook.callOrig(dev, pp, ppp);
+	});
+
+	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DSwapChain9::Present";
+
+	g_swapchainPresentHook.apply(swapchain_vtable[DX9_VTABLE_SWAPCHAIN_PRESENT], [](LPDIRECT3DSWAPCHAIN9 swap_chain, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
+	{
+		IDirect3DDevice9 *device;
+		HRESULT error_code = swap_chain->GetDevice(&device);
+		if (FAILED(error_code))
+			return error_code;
+
+		__asm pushad
+		g_pRenderer.draw(device);
+		__asm popad
+
+		return g_swapchainPresentHook.callOrig(swap_chain, a1, a2, a3, a4);
 	});
 
 
