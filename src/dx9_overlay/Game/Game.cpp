@@ -108,9 +108,9 @@ void initGame()
 		BOOST_LOG_TRIVIAL(fatal) << "Could not create the Direct3D 9 device";
 
 #ifdef _M_IX86
-	UINT32 *vtableEx = *((UINT32 **)d3d9_device_ex);
+	UINT32 *vtable = *((UINT32 **)d3d9_device_ex);
 #else
-	UINT64 *vtableEx = *((UINT64 **)d3d9_device_ex);
+	UINT64 *vtable = *((UINT64 **)d3d9_device_ex);
 #endif
 
 	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
@@ -142,12 +142,8 @@ void initGame()
 
 	if (!UnregisterClass(window_class.lpszClassName, window_class.hInstance))
 		BOOST_LOG_TRIVIAL(fatal) << "Could not release the window class";
-
-
-	DWORD *vtbl = 0;
-	DWORD dwDevice = findPattern((DWORD) hMod, 0x128000, (PBYTE)"\xC7\x06\x00\x00\x00\x00\x89\x86\x00\x00\x00\x00\x89\x86", "xx????xx????xx");
-	memcpy(&vtbl, (void *) (dwDevice + 0x2), 4);
 	
+
 
 	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
 
@@ -163,7 +159,7 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
 
-	g_presentHook.apply(vtbl[17], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
+	g_presentHook.apply(vtable[DX9_VTABLE_PRESENT], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
 	{
 		__asm pushad
 		g_pRenderer.draw(dev);
@@ -174,7 +170,7 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Reset";
 
-	g_resetHook.apply(vtbl[16], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
+	g_resetHook.apply(vtable[DX9_VTABLE_RESET], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
 	{
 		__asm pushad
 		g_pRenderer.reset(dev);
@@ -185,7 +181,7 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
 
-	g_presentExHook.apply(vtableEx[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4, DWORD a5) -> HRESULT
+	g_presentExHook.apply(vtable[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4, DWORD a5) -> HRESULT
 	{
 		__asm pushad
 		g_pRenderer.draw(dev);
@@ -196,7 +192,7 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
 
-	g_resetExHook.apply(vtableEx[DX9X_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS *pp, D3DDISPLAYMODEEX *ppp) -> HRESULT
+	g_resetExHook.apply(vtable[DX9X_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS *pp, D3DDISPLAYMODEEX *ppp) -> HRESULT
 	{
 		__asm pushad
 		g_pRenderer.reset(dev);
