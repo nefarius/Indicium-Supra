@@ -14,6 +14,7 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
 
 #define DX9_VTABLE_RELEASE				0x02
 #define DX9_VTABLE_PRESENT				0x11
@@ -40,16 +41,20 @@ extern "C" __declspec(dllexport) void enable()
 
 namespace logging = boost::log;
 namespace keywords = boost::log::keywords;
+namespace expr = boost::log::expressions;
+
 
 void initGame()
 {
 	HMODULE hMod = NULL;
 
+	logging::add_common_attributes();
+
 	logging::add_file_log
 	(
-		keywords::file_name = "dx9_overlay.log",                                        /* file name pattern            */
+		keywords::file_name = "dx9_overlay.log",
 		keywords::auto_flush = true,
-		keywords::format = "[%TimeStamp%]: %Message%"                                 /* log record format            */
+		keywords::format = "[%TimeStamp%]: %Message%"
 	);
 
 	logging::core::get()->set_filter
@@ -201,6 +206,7 @@ void initGame()
 		return g_resetExHook.callOrig(dev, pp, ppp);
 	});
 
+#if FIXME
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DSwapChain9::Present";
 
 	g_swapchainPresentHook.apply(swapchain_vtable[DX9_VTABLE_SWAPCHAIN_PRESENT], [](LPDIRECT3DSWAPCHAIN9 swap_chain, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
@@ -216,6 +222,7 @@ void initGame()
 
 		return g_swapchainPresentHook.callOrig(swap_chain, a1, a2, a3, a4);
 	});
+#endif
 
 
 	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)> > MessagePaketHandler;
