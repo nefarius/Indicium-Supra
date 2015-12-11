@@ -25,6 +25,7 @@
 #define DX9_VTABLE_PRESENTEX			0x79
 #define DX9_VTABLE_RESETEX				0x84
 #define DX9_VTABLE_SWAPCHAIN_PRESENT	0x03
+#define DX9_VTABLE_ENDSCENE				0x2A
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
 
@@ -33,6 +34,7 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETER
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> g_presentExHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> g_resetExHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DSWAPCHAIN9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_swapchainPresentHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> g_endSceneHook;
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
@@ -248,6 +250,26 @@ void initGame()
 		__asm popad
 
 		return g_resetExHook.callOrig(dev, pp, ppp);
+	});
+
+	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::EndScene";
+
+	g_endSceneHook.apply(vtable[DX9_VTABLE_ENDSCENE], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
+	{
+		static UINT32 counter = 0;
+		static BOOL skip = FALSE;
+
+		if (!skip || counter++ == 100)
+		{
+			skip = TRUE;
+			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9::EndScene is used by process";
+		}
+
+		__asm pushad
+		g_pRenderer.draw(dev);
+		__asm popad
+
+		return g_endSceneHook.callOrig(dev);
 	});
 
 #if FIXME
