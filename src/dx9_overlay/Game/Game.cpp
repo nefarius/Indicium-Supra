@@ -38,6 +38,7 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> g_endSceneHook;
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
+bool g_bIsUsingPresent = false;
 
 extern "C" __declspec(dllexport) void enable()
 {
@@ -176,14 +177,7 @@ void initGame()
 
 	g_presentHook.apply(vtable[DX9_VTABLE_PRESENT], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
 	{
-		static UINT32 counter = 0;
-		static BOOL skip = FALSE;
-
-		if (!skip || counter++ == 100)
-		{
-			skip = TRUE;
-			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9::Present is used by process";
-		}
+		g_bIsUsingPresent = true;
 
 		__asm pushad
 		g_pRenderer.draw(dev);
@@ -216,14 +210,7 @@ void initGame()
 
 	g_presentExHook.apply(vtable[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4, DWORD a5) -> HRESULT
 	{
-		static UINT32 counter = 0;
-		static BOOL skip = FALSE;
-
-		if (!skip || counter++ == 100)
-		{
-			skip = TRUE;
-			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9Ex::PresentEx is used by process";
-		}
+		g_bIsUsingPresent = true;
 
 		__asm pushad
 		g_pRenderer.draw(dev);
@@ -252,45 +239,19 @@ void initGame()
 		return g_resetExHook.callOrig(dev, pp, ppp);
 	});
 
-#ifdef ENDSCENE
-
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::EndScene";
 
 	g_endSceneHook.apply(vtable[DX9_VTABLE_ENDSCENE], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
 	{
-		static UINT32 counter = 0;
-		static BOOL skip = FALSE;
-
-		if (!skip || counter++ == 100)
+		if (!g_bIsUsingPresent)
 		{
-			skip = TRUE;
-			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9::EndScene is used by process";
+			__asm pushad
+			g_pRenderer.draw(dev);
+			__asm popad
 		}
-
-		ID3DXFont* font;
-
-		D3DXCreateFont(dev, 48, 0, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &font);
-
-		RECT font_rect;
-
-		SetRect(&font_rect, 0, 0, 300, 300);
-
-		font->DrawText(NULL, "Hello World!", -1, &font_rect, DT_LEFT | DT_NOCLIP, 0xFFFFFF);
-
-		if (font)
-		{
-			font->Release();
-			font = NULL;
-		}
-
-		//__asm pushad
-		//g_pRenderer.draw(dev);
-		//__asm popad
 
 		return g_endSceneHook.callOrig(dev);
 	});
-
-#endif
 
 #ifdef FIXME
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DSwapChain9::Present";
