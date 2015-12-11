@@ -16,6 +16,9 @@
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 
+#include <Psapi.h>
+#pragma comment(lib, "psapi.lib")
+
 #define DX9_VTABLE_RELEASE				0x02
 #define DX9_VTABLE_PRESENT				0x11
 #define DX9_VTABLE_RESET				0x10
@@ -61,6 +64,11 @@ void initGame()
 	(
 		logging::trivial::severity >= logging::trivial::info
 	);
+
+	LPSTR sz_ProcName = (LPSTR) malloc(MAX_PATH + 1);
+	GetProcessImageFileName(GetCurrentProcess(), sz_ProcName, MAX_PATH);
+	BOOST_LOG_TRIVIAL(info) << "Library loaded into " << sz_ProcName;
+	free(sz_ProcName);
 
 	while ((hMod = GetModuleHandle("d3d9.dll")) == NULL || g_bEnabled == false)
 		Sleep(200);
