@@ -23,7 +23,7 @@
 #define DX9_VTABLE_PRESENT				0x11
 #define DX9_VTABLE_RESET				0x10
 #define DX9_VTABLE_PRESENTEX			0x79
-#define DX9X_VTABLE_RESETEX				0x84
+#define DX9_VTABLE_RESETEX				0x84
 #define DX9_VTABLE_SWAPCHAIN_PRESENT	0x03
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
@@ -174,6 +174,15 @@ void initGame()
 
 	g_presentHook.apply(vtable[DX9_VTABLE_PRESENT], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
 	{
+		static UINT32 counter = 0;
+		static BOOL skip = FALSE;
+
+		if (!skip || counter++ == 100)
+		{
+			skip = TRUE;
+			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9::Present is used by process";
+		}
+
 		__asm pushad
 		g_pRenderer.draw(dev);
 		__asm popad
@@ -185,6 +194,15 @@ void initGame()
 
 	g_resetHook.apply(vtable[DX9_VTABLE_RESET], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
 	{
+		static UINT32 counter = 0;
+		static BOOL skip = FALSE;
+
+		if (!skip || counter++ == 100)
+		{
+			skip = TRUE;
+			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9::Reset is used by process";
+		}
+
 		__asm pushad
 		g_pRenderer.reset(dev);
 		__asm popad
@@ -196,6 +214,15 @@ void initGame()
 
 	g_presentExHook.apply(vtable[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4, DWORD a5) -> HRESULT
 	{
+		static UINT32 counter = 0;
+		static BOOL skip = FALSE;
+
+		if (!skip || counter++ == 100)
+		{
+			skip = TRUE;
+			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9Ex::PresentEx is used by process";
+		}
+
 		__asm pushad
 		g_pRenderer.draw(dev);
 		__asm popad
@@ -205,8 +232,17 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
 
-	g_resetExHook.apply(vtable[DX9X_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS *pp, D3DDISPLAYMODEEX *ppp) -> HRESULT
+	g_resetExHook.apply(vtable[DX9_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS *pp, D3DDISPLAYMODEEX *ppp) -> HRESULT
 	{
+		static UINT32 counter = 0;
+		static BOOL skip = FALSE;
+
+		if (!skip || counter++ == 100)
+		{
+			skip = TRUE;
+			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9Ex::ResetEx is used by process";
+		}
+
 		__asm pushad
 		g_pRenderer.reset(dev);
 		__asm popad
