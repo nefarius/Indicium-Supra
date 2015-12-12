@@ -150,15 +150,6 @@ void initGame()
 
 		g_resetHook.apply(vtable[DX9_VTABLE_RESET], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
 		{
-			static UINT32 counter = 0;
-			static BOOL skip = FALSE;
-
-			if (!skip || counter++ == 100)
-			{
-				skip = TRUE;
-				BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9::Reset is used by process";
-			}
-
 			__asm pushad
 			g_pRenderer.reset(dev);
 			__asm popad
