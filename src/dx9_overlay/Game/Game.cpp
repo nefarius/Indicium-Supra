@@ -95,7 +95,8 @@ void initGame()
 	if (!RegisterClassEx(&window_class))
 		BOOST_LOG_TRIVIAL(fatal) << "Could not get register the window class";
 
-	HWND temp_window = CreateWindow(window_class.lpszClassName, "Temporary DirectX Overlay Window", WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, window_class.hInstance, NULL);
+	HWND temp_window = CreateWindow(window_class.lpszClassName, "Temporary DirectX Overlay Window", 
+		WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, window_class.hInstance, NULL);
 	if (temp_window == NULL)
 		BOOST_LOG_TRIVIAL(fatal) << "Could not get create the temporary window";
 
@@ -119,7 +120,8 @@ void initGame()
 	present_parameters.BackBufferFormat = display_mode.Format;
 
 	IDirect3DDevice9Ex *d3d9_device_ex;
-	error_code = d3d9_ex->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window, D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, NULL, &d3d9_device_ex);
+	error_code = d3d9_ex->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window, 
+		D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, NULL, &d3d9_device_ex);
 	if (FAILED(error_code))
 		BOOST_LOG_TRIVIAL(fatal) << "Could not create the Direct3D 9 device";
 
