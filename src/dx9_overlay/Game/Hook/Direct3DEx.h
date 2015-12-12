@@ -18,11 +18,12 @@ private:
 public:
 	CDirect3DEx();
 	~CDirect3DEx();
+	static const int VTableElements = 134;
 
 #ifdef _M_IX86
-	UINT32 *GetVTableEx();
+	bool GetVTableEx(UINT32 *pVTable);
 #else
-	UINT64 *GetVTableEx();
+	bool GetVTableEx(UINT64 *pVTable);
 #endif
 };
 

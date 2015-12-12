@@ -56,6 +56,9 @@
     <ClCompile Include="Game\Hook\Direct3DEx.cpp">
       <Filter>Game\Hook</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Hook\Direct3D.cpp">
+      <Filter>Game\Hook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -149,6 +152,9 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Game\Hook\Direct3DEx.h">
+      <Filter>Game\Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\Direct3D.h">
       <Filter>Game\Hook</Filter>
     </ClInclude>
   </ItemGroup>

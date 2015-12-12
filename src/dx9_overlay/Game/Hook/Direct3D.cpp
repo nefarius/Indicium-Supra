@@ -1,13 +1,13 @@
-#include "Direct3DEx.h"
+#include "Direct3D.h"
 
 
-CDirect3DEx::CDirect3DEx()
+CDirect3D::CDirect3D()
 {
-	d3d9_ex = NULL;
-	d3d9_device_ex = NULL;
+	d3d9 = NULL;
+	d3d9_device = NULL;
 	vtable = NULL;
 
-	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for Direct3DCreate9Ex...";
+	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for Direct3DCreate9...";
 
 	HMODULE hMod = GetModuleHandle("d3d9.dll");
 
@@ -16,7 +16,7 @@ CDirect3DEx::CDirect3DEx()
 		BOOST_LOG_TRIVIAL(fatal) << "Could not get the handle to d3d9.dll";
 		return;
 	}
-	
+
 	ZeroMemory(&window_class, sizeof(WNDCLASSEX));
 
 	window_class.cbSize = sizeof(WNDCLASSEX);
@@ -45,22 +45,22 @@ CDirect3DEx::CDirect3DEx()
 		return;
 	}
 
-	LPVOID Direct3DCreate9Ex = (LPVOID)GetProcAddress(hMod, "Direct3DCreate9Ex");
-	if (Direct3DCreate9Ex == NULL)
+	LPVOID Direct3DCreate9 = (LPVOID)GetProcAddress(hMod, "Direct3DCreate9");
+	if (Direct3DCreate9 == NULL)
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Could not locate the Direct3DCreate9 procedure entry point";
 		return;
 	}
 
-	HRESULT error_code = ((HRESULT(WINAPI *)(UINT, IDirect3D9Ex **)) Direct3DCreate9Ex)(D3D_SDK_VERSION, &d3d9_ex);
-	if (FAILED(error_code))
+	d3d9 = ((LPDIRECT3D9(WINAPI *)(UINT)) Direct3DCreate9)(D3D_SDK_VERSION);
+	if (d3d9 == NULL)
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Could not create the DirectX 9 interface";
 		return;
 	}
 
 	D3DDISPLAYMODE display_mode;
-	if (FAILED(d3d9_ex->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &display_mode)))
+	if (FAILED(d3d9->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &display_mode)))
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Could not determine the current display mode";
 		return;
@@ -72,8 +72,8 @@ CDirect3DEx::CDirect3DEx()
 	present_parameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	present_parameters.BackBufferFormat = display_mode.Format;
 
-	error_code = d3d9_ex->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, NULL, &d3d9_device_ex);
+	HRESULT error_code = d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window,
+		D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, &d3d9_device);
 	if (FAILED(error_code))
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Could not create the Direct3D 9 device"; return;
@@ -81,24 +81,24 @@ CDirect3DEx::CDirect3DEx()
 	}
 
 #ifdef _M_IX86
-	vtable = *((UINT32 **)d3d9_device_ex);
+	vtable = *((UINT32 **)d3d9_device);
 #else
-	vtable = *((UINT64 **)d3d9_device_ex);
+	vtable = *((UINT64 **)d3d9_device);
 #endif
 
 	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
 }
 
 
-CDirect3DEx::~CDirect3DEx()
+CDirect3D::~CDirect3D()
 {
 	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
 
-	if (d3d9_device_ex)
-		d3d9_device_ex->Release();
+	if (d3d9_device)
+		d3d9_device->Release();
 
-	if (d3d9_ex)
-		d3d9_ex->Release();
+	if (d3d9)
+		d3d9->Release();
 
 	if (!DestroyWindow(temp_window))
 		BOOST_LOG_TRIVIAL(fatal) << "Could not release the temporary window";
@@ -108,18 +108,18 @@ CDirect3DEx::~CDirect3DEx()
 }
 
 #ifdef _M_IX86
-bool CDirect3DEx::GetVTableEx(UINT32 *pVTable)
+bool CDirect3D::GetVTable(UINT32 *pVTable)
 {
 	if (vtable)
 	{
 		memcpy(pVTable, vtable, VTableElements * sizeof(UINT32));
 		return true;
 	}
-
+	
 	return false;
 }
 #else
-bool CDirect3DEx::GetVTableEx(UINT64 *pVTable)
+bool CDirect3D::GetVTable(UINT64 *pVTable)
 {
 	if (vtable)
 	{

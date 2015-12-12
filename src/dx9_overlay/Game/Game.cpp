@@ -19,6 +19,7 @@
 #include <Psapi.h>
 #pragma comment(lib, "psapi.lib")
 
+#include <Game/Hook/Direct3D.h>
 #include <Game/Hook/Direct3DEx.h>
 
 #define DX9_VTABLE_RELEASE				0x02
@@ -81,14 +82,21 @@ void initGame()
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
 
 #ifdef _M_IX86
-	UINT32 *vtable = NULL;
+	UINT32 vtable[CDirect3D::VTableElements] = { };
+	UINT32 vtableEx[CDirect3DEx::VTableElements] = {};
 #else
-	UINT64 *vtable = NULL;
+	UINT64 vtable[CDirect3D::VTableElements] = { };
+	UINT64 vtableEx[CDirect3DEx::VTableElements] = { };
 #endif
 
 	{
+		CDirect3D d3d;
+		d3d.GetVTable(vtable);
+	}
+
+	{
 		CDirect3DEx d3dEx;
-		vtable = d3dEx.GetVTableEx();
+		d3dEx.GetVTableEx(vtableEx);
 	}
 
 #ifdef SWAPCHAIN
@@ -124,86 +132,91 @@ void initGame()
 	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
 
 	
-
-	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
-
-	g_presentHook.apply(vtable[DX9_VTABLE_PRESENT], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
+	if (vtable)
 	{
-		g_bIsUsingPresent = true;
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
 
-		__asm pushad
-		g_pRenderer.draw(dev);
-		__asm popad
-
-		return g_presentHook.callOrig(dev, a1, a2, a3, a4);
-	});
-
-	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Reset";
-
-	g_resetHook.apply(vtable[DX9_VTABLE_RESET], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
-	{
-		static UINT32 counter = 0;
-		static BOOL skip = FALSE;
-
-		if (!skip || counter++ == 100)
+		g_presentHook.apply(vtable[DX9_VTABLE_PRESENT], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
 		{
-			skip = TRUE;
-			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9::Reset is used by process";
-		}
+			g_bIsUsingPresent = true;
 
-		__asm pushad
-		g_pRenderer.reset(dev);
-		__asm popad
-
-		return g_resetHook.callOrig(dev, pp);
-	});
-
-	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
-
-	g_presentExHook.apply(vtable[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4, DWORD a5) -> HRESULT
-	{
-		g_bIsUsingPresent = true;
-
-		__asm pushad
-		g_pRenderer.draw(dev);
-		__asm popad
-
-		return g_presentExHook.callOrig(dev, a1, a2, a3, a4, a5);
-	});
-
-	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
-
-	g_resetExHook.apply(vtable[DX9_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS *pp, D3DDISPLAYMODEEX *ppp) -> HRESULT
-	{
-		static UINT32 counter = 0;
-		static BOOL skip = FALSE;
-
-		if (!skip || counter++ == 100)
-		{
-			skip = TRUE;
-			BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9Ex::ResetEx is used by process";
-		}
-
-		__asm pushad
-		g_pRenderer.reset(dev);
-		__asm popad
-
-		return g_resetExHook.callOrig(dev, pp, ppp);
-	});
-
-	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::EndScene";
-
-	g_endSceneHook.apply(vtable[DX9_VTABLE_ENDSCENE], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
-	{
-		if (!g_bIsUsingPresent)
-		{
 			__asm pushad
 			g_pRenderer.draw(dev);
 			__asm popad
-		}
 
-		return g_endSceneHook.callOrig(dev);
-	});
+			return g_presentHook.callOrig(dev, a1, a2, a3, a4);
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Reset";
+
+		g_resetHook.apply(vtable[DX9_VTABLE_RESET], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
+		{
+			static UINT32 counter = 0;
+			static BOOL skip = FALSE;
+
+			if (!skip || counter++ == 100)
+			{
+				skip = TRUE;
+				BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9::Reset is used by process";
+			}
+
+			__asm pushad
+			g_pRenderer.reset(dev);
+			__asm popad
+
+			return g_resetHook.callOrig(dev, pp);
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::EndScene";
+
+		g_endSceneHook.apply(vtable[DX9_VTABLE_ENDSCENE], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
+		{
+			if (!g_bIsUsingPresent)
+			{
+				__asm pushad
+				g_pRenderer.draw(dev);
+				__asm popad
+			}
+
+			return g_endSceneHook.callOrig(dev);
+		});
+	}
+
+	if (vtableEx)
+	{
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
+
+		g_presentExHook.apply(vtableEx[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4, DWORD a5) -> HRESULT
+		{
+			g_bIsUsingPresent = true;
+
+			__asm pushad
+			g_pRenderer.draw(dev);
+			__asm popad
+
+			return g_presentExHook.callOrig(dev, a1, a2, a3, a4, a5);
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
+
+		g_resetExHook.apply(vtableEx[DX9_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS *pp, D3DDISPLAYMODEEX *ppp) -> HRESULT
+		{
+			static UINT32 counter = 0;
+			static BOOL skip = FALSE;
+
+			if (!skip || counter++ == 100)
+			{
+				skip = TRUE;
+				BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9Ex::ResetEx is used by process";
+			}
+
+			__asm pushad
+			g_pRenderer.reset(dev);
+			__asm popad
+
+			return g_resetExHook.callOrig(dev, pp, ppp);
+		});
+	}
 
 #ifdef FIXME
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DSwapChain9::Present";

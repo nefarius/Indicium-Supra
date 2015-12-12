@@ -93,6 +93,7 @@
   <ItemGroup>
     <ClCompile Include="Client\Client.cpp" />
     <ClCompile Include="Client\Render.cpp" />
+    <ClCompile Include="Game\Hook\Direct3D.cpp" />
     <ClCompile Include="Game\Hook\Direct3DEx.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Game\Game.cpp" />
@@ -114,6 +115,7 @@
   <ItemGroup>
     <ClInclude Include="Client\Client.h" />
     <ClInclude Include="Client\Render.h" />
+    <ClInclude Include="Game\Hook\Direct3D.h" />
     <ClInclude Include="Game\Hook\Direct3DEx.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="Game\Game.h" />
