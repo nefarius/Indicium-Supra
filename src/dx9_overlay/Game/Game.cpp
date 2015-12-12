@@ -19,6 +19,8 @@
 #include <Psapi.h>
 #pragma comment(lib, "psapi.lib")
 
+#include <Game/Hook/Direct3DEx.h>
+
 #define DX9_VTABLE_RELEASE				0x02
 #define DX9_VTABLE_PRESENT				0x11
 #define DX9_VTABLE_RESET				0x10
@@ -78,62 +80,18 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
 
-	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for Direct3DCreate9Ex...";
-
-	WNDCLASSEX window_class;
-	ZeroMemory(&window_class, sizeof(WNDCLASSEX));
-
-	window_class.cbSize = sizeof(WNDCLASSEX);
-	window_class.style = CS_HREDRAW | CS_VREDRAW;
-	window_class.lpfnWndProc = DefWindowProc;
-	window_class.lpszClassName = "TempDirectXOverlayWindow";
-
-	window_class.hInstance = GetModuleHandle(NULL);
-	if (window_class.hInstance == NULL)
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get the instance handle";
-
-	if (!RegisterClassEx(&window_class))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get register the window class";
-
-	HWND temp_window = CreateWindow(window_class.lpszClassName, "Temporary DirectX Overlay Window", 
-		WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, window_class.hInstance, NULL);
-	if (temp_window == NULL)
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get create the temporary window";
-
-	LPVOID Direct3DCreate9Ex = (LPVOID)GetProcAddress(hMod, "Direct3DCreate9Ex");
-	if (Direct3DCreate9Ex == NULL)
-		BOOST_LOG_TRIVIAL(fatal) << "Could not locate the Direct3DCreate9 procedure entry point";
-
-	IDirect3D9Ex *d3d9_ex;
-	HRESULT error_code = ((HRESULT(WINAPI *)(UINT, IDirect3D9Ex **)) Direct3DCreate9Ex)(D3D_SDK_VERSION, &d3d9_ex);
-	if (FAILED(error_code))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not create the DirectX 9 interface";
-
-	D3DDISPLAYMODE display_mode;
-	if (FAILED(d3d9_ex->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &display_mode)))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not determine the current display mode";
-
-	D3DPRESENT_PARAMETERS present_parameters;
-	ZeroMemory(&present_parameters, sizeof(D3DPRESENT_PARAMETERS));
-	present_parameters.Windowed = TRUE;
-	present_parameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	present_parameters.BackBufferFormat = display_mode.Format;
-
-	IDirect3DDevice9Ex *d3d9_device_ex;
-	error_code = d3d9_ex->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window, 
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, NULL, &d3d9_device_ex);
-	if (FAILED(error_code))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not create the Direct3D 9 device";
-
 #ifdef _M_IX86
-	UINT32 *vtable = *((UINT32 **)d3d9_device_ex);
+	UINT32 *vtable = NULL;
 #else
-	UINT64 *vtable = *((UINT64 **)d3d9_device_ex);
+	UINT64 *vtable = NULL;
 #endif
 
-	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
+	{
+		CDirect3DEx d3dEx;
+		vtable = d3dEx.GetVTableEx();
+	}
 
-
+#ifdef SWAPCHAIN
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for IDirect3DSwapChain9...";
 
 	IDirect3DSwapChain9 *swap_chain;
@@ -148,20 +106,12 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
 
-
 	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
 
 	swap_chain->Release();
-	d3d9_device_ex->Release();
-	d3d9_ex->Release();
+#endif
 
-	if (!DestroyWindow(temp_window))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not release the temporary window";
-
-	if (!UnregisterClass(window_class.lpszClassName, window_class.hInstance))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not release the window class";
 	
-
 
 	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
 

@@ -53,6 +53,9 @@
     <ClCompile Include="Utils\Serializer.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Hook\Direct3DEx.cpp">
+      <Filter>Game\Hook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -69,6 +72,9 @@
     </Filter>
     <Filter Include="Shared">
       <UniqueIdentifier>{3b5d3b0a-16b2-4805-a0a8-4cf8445aec66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Hook">
+      <UniqueIdentifier>{d80dc06f-9e19-4300-bbdc-c3d72172e3ec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +147,9 @@
     </ClInclude>
     <ClInclude Include="Utils\Serializer.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\Direct3DEx.h">
+      <Filter>Game\Hook</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
