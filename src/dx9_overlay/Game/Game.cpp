@@ -118,8 +118,7 @@ void initGame()
 
 	swap_chain->Release();
 #endif
-
-	
+		
 
 	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
 
@@ -201,15 +200,6 @@ void initGame()
 
 		g_resetExHook.apply(vtableEx[DX9_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS *pp, D3DDISPLAYMODEEX *ppp) -> HRESULT
 		{
-			static UINT32 counter = 0;
-			static BOOL skip = FALSE;
-
-			if (!skip || counter++ == 100)
-			{
-				skip = TRUE;
-				BOOST_LOG_TRIVIAL(info) << "IDirect3DDevice9Ex::ResetEx is used by process";
-			}
-
 			__asm pushad
 			g_pRenderer.reset(dev);
 			__asm popad
