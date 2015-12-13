@@ -4,7 +4,7 @@
 #include "dx_utils.h"
 
 Text::Text(Renderer *renderer, const std::string& font,int iFontSize,bool Bold,bool Italic,int x,int y,D3DCOLOR color,const std::string& text, bool bShadow, bool bShow)
-	: RenderBase(renderer), m_D3DFont(NULL)
+	: RenderBase(renderer), m_2DFont(nullptr)
 {
 	setPos(x,y);
 	setColor(color);
@@ -98,7 +98,7 @@ void Text::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 
 bool Text::canBeDeleted()
 {
-	return m_D3DFont == nullptr;
+	return m_2DFont == nullptr;
 }
 
 bool Text::loadResource(IDirect3DDevice9 *pDevice)
@@ -116,19 +116,18 @@ void Text::initFont(IDirect3DDevice9 *pDevice)
 {
 	int size = calculatedYPos(m_FontSize);
 
-	m_D3DFont = std::make_shared<CD3DFont>(m_Font.c_str(), size, (m_bBold) ? D3DFONT_BOLD : 0 | (m_bItalic) ? D3DFONT_ITALIC : 0 | D3DFONT_FILTERED);
-	m_D3DFont->InitDeviceObjects(pDevice);
-	m_D3DFont->RestoreDeviceObjects();
+	m_2DFont = std::make_shared<C2DFont>();
+	m_2DFont->Initialize(pDevice, m_Font.c_str(), size, m_bBold, m_bItalic);
 }
 
-void Text::resetFont()
+void Text::resetFont() const
 {
-	m_D3DFont.reset();
+	m_2DFont->OnResetDevice();
 }
 
 bool Text::drawText(int x, int y, DWORD dwColor, const std::string& strText, DWORD dwFlags /*= 0L*/)
 {
 	return safeExecuteWithValidation([&](){
-		m_D3DFont->DrawTextA((float)x, (float)y, dwColor, m_Text.c_str(), dwFlags);
+		m_2DFont->Print(m_Text.c_str(), x, y, dwColor);
 	});
 }

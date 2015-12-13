@@ -5,6 +5,7 @@
 
 #include "D3DFont.h"
 #include "RenderBase.h"
+#include "C2DFont.h"
 
 class Text : public RenderBase
 {
@@ -35,11 +36,11 @@ private:
 	std::string	m_Text, m_Font;
 	int	m_X, m_Y, m_FontSize;
 	D3DCOLOR m_Color;
-	std::shared_ptr<CD3DFont> m_D3DFont;
+	std::shared_ptr<C2DFont> m_2DFont;
 	bool m_bShown, m_bShadow, m_bItalic, m_bBold;
 
 	void initFont(IDirect3DDevice9 *pDevice);
-	void resetFont();
+	void resetFont() const;
 	bool drawText(int x, int y, DWORD dwColor, const std::string& strText, DWORD dwFlags = 0L);
 };
 

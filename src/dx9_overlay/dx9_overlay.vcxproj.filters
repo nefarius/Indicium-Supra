@@ -59,6 +59,9 @@
     <ClCompile Include="Game\Hook\Direct3D.cpp">
       <Filter>Game\Hook</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Rendering\C2DFont.cpp">
+      <Filter>Game\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -156,6 +159,9 @@
     </ClInclude>
     <ClInclude Include="Game\Hook\Direct3D.h">
       <Filter>Game\Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Rendering\C2DFont.h">
+      <Filter>Game\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
