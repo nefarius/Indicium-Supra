@@ -1,6 +1,5 @@
 #include <Utils/Windows.h>
 #include <Utils/Hook.h>
-#include <Utils/Pattern.h>
 #include <Utils/PipeServer.h>
 
 #include "Game.h"

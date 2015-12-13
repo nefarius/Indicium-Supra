@@ -41,9 +41,6 @@
     <ClCompile Include="Utils\Misc.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\Pattern.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Utils\PipeClient.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -131,9 +128,6 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Misc.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\Pattern.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Windows.h">

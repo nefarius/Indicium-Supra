@@ -111,7 +111,6 @@
     <ClCompile Include="Utils\Misc.cpp" />
     <ClCompile Include="Utils\PipeClient.cpp" />
     <ClCompile Include="Utils\PipeServer.cpp" />
-    <ClCompile Include="Utils\Pattern.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Rendering\C2DFont.h" />
@@ -138,7 +137,6 @@
     <ClInclude Include="Utils\Misc.h" />
     <ClInclude Include="Utils\PipeClient.h" />
     <ClInclude Include="Utils\PipeServer.h" />
-    <ClInclude Include="Utils\Pattern.h" />
     <ClInclude Include="Utils\SafeBlock.h" />
     <ClInclude Include="Utils\Windows.h" />
   </ItemGroup>
