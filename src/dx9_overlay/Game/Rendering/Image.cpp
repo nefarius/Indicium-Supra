@@ -57,8 +57,34 @@ void Image::draw(IDirect3DDevice9 *pDevice)
 	int x = calculatedXPos(m_x);
 	int y = calculatedYPos(m_y);
 
+	m_Imagepos.x = (float)x;
+	m_Imagepos.y = (float)y;
+	m_Imagepos.z = 0.0f;
+
 	if(m_pTexture && m_pSprite)
-		Drawing::DrawSprite(m_pSprite, m_pTexture, x, y, m_rotation, m_align);
+	{
+		D3DXMATRIX mat;
+		D3DXVECTOR2 scaling(1.0f, 1.0f);
+		D3DSURFACE_DESC desc;
+
+		m_pTexture->GetLevelDesc(0, &desc);
+
+		D3DXVECTOR2 spriteCentre;
+		if (m_align == 1)
+			spriteCentre = D3DXVECTOR2((FLOAT)desc.Width / 2, (FLOAT)desc.Height / 2);
+		else
+			spriteCentre = D3DXVECTOR2(0, 0);
+
+		D3DXVECTOR2 trans = D3DXVECTOR2(0, 0);
+		D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, &spriteCentre, (FLOAT)m_rotation, &trans);
+		
+		//m_pSprite->SetTransform(&mat);
+		m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
+		m_pSprite->Draw(m_pTexture, nullptr, nullptr, &m_Imagepos, 0xFFFFFFFF);
+		m_pSprite->End();
+	}
+		
+	//Drawing::DrawSprite(m_pSprite, m_pTexture, x, y, m_rotation, m_align);
 }
 
 void Image::reset(IDirect3DDevice9 *pDevice)

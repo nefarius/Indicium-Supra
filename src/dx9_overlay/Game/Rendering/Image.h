@@ -39,4 +39,5 @@ private:
 
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	LPD3DXSPRITE m_pSprite;
+	D3DXVECTOR3 m_Imagepos;
 };
