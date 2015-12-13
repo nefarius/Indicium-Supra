@@ -40,7 +40,7 @@ private:
 	bool m_bShown, m_bShadow, m_bItalic, m_bBold;
 
 	void initFont(IDirect3DDevice9 *pDevice);
-	void resetFont() const;
+	void resetFont();
 	bool drawText(int x, int y, DWORD dwColor, const std::string& strText, DWORD dwFlags = 0L);
 };
 

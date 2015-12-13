@@ -120,9 +120,9 @@ void Text::initFont(IDirect3DDevice9 *pDevice)
 	m_2DFont->Initialize(pDevice, m_Font.c_str(), size, m_bBold, m_bItalic);
 }
 
-void Text::resetFont() const
+void Text::resetFont()
 {
-	m_2DFont->OnResetDevice();
+	m_2DFont.reset();
 }
 
 bool Text::drawText(int x, int y, DWORD dwColor, const std::string& strText, DWORD dwFlags /*= 0L*/)
