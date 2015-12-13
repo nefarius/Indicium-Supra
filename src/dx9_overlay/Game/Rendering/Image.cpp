@@ -1,5 +1,6 @@
 #include "Image.h"
 #include <math.h>
+#include <boost/log/trivial.hpp>
 
 Image::Image(Renderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
 	: RenderBase(renderer), m_pSprite(NULL), m_pTexture(NULL)
@@ -124,22 +125,31 @@ bool Image::loadResource(IDirect3DDevice9 *pDevice)
 	if(m_pSprite)
 	{
 		m_pSprite->Release();
-		m_pSprite = NULL;
+		m_pSprite = nullptr;
 	}
 
 	if(m_pTexture)
 	{
 		m_pTexture->Release();
-		m_pTexture = NULL;
+		m_pTexture = nullptr;
 	}
 
-	D3DXCreateTextureFromFileA(pDevice, m_filePath.c_str(), &m_pTexture);
-	D3DXCreateSprite(pDevice, &m_pSprite);
+	if (FAILED(D3DXCreateTextureFromFileA(pDevice, m_filePath.c_str(), &m_pTexture)))
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't load texture from file " << m_filePath;
+		return false;
+	}
+
+	if (FAILED(D3DXCreateSprite(pDevice, &m_pSprite)))
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't create sprite";
+		return false;
+	}
 
 	if (m_pTexture)
 		m_pTexture->GetLevelDesc(0, &m_TextureDesc);
 
-	return (m_pTexture != NULL && m_pSprite != NULL);
+	return (m_pTexture != nullptr && m_pSprite != nullptr);
 }
 
 void Image::firstDrawAfterReset(IDirect3DDevice9 *pDevice)
