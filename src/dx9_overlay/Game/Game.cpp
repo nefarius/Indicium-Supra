@@ -21,6 +21,15 @@
 #include <Game/Hook/Direct3D.h>
 #include <Game/Hook/Direct3DEx.h>
 
+// #define SUPPORT_OPENGL
+
+#ifdef SUPPORT_OPENGL
+#include <gl/GL.h>
+#include <gl/GLU.h>
+#pragma comment(lib,"OpenGL32.lib")
+#pragma comment(lib,"GLu32.lib")
+#endif
+
 #define DX9_VTABLE_RELEASE				0x02
 #define DX9_VTABLE_PRESENT				0x11
 #define DX9_VTABLE_RESET				0x10
@@ -37,6 +46,14 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONS
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> g_resetExHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DSWAPCHAIN9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_swapchainPresentHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> g_endSceneHook;
+
+#ifdef SUPPORT_OPENGL
+Hook<CallConvention::stdcall_t, VOID, GLenum> g_glBeginHook;
+Hook<CallConvention::stdcall_t, VOID, const GLfloat*> g_glVertex3fvHook;
+Hook<CallConvention::stdcall_t, VOID, GLfloat, GLfloat, GLfloat> g_glVertex3fHook;
+Hook<CallConvention::stdcall_t, VOID, GLbitfield> g_glClearHook;
+Hook<CallConvention::stdcall_t, VOID, GLenum> g_glEnableHook;
+#endif
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
@@ -117,7 +134,6 @@ void initGame()
 
 	swap_chain->Release();
 #endif
-		
 
 	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
 
@@ -129,6 +145,101 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
 
+#ifdef SUPPORT_OPENGL
+	HMODULE hModOpenGL = nullptr;
+
+	if ((hModOpenGL = GetModuleHandle("opengl32.dll")) != nullptr)
+	{
+		BOOST_LOG_TRIVIAL(info) << "Preparing to hook OpenGL...";
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking glBegin";
+		g_glBeginHook.apply((DWORD)GetProcAddress(hModOpenGL, "glBegin"), [](GLenum mode) -> VOID
+		{
+			BOOST_LOG_TRIVIAL(info) << "Inside glBegin";
+
+			g_glBeginHook.callOrig(mode);
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking glVertex3fv";
+		g_glVertex3fvHook.apply((DWORD)GetProcAddress(hModOpenGL, "glVertex3fv"), [](const GLfloat *v) -> VOID
+		{
+			BOOST_LOG_TRIVIAL(info) << "Inside glVertex3fv";
+
+			g_glVertex3fvHook.callOrig(v);
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking glVertex3f";
+		g_glVertex3fHook.apply((DWORD)GetProcAddress(hModOpenGL, "glVertex3f"), [](GLfloat x, GLfloat y, GLfloat z) -> VOID
+		{
+			BOOST_LOG_TRIVIAL(info) << "Inside glVertex3f";
+
+			g_glVertex3fHook.callOrig(x, y, z);
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking glClear";
+		g_glClearHook.apply((DWORD)GetProcAddress(hModOpenGL, "glClear"), [](GLbitfield mask) -> VOID
+		{
+			BOOST_LOG_TRIVIAL(info) << "Inside glClear";
+
+			g_glClearHook.callOrig(mask);
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking glEnable";
+		g_glEnableHook.apply((DWORD)GetProcAddress(hModOpenGL, "glEnable"), [](GLenum cap) -> VOID
+		{
+			BOOST_LOG_TRIVIAL(info) << "Inside glEnable";
+
+			// White side - BACK
+			glBegin(GL_POLYGON);
+			glColor3f(1.0, 1.0, 1.0);
+			glVertex3f(0.5, -0.5, 0.5);
+			glVertex3f(0.5, 0.5, 0.5);
+			glVertex3f(-0.5, 0.5, 0.5);
+			glVertex3f(-0.5, -0.5, 0.5);
+			glEnd();
+
+			// Purple side - RIGHT
+			glBegin(GL_POLYGON);
+			glColor3f(1.0, 0.0, 1.0);
+			glVertex3f(0.5, -0.5, -0.5);
+			glVertex3f(0.5, 0.5, -0.5);
+			glVertex3f(0.5, 0.5, 0.5);
+			glVertex3f(0.5, -0.5, 0.5);
+			glEnd();
+
+			// Green side - LEFT
+			glBegin(GL_POLYGON);
+			glColor3f(0.0, 1.0, 0.0);
+			glVertex3f(-0.5, -0.5, 0.5);
+			glVertex3f(-0.5, 0.5, 0.5);
+			glVertex3f(-0.5, 0.5, -0.5);
+			glVertex3f(-0.5, -0.5, -0.5);
+			glEnd();
+
+			// Blue side - TOP
+			glBegin(GL_POLYGON);
+			glColor3f(0.0, 0.0, 1.0);
+			glVertex3f(0.5, 0.5, 0.5);
+			glVertex3f(0.5, 0.5, -0.5);
+			glVertex3f(-0.5, 0.5, -0.5);
+			glVertex3f(-0.5, 0.5, 0.5);
+			glEnd();
+
+			// Red side - BOTTOM
+			glBegin(GL_POLYGON);
+			glColor3f(1.0, 0.0, 0.0);
+			glVertex3f(0.5, -0.5, -0.5);
+			glVertex3f(0.5, -0.5, 0.5);
+			glVertex3f(-0.5, -0.5, 0.5);
+			glVertex3f(-0.5, -0.5, -0.5);
+			glEnd();
+
+			glFlush();
+
+			g_glEnableHook.callOrig(cap);
+		});
+	}
+#endif
 	
 	if (vtable)
 	{
