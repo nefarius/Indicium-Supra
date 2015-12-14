@@ -1,5 +1,5 @@
 #include "dx_utils.h"
-#include "D3DFont.h"
+#include <math.h>
 
 void Drawing::DrawBox(float x, float y, float w, float h, DWORD color, LPDIRECT3DDEVICE9 pDevice)
 {
@@ -52,12 +52,6 @@ void Drawing::DrawSprite(LPD3DXSPRITE SpriteInterface, LPDIRECT3DTEXTURE9 Textur
 	if (SpriteInterface == NULL || TextureInterface == NULL)
 		return;
 
-	D3DXVECTOR3 Vec;
-
-	Vec.x = (FLOAT) PosX;
-	Vec.y = (FLOAT) PosY;
-	Vec.z = (FLOAT)0.0f;
-
 	D3DXMATRIX mat;
 	D3DXVECTOR2 scaling(1.0f, 1.0f);
 	D3DSURFACE_DESC desc;
@@ -70,11 +64,11 @@ void Drawing::DrawSprite(LPD3DXSPRITE SpriteInterface, LPDIRECT3DTEXTURE9 Textur
 	else
 		spriteCentre = D3DXVECTOR2(0, 0);
 
-	D3DXVECTOR2 trans = D3DXVECTOR2(0, 0);
-	D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, &spriteCentre, (FLOAT) Rotation, &trans);
+	D3DXVECTOR2 trans = D3DXVECTOR2((FLOAT)PosX, (FLOAT)PosY);
+	D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, &spriteCentre, (FLOAT)((Rotation * acos(-1.0)) / 180), &trans);
 
 	SpriteInterface->SetTransform(&mat);
 	SpriteInterface->Begin(D3DXSPRITE_ALPHABLEND);
-	SpriteInterface->Draw(TextureInterface, NULL, NULL, &Vec, 0xFFFFFFFF);
+	SpriteInterface->Draw(TextureInterface, nullptr, nullptr, nullptr, 0xFFFFFFFF);
 	SpriteInterface->End();
 }

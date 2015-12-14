@@ -1,6 +1,6 @@
 #include "Image.h"
-#include <math.h>
 #include <boost/log/trivial.hpp>
+#include "dx_utils.h"
 
 Image::Image(Renderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
 	: RenderBase(renderer), m_pSprite(NULL), m_pTexture(NULL)
@@ -59,24 +59,7 @@ void Image::draw(IDirect3DDevice9 *pDevice)
 	int y = calculatedYPos(m_y);
 
 	if(m_pTexture && m_pSprite)
-	{
-		D3DXMATRIX mat;
-		D3DXVECTOR2 scaling(1.0f, 1.0f);
-		D3DXVECTOR2 spriteCentre;
-
-		if (m_align == 1)
-			spriteCentre = D3DXVECTOR2((FLOAT)m_TextureDesc.Width / 2, (FLOAT)m_TextureDesc.Height / 2);
-		else
-			spriteCentre = D3DXVECTOR2(0, 0);
-
-		D3DXVECTOR2 trans = D3DXVECTOR2((FLOAT)x, (FLOAT)y);
-		D3DXMatrixTransformation2D(&mat, NULL, 0.0, &scaling, &spriteCentre, (FLOAT)(((m_rotation)* acos(-1.0)) / 180), &trans);
-		
-		m_pSprite->Begin(D3DXSPRITE_ALPHABLEND);
-		m_pSprite->SetTransform(&mat);
-		m_pSprite->Draw(m_pTexture, nullptr, nullptr, nullptr, 0xFFFFFFFF);
-		m_pSprite->End();
-	}
+		Drawing::DrawSprite(m_pSprite, m_pTexture, x, y, m_rotation, m_align);
 }
 
 void Image::reset(IDirect3DDevice9 *pDevice)
