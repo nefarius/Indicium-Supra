@@ -157,8 +157,12 @@
     <ClInclude Include="Game\Rendering\C2DFont.h">
       <Filter>Game\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="dx9_overlay.rc" />
   </ItemGroup>
 </Project>
