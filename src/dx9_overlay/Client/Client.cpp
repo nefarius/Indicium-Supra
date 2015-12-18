@@ -2,6 +2,7 @@
 
 #include <dllmain.h>
 #include <ShlObj.h>
+#include <Psapi.h>
 
 #include <Shared/PipeMessages.h>
 #include <Utils/Misc.h>
@@ -10,6 +11,8 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem/path.hpp>
 
 struct stParamInfo
 {
@@ -90,6 +93,28 @@ EXPORT int Init()
 	}
 
 	BOOST_LOG_TRIVIAL(info) << "Opened target process [HANDLE: " << hHandle << "]";
+
+	HMODULE hMods[1024];
+	DWORD cbNeeded;
+
+	if (EnumProcessModules(hHandle, hMods, sizeof(hMods), &cbNeeded))
+	{
+		for (unsigned int i = 0; i < (cbNeeded / sizeof(HMODULE)); i++)
+		{
+			TCHAR szModName[MAX_PATH];
+
+			if (GetModuleFileNameEx(hHandle, hMods[i], szModName,
+				sizeof(szModName) / sizeof(TCHAR)))
+			{
+				if (boost::iequals(szModName, szDLLPath))
+				{
+					BOOST_LOG_TRIVIAL(info) << "Overlay already loaded in target process";
+					CloseHandle(hHandle);
+					return 1;
+				}
+			}
+		}
+	}
 
 	void *pAddr = VirtualAllocEx(hHandle, NULL, strlen(szDLLPath) + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 	if (pAddr == NULL)
