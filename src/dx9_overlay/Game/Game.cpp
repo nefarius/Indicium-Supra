@@ -91,12 +91,18 @@ void initGame()
 
 	{
 		CDirect3D d3d;
-		d3d.GetVTable(vtable);
+		if (!d3d.GetVTable(vtable))
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9";
+		}
 	}
 
 	{
 		CDirect3DEx d3dEx;
-		d3dEx.GetVTableEx(vtableEx);
+		if (!d3dEx.GetVTableEx(vtableEx))
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9Ex";
+		}
 	}
 
 #ifdef SWAPCHAIN
