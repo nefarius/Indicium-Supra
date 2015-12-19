@@ -2,13 +2,14 @@
 #include <boost/log/trivial.hpp>
 #include "dx_utils.h"
 
-Image::Image(Renderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
+Image::Image(Renderer *renderer, const std::string& file_path, int x, int y, float scaleX, float scaleY, int rotation, int align, bool bShow)
 	: RenderBase(renderer), m_pSprite(NULL), m_pTexture(NULL)
 {
 	setFilePath(file_path);
 	setPos(x, y);
 	setRotation(rotation);
 	setAlign(align);
+	setScale(scaleX, scaleY);
 	setShown(bShow);
 }
 
@@ -37,12 +38,19 @@ void Image::setShown(bool show)
 	m_bShow = show;
 }
 
-bool Image::updateImage(const std::string& file_path, int x, int y, int rotation, int align, bool bShow)
+void Image::setScale(float x, float y)
+{
+	m_scale_x = x;
+	m_scale_y = y;
+}
+
+bool Image::updateImage(const std::string& file_path, int x, int y, float scaleX, float scaleY, int rotation, int align, bool bShow)
 {
 	setFilePath(file_path);
 	setPos(x, y);
 	setRotation(rotation);
 	setAlign(align);
+	setScale(scaleX, scaleY);
 	setShown(bShow);
 
 	changeResource();
@@ -59,7 +67,7 @@ void Image::draw(IDirect3DDevice9 *pDevice)
 	int y = calculatedYPos(m_y);
 
 	if(m_pTexture && m_pSprite)
-		Drawing::DrawSprite(m_pSprite, m_pTexture, x, y, m_rotation, m_align);
+		Drawing::DrawSprite(m_pSprite, m_pTexture, x, y, m_scale_x, m_scale_y, m_rotation, m_align);
 }
 
 void Image::reset(IDirect3DDevice9 *pDevice)

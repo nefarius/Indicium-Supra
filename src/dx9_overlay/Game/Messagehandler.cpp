@@ -256,11 +256,13 @@ void ImageCreate(Serializer& serializerIn, Serializer& serializerOut)
 	READ(std::string, path); 
 	READ(int, x); 
 	READ(int, y); 
+	READ(float, scaleX);
+	READ(float, scaleY);
 	READ(int, rotation); 
 	READ(int, align); 
 	READ(bool, show);
 	
-	WRITE(g_pRenderer.add(std::make_shared<Image>(&g_pRenderer, path.c_str(), x, y, rotation, align, show)));
+	WRITE(g_pRenderer.add(std::make_shared<Image>(&g_pRenderer, path.c_str(), x, y, scaleX, scaleY, rotation, align, show)));
 }
 
 void ImageDestroy(Serializer& serializerIn, Serializer& serializerOut)
@@ -310,6 +312,16 @@ void ImageSetRotation(Serializer& serializerIn, Serializer& serializerOut)
 	})));
 }
 
+void ImageSetScale(Serializer& serializerIn, Serializer& serializerOut)
+{
+	READ(int, id);
+	READ(float, x);
+	READ(float, y);
+
+	WRITE(int(safeExecuteWithValidation([&](){
+		g_pRenderer.getAs<Image>(id)->setScale(x, y);
+	})));
+}
 
 void DestroyAllVisual(Serializer& serializerIn, Serializer& serializerOut)
 {

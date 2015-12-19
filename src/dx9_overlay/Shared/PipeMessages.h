@@ -32,6 +32,7 @@ enum class PipeMessages : short
 	ImageSetAlign,
 	ImageSetPos,
 	ImageSetRotation,
+	ImageSetScale,
 	DestroyAllVisual,
 	ShowAllVisual,
 	HideAllVisual,

@@ -333,7 +333,7 @@ EXPORT int LineSetPos(int id, int x1, int y1, int x2, int y2)
 	return 0;
 }
 
-EXPORT int ImageCreate(char *path, int x, int y, int rotation, int align, bool bShow)
+EXPORT int ImageCreate(char *path, int x, int y, float scaleX, float scaleY, int rotation, int align, bool bShow)
 {
 	SERVER_CHECK(-1)
 
@@ -343,7 +343,7 @@ EXPORT int ImageCreate(char *path, int x, int y, int rotation, int align, bool b
 	if (!boost::filesystem::exists(abs_path))
 		return -2;
 
-	serializerIn << PipeMessages::ImageCreate << abs_path << x << y << rotation << align << bShow;
+	serializerIn << PipeMessages::ImageCreate << abs_path << x << y << scaleX << scaleY << rotation << align << bShow;
 
 	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
@@ -418,6 +418,20 @@ EXPORT int ImageSetRotation(int id, int rotation)
 	if (PipeClient(serializerIn, serializerOut).success())
 		SERIALIZER_RET(int);
 	
+	return 0;
+}
+
+EXPORT int ImageSetScale(int id, float x, float y)
+{
+	SERVER_CHECK(0)
+
+	Serializer serializerIn, serializerOut;
+
+	serializerIn << PipeMessages::ImageSetScale << id << x << y;
+
+	if (PipeClient(serializerIn, serializerOut).success())
+		SERIALIZER_RET(int);
+
 	return 0;
 }
 
@@ -518,3 +532,5 @@ EXPORT int SetOverlayPriority(int id, int priority)
 
 	return 0;
 }
+
+

@@ -6,16 +6,15 @@
 class Image : public RenderBase
 {
 public:
-	static void DrawSprite(LPD3DXSPRITE SpriteInterface, LPDIRECT3DTEXTURE9 TextureInterface, int PosX, int PosY, int Rotation, int Align);
-
-	Image(Renderer *renderer, const std::string& file_path, int x, int y, int rotation, int align, bool bShow);
+	Image(Renderer *renderer, const std::string& file_path, int x, int y, float scaleX, float scaleY, int rotation, int align, bool bShow);
 
 	void setFilePath(const std::string & path);
 	void setPos(int x, int y);
 	void setRotation(int rotation);
 	void setAlign(int align);
 	void setShown(bool show);
-	bool updateImage(const std::string& file_path, int x, int y, int rotation, int align, bool bShow);
+	void setScale(float x, float y);
+	bool updateImage(const std::string& file_path, int x, int y, float scaleX, float scaleY, int rotation, int align, bool bShow);
 
 protected:
 	virtual void draw(IDirect3DDevice9 *pDevice) sealed;
@@ -36,6 +35,8 @@ private:
 	int	m_x, m_y, m_rotation, m_align;
 
 	bool m_bShow;
+
+	float m_scale_x, m_scale_y;
 
 	LPDIRECT3DTEXTURE9 m_pTexture;
 	LPD3DXSPRITE m_pSprite;

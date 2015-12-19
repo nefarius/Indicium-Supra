@@ -36,6 +36,7 @@ void ImageSetShown(Serializer& serializerIn, Serializer& serializerOut);
 void ImageSetAlign(Serializer& serializerIn, Serializer& serializerOut);
 void ImageSetPos(Serializer& serializerIn, Serializer& serializerOut);
 void ImageSetRotation(Serializer& serializerIn, Serializer& serializerOut);
+void ImageSetScale(Serializer& serializerIn, Serializer& serializerOut);
 
 void DestroyAllVisual(Serializer& serializerIn, Serializer& serializerOut);
 void ShowAllVisual(Serializer& serializerIn, Serializer& serializerOut);

@@ -257,6 +257,7 @@ void initGame()
 	BIND(ImageSetAlign);
 	BIND(ImageSetPos);
 	BIND(ImageSetRotation);
+	BIND(ImageSetScale);
 
 	BIND(DestroyAllVisual);
 	BIND(ShowAllVisual);

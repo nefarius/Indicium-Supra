@@ -27,12 +27,13 @@ EXPORT int LineSetColor(int id, unsigned int color);
 EXPORT int LineSetWidth(int id, int width);
 EXPORT int LineSetPos(int id, int x1, int y1, int x2, int y2);
 
-EXPORT int ImageCreate(char *path, int x, int y, int rotation, int align, bool bShow);
+EXPORT int ImageCreate(char *path, int x, int y, float scaleX, float scaleY, int rotation, int align, bool bShow);
 EXPORT int ImageDestroy(int id);
 EXPORT int ImageSetShown(int id, bool bShown);
 EXPORT int ImageSetAlign(int id, int align);
 EXPORT int ImageSetPos(int id, int x, int y);
 EXPORT int ImageSetRotation(int id, int rotation);
+EXPORT int ImageSetScale(int id, float x, float y);
 
 EXPORT int DestroyAllVisual();
 EXPORT int ShowAllVisual();
