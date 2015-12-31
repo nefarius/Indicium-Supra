@@ -2,54 +2,28 @@
 #include <boost/log/trivial.hpp>
 
 
-Direct3DEx::Direct3DEx() : vtable(nullptr), d3d9_ex(nullptr), d3d9_device_ex(nullptr)
+Direct3DEx::Direct3DEx() : vtable(nullptr), temp_window(nullptr), d3d9_ex(nullptr), d3d9_device_ex(nullptr)
 {
+	temp_window = new Window();
+
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for Direct3DCreate9Ex...";
 
-	HMODULE hMod = GetModuleHandle("d3d9.dll");
+	auto hMod = GetModuleHandle("d3d9.dll");
 
-	if (hMod == NULL)
+	if (hMod == nullptr)
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Could not get the handle to d3d9.dll";
 		return;
 	}
-	
-	ZeroMemory(&window_class, sizeof(WNDCLASSEX));
 
-	window_class.cbSize = sizeof(WNDCLASSEX);
-	window_class.style = CS_HREDRAW | CS_VREDRAW;
-	window_class.lpfnWndProc = DefWindowProc;
-	window_class.lpszClassName = "TempDirectXOverlayWindow";
-
-	window_class.hInstance = GetModuleHandle(NULL);
-	if (window_class.hInstance == NULL)
-	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get the instance handle";
-		return;
-	}
-
-	if (!RegisterClassEx(&window_class))
-	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get register the window class";
-		return;
-	}
-
-	temp_window = CreateWindow(window_class.lpszClassName, "Temporary DirectX Overlay Window",
-		WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, window_class.hInstance, NULL);
-	if (temp_window == NULL)
-	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get create the temporary window";
-		return;
-	}
-
-	LPVOID Direct3DCreate9Ex = (LPVOID)GetProcAddress(hMod, "Direct3DCreate9Ex");
-	if (Direct3DCreate9Ex == NULL)
+	auto Direct3DCreate9Ex = static_cast<LPVOID>(GetProcAddress(hMod, "Direct3DCreate9Ex"));
+	if (Direct3DCreate9Ex == nullptr)
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Could not locate the Direct3DCreate9 procedure entry point";
 		return;
 	}
 
-	HRESULT error_code = ((HRESULT(WINAPI *)(UINT, IDirect3D9Ex **)) Direct3DCreate9Ex)(D3D_SDK_VERSION, &d3d9_ex);
+	auto error_code = static_cast<HRESULT(WINAPI *)(UINT, IDirect3D9Ex **)>(Direct3DCreate9Ex)(D3D_SDK_VERSION, &d3d9_ex);
 	if (FAILED(error_code))
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Could not create the DirectX 9 interface";
@@ -69,16 +43,16 @@ Direct3DEx::Direct3DEx() : vtable(nullptr), d3d9_ex(nullptr), d3d9_device_ex(nul
 	present_parameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	present_parameters.BackBufferFormat = display_mode.Format;
 
-	error_code = d3d9_ex->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, NULL, &d3d9_device_ex);
+	error_code = d3d9_ex->CreateDeviceEx(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window->GetWindowHandle(),
+		D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, nullptr, &d3d9_device_ex);
 	if (FAILED(error_code))
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not create the Direct3D 9 device"; return;
+		BOOST_LOG_TRIVIAL(fatal) << "Could not create the Direct3D 9 device";
 		return;
 	}
 
 #ifdef _M_IX86
-	vtable = *((UINT32 **)d3d9_device_ex);
+	vtable = *reinterpret_cast<UINT32 **>(d3d9_device_ex);
 #else
 	vtable = *((UINT64 **)d3d9_device_ex);
 #endif
@@ -96,11 +70,8 @@ Direct3DEx::~Direct3DEx()
 	if (d3d9_ex)
 		d3d9_ex->Release();
 
-	if (!DestroyWindow(temp_window))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not release the temporary window";
-
-	if (!UnregisterClass(window_class.lpszClassName, window_class.hInstance))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not release the window class";
+	if (temp_window)
+		delete temp_window;
 }
 
 #ifdef _M_IX86

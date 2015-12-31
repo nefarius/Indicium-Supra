@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d9.h>
+#include <Window.h>
 
 class Direct3D
 {
@@ -8,8 +9,7 @@ class Direct3D
 #else
 	UINT64 *vtable;
 #endif
-	WNDCLASSEX window_class;
-	HWND temp_window;
+	Window *temp_window;
 	IDirect3D9 *d3d9;
 	IDirect3DDevice9 *d3d9_device;
 public:

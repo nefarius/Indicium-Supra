@@ -111,6 +111,7 @@
     <ClCompile Include="Utils\Misc.cpp" />
     <ClCompile Include="Utils\PipeClient.cpp" />
     <ClCompile Include="Utils\PipeServer.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Rendering\C2DFont.h" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Utils\PipeServer.h" />
     <ClInclude Include="Utils\SafeBlock.h" />
     <ClInclude Include="Utils\Windows.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
