@@ -11,8 +11,8 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/log/trivial.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem/path.hpp>
+#include <Utils/Serializer.h>
+#include <Utils/PipeClient.h>
 
 struct stParamInfo
 {
@@ -63,16 +63,16 @@ EXPORT int Init()
 
 	BOOST_LOG_TRIVIAL(info) << "Initializing DLL injection";
 
-	GetModuleFileName((HMODULE) g_hDllHandle, szDLLPath, sizeof(szDLLPath));
+	GetModuleFileName(static_cast<HMODULE>(g_hDllHandle), szDLLPath, sizeof(szDLLPath));
 	if (!atoi(GetParam("use_window").c_str()))
 	{
-		std::string szSearchName = GetParam("process");
+		auto szSearchName = GetParam("process");
 		BOOST_LOG_TRIVIAL(info) << "Searching for target process by process name: " << szSearchName;
 		dwPId = procIdByProcName(szSearchName);
 	}
 	else
 	{
-		std::string szSearchName = GetParam("window");
+		auto szSearchName = GetParam("window");
 		BOOST_LOG_TRIVIAL(info) << "Searching for target process by window name: " << szSearchName;
 		dwPId = procIdByWindowName(szSearchName);
 	}
@@ -85,8 +85,8 @@ EXPORT int Init()
 
 	BOOST_LOG_TRIVIAL(info) << "Target PID: " << dwPId;
 
-	HANDLE hHandle = OpenProcess((STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xFFF), FALSE, dwPId);
-	if (hHandle == 0 || hHandle == INVALID_HANDLE_VALUE)
+	auto hHandle = OpenProcess((STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xFFF), FALSE, dwPId);
+	if (hHandle == nullptr || hHandle == INVALID_HANDLE_VALUE)
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Couldn't open target process";
 		return 0;
@@ -116,8 +116,8 @@ EXPORT int Init()
 		}
 	}
 
-	void *pAddr = VirtualAllocEx(hHandle, NULL, strlen(szDLLPath) + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-	if (pAddr == NULL)
+	auto pAddr = VirtualAllocEx(hHandle, nullptr, strlen(szDLLPath) + 1, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	if (pAddr == nullptr)
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Couldn't allocate memory in target process";
 		CloseHandle(hHandle);
@@ -126,7 +126,7 @@ EXPORT int Init()
 
 	BOOST_LOG_TRIVIAL(info) << "Allocated memory [ADDR: " << pAddr << "]";
 
-	bRetn = WriteProcessMemory(hHandle, pAddr, szDLLPath, strlen(szDLLPath) + 1, NULL);
+	bRetn = WriteProcessMemory(hHandle, pAddr, szDLLPath, strlen(szDLLPath) + 1, nullptr);
 	if (bRetn == FALSE)
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Couldn't write in memory region, performing clean-up";
@@ -141,8 +141,8 @@ EXPORT int Init()
 
 	// Load DLL-file
 	{
-		LPTHREAD_START_ROUTINE pFunc = (LPTHREAD_START_ROUTINE) GetProcAddress(GetModuleHandleA("kernel32.dll"), "LoadLibraryA");
-		if (pFunc == NULL)
+		auto pFunc = reinterpret_cast<LPTHREAD_START_ROUTINE>(GetProcAddress(GetModuleHandleA("kernel32.dll"), "LoadLibraryA"));
+		if (pFunc == nullptr)
 		{
 			BOOST_LOG_TRIVIAL(fatal) << "Couldn't find LoadLibraryA function or kernel32 module";
 			VirtualFreeEx(hHandle, pAddr, strlen(szDLLPath) + 1, MEM_RELEASE);
@@ -150,8 +150,8 @@ EXPORT int Init()
 			return 0;
 		}
 
-		HANDLE hThread = CreateRemoteThread(hHandle, 0, 0, pFunc, pAddr, 0, 0);
-		if (hThread == NULL || hThread == INVALID_HANDLE_VALUE)
+		auto hThread = CreateRemoteThread(hHandle, nullptr, 0, pFunc, pAddr, 0, 0);
+		if (hThread == nullptr || hThread == INVALID_HANDLE_VALUE)
 		{
 			BOOST_LOG_TRIVIAL(fatal) << "Couldn't create remote thread";
 			VirtualFreeEx(hHandle, pAddr, strlen(szDLLPath) + 1, MEM_RELEASE);
@@ -177,11 +177,11 @@ EXPORT int Init()
 			CloseHandle(hHandle);
 			return 0;
 		}
-			
 
-		DWORD pFunc = (DWORD) GetProcAddress((HMODULE) g_hDllHandle, "enable");
-		pFunc -= (DWORD) g_hDllHandle;
-		pFunc += (DWORD) dwBase;
+
+		auto pFunc = reinterpret_cast<DWORD>(GetProcAddress(static_cast<HMODULE>(g_hDllHandle), "enable"));
+		pFunc -= reinterpret_cast<DWORD>(g_hDllHandle);
+		pFunc += static_cast<DWORD>(dwBase);
 
 		if (pFunc == NULL)
 		{
@@ -189,8 +189,8 @@ EXPORT int Init()
 			return 0;
 		}
 
-		HANDLE hThread = CreateRemoteThread(hHandle, 0, 0, (LPTHREAD_START_ROUTINE) pFunc, 0, 0, 0);
-		if (hThread == NULL || hThread == INVALID_HANDLE_VALUE)
+		auto hThread = CreateRemoteThread(hHandle, nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(pFunc), 0, 0, 0);
+		if (hThread == nullptr || hThread == INVALID_HANDLE_VALUE)
 		{
 			CloseHandle(hHandle);
 			return 0;

@@ -4,8 +4,6 @@
 
 #include <Shared/Config.h>
 
-#include <iostream>
-
 PipeClient::PipeClient(Serializer& serializerIn, Serializer& serializerOut) :
 m_bSuccess(false)
 {
@@ -15,7 +13,7 @@ m_bSuccess(false)
 
 	sprintf_s(szPipe, "\\\\.\\pipe\\%s", g_strPipeName);
 
-	if (CallNamedPipe(szPipe, (LPVOID)serializerIn.data(), serializerIn.numberOfBytesUsed(), szData, sizeof(szData), &dwReaded, TIME_OUT))
+	if (CallNamedPipe(szPipe, LPVOID(serializerIn.data()), serializerIn.numberOfBytesUsed(), szData, sizeof(szData), &dwReaded, TIME_OUT))
 	{
 		serializerOut.setData(szData, sizeof(szData));
 		m_bSuccess = true;

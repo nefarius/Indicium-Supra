@@ -17,14 +17,14 @@ public:
 	bool updateImage(const std::string& file_path, int x, int y, float scaleX, float scaleY, int rotation, int align, bool bShow);
 
 protected:
-	virtual void draw(IDirect3DDevice9 *pDevice) sealed;
-	virtual void reset(IDirect3DDevice9 *pDevice) sealed;
+	virtual void draw(IDirect3DDevice9 *pDevice) override sealed;
+	virtual void reset(IDirect3DDevice9 *pDevice) override sealed;
 
-	virtual void show() sealed;
-	virtual void hide() sealed;
+	virtual void show() override sealed;
+	virtual void hide() override sealed;
 
-	virtual void releaseResourcesForDeletion(IDirect3DDevice9 *pDevice) sealed;
-	virtual bool canBeDeleted() sealed;
+	virtual void releaseResourcesForDeletion(IDirect3DDevice9 *pDevice) override sealed;
+	virtual bool canBeDeleted() override sealed;
 
 	virtual bool loadResource(IDirect3DDevice9 *pDevice) override sealed;
 	virtual void firstDrawAfterReset(IDirect3DDevice9 *pDevice) override sealed;

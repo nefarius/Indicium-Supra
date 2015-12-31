@@ -9,7 +9,6 @@
 
 #include <d3dx9.h>
 
-#include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/utility/setup/file.hpp>
@@ -55,40 +54,41 @@ namespace expr = boost::log::expressions;
 
 void initGame()
 {
-	HMODULE hMod = NULL;
+	HMODULE hMod = nullptr;
 
 	logging::add_common_attributes();
 
 	logging::add_file_log
-	(
+		(
 		keywords::file_name = "dx9_overlay.log",
 		keywords::auto_flush = true,
 		keywords::format = "[%TimeStamp%]: %Message%"
-	);
+		);
 
 	logging::core::get()->set_filter
-	(
+		(
 		logging::trivial::severity >= logging::trivial::info
-	);
+		);
 
-	LPSTR sz_ProcName = (LPSTR) malloc(MAX_PATH + 1);
+	auto sz_ProcName = static_cast<LPSTR>(malloc(MAX_PATH + 1));
 	GetProcessImageFileName(GetCurrentProcess(), sz_ProcName, MAX_PATH);
 	BOOST_LOG_TRIVIAL(info) << "Library loaded into " << sz_ProcName;
 	free(sz_ProcName);
 
-	while ((hMod = GetModuleHandle("d3d9.dll")) == NULL || g_bEnabled == false)
+	while ((hMod = GetModuleHandle("d3d9.dll")) == nullptr || g_bEnabled == false)
 		Sleep(200);
 
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
 
 #ifdef _M_IX86
-	UINT32 vtable[CDirect3D::VTableElements] = { };
+	UINT32 vtable[CDirect3D::VTableElements] = {};
 	UINT32 vtableEx[CDirect3DEx::VTableElements] = {};
 #else
 	UINT64 vtable[CDirect3D::VTableElements] = { };
 	UINT64 vtableEx[CDirect3DEx::VTableElements] = { };
 #endif
 
+	// get VTable for Direct3DCreate9
 	{
 		CDirect3D d3d;
 		if (!d3d.GetVTable(vtable))
@@ -97,6 +97,7 @@ void initGame()
 		}
 	}
 
+	// get VTable for Direct3DCreate9Ex
 	{
 		CDirect3DEx d3dEx;
 		if (!d3dEx.GetVTableEx(vtableEx))
@@ -139,7 +140,7 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
 
-		g_presentHook.apply(vtable[DX9_VTABLE_PRESENT], [](LPDIRECT3DDEVICE9 dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
+		g_presentHook.apply(vtable[DX9_VTABLE_PRESENT], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
 		{
 			g_bIsUsingPresent = true;
 
@@ -152,7 +153,7 @@ void initGame()
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Reset";
 
-		g_resetHook.apply(vtable[DX9_VTABLE_RESET], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS *pp) -> HRESULT
+		g_resetHook.apply(vtable[DX9_VTABLE_RESET], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
 		{
 			__asm pushad
 			g_pRenderer.reset(dev);
@@ -180,7 +181,7 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
 
-		g_presentExHook.apply(vtableEx[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4, DWORD a5) -> HRESULT
+		g_presentExHook.apply(vtableEx[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
 		{
 			g_bIsUsingPresent = true;
 
@@ -193,7 +194,7 @@ void initGame()
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
 
-		g_resetExHook.apply(vtableEx[DX9_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS *pp, D3DDISPLAYMODEEX *ppp) -> HRESULT
+		g_resetExHook.apply(vtableEx[DX9_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
 		{
 			__asm pushad
 			g_pRenderer.reset(dev);
@@ -221,8 +222,7 @@ void initGame()
 	});
 #endif
 
-
-	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)> > MessagePaketHandler;
+	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)>> MessagePaketHandler;
 	MessagePaketHandler PaketHandler;
 
 	BIND(TextCreate);
@@ -289,7 +289,9 @@ void initGame()
 		}
 	});
 
-	while (true){
+	while (true)
+	{
 		Sleep(100);
 	}
 }
+

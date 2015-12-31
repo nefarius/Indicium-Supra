@@ -1,5 +1,4 @@
 #pragma once
-#include <Utils/Windows.h>
 #include <d3dx9.h>
 
 #define DRAW_FVF (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)

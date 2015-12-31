@@ -1,9 +1,5 @@
 #pragma once
 
-#include <Utils/Windows.h>
-#include <Utils/PipeClient.h>
-#include <Utils/Serializer.h>
-
 #define EXPORT extern "C" __declspec(dllexport)
 
 #define SERVER_CHECK(retn)	\

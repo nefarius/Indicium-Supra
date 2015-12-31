@@ -3,7 +3,7 @@
 #include "dx_utils.h"
 
 Image::Image(Renderer *renderer, const std::string& file_path, int x, int y, float scaleX, float scaleY, int rotation, int align, bool bShow)
-	: RenderBase(renderer), m_pSprite(NULL), m_pTexture(NULL)
+	: RenderBase(renderer), m_pTexture(nullptr), m_pSprite(nullptr)
 {
 	setFilePath(file_path);
 	setPos(x, y);
@@ -79,7 +79,6 @@ void Image::reset(IDirect3DDevice9 *pDevice)
 	}
 }
 
-
 void Image::show()
 {
 	setShown(true);
@@ -89,7 +88,6 @@ void Image::hide()
 {
 	setShown(false);
 }
-
 
 void Image::releaseResourcesForDeletion(IDirect3DDevice9 *pDevice)
 {
