@@ -1,11 +1,8 @@
 #pragma once
 #include <d3dx9.h>
-#include <Utils/Windows.h>
-#include <boost/log/trivial.hpp>
 
-class CDirect3DEx
+class Direct3DEx
 {
-private:
 #ifdef _M_IX86
 	UINT32 *vtable;
 #else
@@ -16,12 +13,12 @@ private:
 	IDirect3D9Ex *d3d9_ex;
 	IDirect3DDevice9Ex *d3d9_device_ex;
 public:
-	CDirect3DEx();
-	~CDirect3DEx();
+	Direct3DEx();
+	~Direct3DEx();
 	static const int VTableElements = 134;
 
 #ifdef _M_IX86
-	bool GetVTableEx(UINT32 *pVTable);
+	bool GetVTableEx(UINT32 *pVTable) const;
 #else
 	bool GetVTableEx(UINT64 *pVTable);
 #endif

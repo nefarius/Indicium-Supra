@@ -81,8 +81,8 @@ void initGame()
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
 
 #ifdef _M_IX86
-	UINT32 vtable[CDirect3D::VTableElements] = {};
-	UINT32 vtableEx[CDirect3DEx::VTableElements] = {};
+	UINT32 vtable[Direct3D::VTableElements] = {};
+	UINT32 vtableEx[Direct3DEx::VTableElements] = {};
 #else
 	UINT64 vtable[CDirect3D::VTableElements] = { };
 	UINT64 vtableEx[CDirect3DEx::VTableElements] = { };
@@ -90,7 +90,7 @@ void initGame()
 
 	// get VTable for Direct3DCreate9
 	{
-		CDirect3D d3d;
+		Direct3D d3d;
 		if (!d3d.GetVTable(vtable))
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9";
@@ -99,7 +99,7 @@ void initGame()
 
 	// get VTable for Direct3DCreate9Ex
 	{
-		CDirect3DEx d3dEx;
+		Direct3DEx d3dEx;
 		if (!d3dEx.GetVTableEx(vtableEx))
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9Ex";

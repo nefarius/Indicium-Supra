@@ -1,12 +1,9 @@
 #include "Direct3D.h"
+#include <boost/log/trivial.hpp>
 
 
-CDirect3D::CDirect3D()
+Direct3D::Direct3D() : vtable(nullptr), d3d9(nullptr), d3d9_device(nullptr)
 {
-	d3d9 = NULL;
-	d3d9_device = NULL;
-	vtable = NULL;
-
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for Direct3DCreate9...";
 
 	HMODULE hMod = GetModuleHandle("d3d9.dll");
@@ -89,8 +86,7 @@ CDirect3D::CDirect3D()
 	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
 }
 
-
-CDirect3D::~CDirect3D()
+Direct3D::~Direct3D()
 {
 	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
 
@@ -108,7 +104,7 @@ CDirect3D::~CDirect3D()
 }
 
 #ifdef _M_IX86
-bool CDirect3D::GetVTable(UINT32 *pVTable)
+bool Direct3D::GetVTable(UINT32 *pVTable) const
 {
 	if (vtable)
 	{
