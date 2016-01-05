@@ -17,17 +17,9 @@
 #include <Psapi.h>
 #pragma comment(lib, "psapi.lib")
 
-#include <Game/Hook/Direct3D.h>
-#include <Game/Hook/Direct3DEx.h>
+#include <Game/Hook/Direct3D9.h>
+#include <Game/Hook/Direct3D9Ex.h>
 
-
-#define DX9_VTABLE_RELEASE				0x02
-#define DX9_VTABLE_PRESENT				0x11
-#define DX9_VTABLE_RESET				0x10
-#define DX9_VTABLE_PRESENTEX			0x79
-#define DX9_VTABLE_RESETEX				0x84
-#define DX9_VTABLE_SWAPCHAIN_PRESENT	0x03
-#define DX9_VTABLE_ENDSCENE				0x2A
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
 
@@ -81,8 +73,8 @@ void initGame()
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
 
 #ifdef _M_IX86
-	UINT32 vtable[Direct3D::VTableElements] = {};
-	UINT32 vtableEx[Direct3DEx::VTableElements] = {};
+	UINT32 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = {};
+	UINT32 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = {};
 #else
 	UINT64 vtable[CDirect3D::VTableElements] = { };
 	UINT64 vtableEx[CDirect3DEx::VTableElements] = { };
@@ -90,7 +82,7 @@ void initGame()
 
 	// get VTable for Direct3DCreate9
 	{
-		Direct3D d3d;
+		Direct3D9Hooking::Direct3D9 d3d;
 		if (!d3d.GetVTable(vtable))
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9";
@@ -99,32 +91,12 @@ void initGame()
 
 	// get VTable for Direct3DCreate9Ex
 	{
-		Direct3DEx d3dEx;
+		Direct3D9Hooking::Direct3D9Ex d3dEx;
 		if (!d3dEx.GetVTableEx(vtableEx))
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9Ex";
 		}
 	}
-
-#ifdef SWAPCHAIN
-	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for IDirect3DSwapChain9...";
-
-	IDirect3DSwapChain9 *swap_chain;
-	if (FAILED(d3d9_device_ex->GetSwapChain(0, &swap_chain)))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not obtain the swap chain";
-
-#ifdef _M_IX86
-	UINT32 *swapchain_vtable = *((UINT32 **)swap_chain);
-#else
-	UINT64 *swapchain_vtable = *((UINT64 **)swap_chain);
-#endif
-
-	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
-
-	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
-
-	swap_chain->Release();
-#endif
 
 	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
 
@@ -140,7 +112,7 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
 
-		g_presentHook.apply(vtable[DX9_VTABLE_PRESENT], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
+		g_presentHook.apply(vtable[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
 		{
 			g_bIsUsingPresent = true;
 
@@ -153,7 +125,7 @@ void initGame()
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Reset";
 
-		g_resetHook.apply(vtable[DX9_VTABLE_RESET], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
+		g_resetHook.apply(vtable[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
 		{
 			__asm pushad
 			g_pRenderer.reset(dev);
@@ -164,7 +136,7 @@ void initGame()
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::EndScene";
 
-		g_endSceneHook.apply(vtable[DX9_VTABLE_ENDSCENE], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
+		g_endSceneHook.apply(vtable[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
 		{
 			if (!g_bIsUsingPresent)
 			{
@@ -181,7 +153,7 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
 
-		g_presentExHook.apply(vtableEx[DX9_VTABLE_PRESENTEX], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
+		g_presentExHook.apply(vtableEx[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
 		{
 			g_bIsUsingPresent = true;
 
@@ -194,7 +166,7 @@ void initGame()
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
 
-		g_resetExHook.apply(vtableEx[DX9_VTABLE_RESETEX], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
+		g_resetExHook.apply(vtableEx[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
 		{
 			__asm pushad
 			g_pRenderer.reset(dev);
@@ -204,23 +176,6 @@ void initGame()
 		});
 	}
 
-#ifdef FIXME
-	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DSwapChain9::Present";
-
-	g_swapchainPresentHook.apply(swapchain_vtable[DX9_VTABLE_SWAPCHAIN_PRESENT], [](LPDIRECT3DSWAPCHAIN9 swap_chain, CONST RECT * a1, CONST RECT * a2, HWND a3, CONST RGNDATA *a4) -> HRESULT
-	{
-		IDirect3DDevice9 *device;
-		HRESULT error_code = swap_chain->GetDevice(&device);
-		if (FAILED(error_code))
-			return error_code;
-
-		__asm pushad
-		g_pRenderer.draw(device);
-		__asm popad
-
-		return g_swapchainPresentHook.callOrig(swap_chain, a1, a2, a3, a4);
-	});
-#endif
 
 	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)>> MessagePaketHandler;
 	MessagePaketHandler PaketHandler;

@@ -94,8 +94,8 @@
     <ClCompile Include="Game\Rendering\C2DFont.cpp" />
     <ClCompile Include="Client\Client.cpp" />
     <ClCompile Include="Client\Render.cpp" />
-    <ClCompile Include="Game\Hook\Direct3D.cpp" />
-    <ClCompile Include="Game\Hook\Direct3DEx.cpp" />
+    <ClCompile Include="Game\Hook\Direct3D9.cpp" />
+    <ClCompile Include="Game\Hook\Direct3D9Ex.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\Messagehandler.cpp" />
@@ -111,14 +111,14 @@
     <ClCompile Include="Utils\Misc.cpp" />
     <ClCompile Include="Utils\PipeClient.cpp" />
     <ClCompile Include="Utils\PipeServer.cpp" />
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Game\Hook\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Rendering\C2DFont.h" />
     <ClInclude Include="Client\Client.h" />
     <ClInclude Include="Client\Render.h" />
-    <ClInclude Include="Game\Hook\Direct3D.h" />
-    <ClInclude Include="Game\Hook\Direct3DEx.h" />
+    <ClInclude Include="Game\Hook\Direct3D9.h" />
+    <ClInclude Include="Game\Hook\Direct3D9Ex.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\Messagehandler.h" />
@@ -141,7 +141,7 @@
     <ClInclude Include="Utils\PipeServer.h" />
     <ClInclude Include="Utils\SafeBlock.h" />
     <ClInclude Include="Utils\Windows.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Game\Hook\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -50,16 +50,18 @@
     <ClCompile Include="Utils\Serializer.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Hook\Direct3DEx.cpp">
-      <Filter>Game\Hook</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Hook\Direct3D.cpp">
-      <Filter>Game\Hook</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Rendering\C2DFont.cpp">
       <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Game\Hook\Window.cpp">
+      <Filter>Game\Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Hook\Direct3D9.cpp">
+      <Filter>Game\Hook\D3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Hook\Direct3D9Ex.cpp">
+      <Filter>Game\Hook\D3D9</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -79,6 +81,9 @@
     </Filter>
     <Filter Include="Game\Hook">
       <UniqueIdentifier>{d80dc06f-9e19-4300-bbdc-c3d72172e3ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Hook\D3D9">
+      <UniqueIdentifier>{e807212c-4096-4993-883a-6a0bf4aa7aa9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -149,17 +154,19 @@
     <ClInclude Include="Utils\Serializer.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Hook\Direct3DEx.h">
-      <Filter>Game\Hook</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Hook\Direct3D.h">
-      <Filter>Game\Hook</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Rendering\C2DFont.h">
       <Filter>Game\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Game\Hook\Window.h">
+      <Filter>Game\Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\Direct3D9Ex.h">
+      <Filter>Game\Hook\D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\Direct3D9.h">
+      <Filter>Game\Hook\D3D9</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
