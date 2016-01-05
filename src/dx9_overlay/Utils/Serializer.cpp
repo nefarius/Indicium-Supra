@@ -32,5 +32,5 @@ void Serializer::setData(const char *szData, const size_t size)
 
 int Serializer::numberOfBytesUsed() const
 {
-	return _ss.str().length();
+	return static_cast<int>(_ss.str().length());
 }

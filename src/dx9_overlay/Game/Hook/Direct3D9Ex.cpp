@@ -86,7 +86,7 @@ bool Direct3D9Hooking::Direct3D9Ex::GetVTableEx(UINT32 *pVTable) const
 	return false;
 }
 #else
-bool CDirect3DEx::GetVTableEx(UINT64 *pVTable)
+bool Direct3D9Hooking::Direct3D9Ex::GetVTableEx(UINT64 *pVTable) const
 {
 	if (vtable)
 	{

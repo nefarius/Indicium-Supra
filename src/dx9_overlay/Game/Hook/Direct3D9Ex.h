@@ -41,7 +41,7 @@ namespace Direct3D9Hooking
 #ifdef _M_IX86
 		bool GetVTableEx(UINT32 *pVTable) const;
 #else
-		bool GetVTableEx(UINT64 *pVTable);
+		bool GetVTableEx(UINT64 *pVTable) const;
 #endif
 	};
 }

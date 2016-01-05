@@ -11,9 +11,6 @@
     <ClCompile Include="Game\Rendering\Box.cpp">
       <Filter>Game\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Rendering\D3DFont.cpp">
-      <Filter>Game\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Rendering\dx_utils.cpp">
       <Filter>Game\Rendering</Filter>
     </ClCompile>
@@ -95,9 +92,6 @@
       <Filter>Client</Filter>
     </ClInclude>
     <ClInclude Include="Game\Rendering\Box.h">
-      <Filter>Game\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Rendering\D3DFont.h">
       <Filter>Game\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Game\Rendering\dx_utils.h">

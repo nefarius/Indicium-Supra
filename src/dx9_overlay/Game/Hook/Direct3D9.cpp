@@ -86,7 +86,7 @@ bool Direct3D9Hooking::Direct3D9::GetVTable(UINT32 *pVTable) const
 	return false;
 }
 #else
-bool CDirect3D::GetVTable(UINT64 *pVTable)
+bool Direct3D9Hooking::Direct3D9::GetVTable(UINT64 *pVTable) const
 {
 	if (vtable)
 	{

@@ -76,8 +76,8 @@ void initGame()
 	UINT32 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = {};
 	UINT32 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = {};
 #else
-	UINT64 vtable[CDirect3D::VTableElements] = { };
-	UINT64 vtableEx[CDirect3DEx::VTableElements] = { };
+	UINT64 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { };
+	UINT64 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = {};
 #endif
 
 	// get VTable for Direct3DCreate9
@@ -116,9 +116,7 @@ void initGame()
 		{
 			g_bIsUsingPresent = true;
 
-			__asm pushad
 			g_pRenderer.draw(dev);
-			__asm popad
 
 			return g_presentHook.callOrig(dev, a1, a2, a3, a4);
 		});
@@ -127,9 +125,7 @@ void initGame()
 
 		g_resetHook.apply(vtable[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
 		{
-			__asm pushad
 			g_pRenderer.reset(dev);
-			__asm popad
 
 			return g_resetHook.callOrig(dev, pp);
 		});
@@ -140,9 +136,7 @@ void initGame()
 		{
 			if (!g_bIsUsingPresent)
 			{
-				__asm pushad
 				g_pRenderer.draw(dev);
-				__asm popad
 			}
 
 			return g_endSceneHook.callOrig(dev);
@@ -157,9 +151,7 @@ void initGame()
 		{
 			g_bIsUsingPresent = true;
 
-			__asm pushad
 			g_pRenderer.draw(dev);
-			__asm popad
 
 			return g_presentExHook.callOrig(dev, a1, a2, a3, a4, a5);
 		});
@@ -168,9 +160,7 @@ void initGame()
 
 		g_resetExHook.apply(vtableEx[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
 		{
-			__asm pushad
 			g_pRenderer.reset(dev);
-			__asm popad
 
 			return g_resetExHook.callOrig(dev, pp, ppp);
 		});

@@ -63,7 +63,7 @@ public:
 	void apply(T pFunc, type detour)
 	{
 		_detour = detour;
-		_orig = pFunc;
+		_orig = static_cast<DWORD>(pFunc);
 
 		if (MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_trampoline) != MH_OK)
 		{
