@@ -59,6 +59,9 @@
     <ClCompile Include="Game\Hook\Direct3D9Ex.cpp">
       <Filter>Game\Hook\D3D9</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Hook\Direct3D10.cpp">
+      <Filter>Game\Hook\D3D10</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -81,6 +84,9 @@
     </Filter>
     <Filter Include="Game\Hook\D3D9">
       <UniqueIdentifier>{e807212c-4096-4993-883a-6a0bf4aa7aa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Hook\D3D10">
+      <UniqueIdentifier>{9b51e062-9c73-4803-b205-97d83c8501b3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="Game\Hook\Direct3D9.h">
       <Filter>Game\Hook\D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\Direct3D10.h">
+      <Filter>Game\Hook\D3D10</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

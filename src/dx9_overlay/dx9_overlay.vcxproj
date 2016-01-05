@@ -165,6 +165,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\Hook\Direct3D10.cpp" />
     <ClCompile Include="Game\Rendering\C2DFont.cpp" />
     <ClCompile Include="Client\Client.cpp" />
     <ClCompile Include="Client\Render.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="Game\Hook\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\Hook\Direct3D10.h" />
     <ClInclude Include="Game\Rendering\C2DFont.h" />
     <ClInclude Include="Client\Client.h" />
     <ClInclude Include="Client\Render.h" />

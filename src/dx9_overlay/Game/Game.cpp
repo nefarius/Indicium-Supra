@@ -8,6 +8,9 @@
 #include "Rendering/Renderer.h"
 
 #include <d3dx9.h>
+#include <dxgi.h>
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3d10.lib")
 
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
@@ -19,15 +22,22 @@
 
 #include <Game/Hook/Direct3D9.h>
 #include <Game/Hook/Direct3D9Ex.h>
+#include <Game/Hook/Direct3D10.h>
 
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
 
+// D3D9
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> g_endSceneHook;
+
+// D3D9Ex
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> g_presentExHook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> g_resetExHook;
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> g_endSceneHook;
+
+// D3D10
+Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresentHook10;
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
@@ -74,6 +84,7 @@ void initGame()
 #ifdef _M_IX86
 	UINT32 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = {};
 	UINT32 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = {};
+	UINT32 vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = {};
 #else
 	UINT64 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { };
 	UINT64 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = {};
@@ -95,6 +106,12 @@ void initGame()
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9Ex";
 		}
+	}
+
+	// get VTable for IDXGISwapChain
+	{
+		Direct3D10Hooking::Direct3D10 d3d10;
+		d3d10.GetSwapChainVTable(vtable10SwapChain);
 	}
 
 	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
@@ -162,6 +179,18 @@ void initGame()
 			g_pRenderer.reset(dev);
 
 			return g_resetExHook.callOrig(dev, pp, ppp);
+		});
+	}
+
+	if (vtable10SwapChain)
+	{
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
+
+		g_swapChainPresentHook10.apply(vtable10SwapChain[Direct3D10Hooking::Present], [](IDXGISwapChain *chain, UINT SyncInterval, UINT Flags) -> HRESULT
+		{
+			//BOOST_LOG_TRIVIAL(info) << "IDXGISwapChain::Present called";
+
+			return g_swapChainPresentHook10.callOrig(chain, SyncInterval, Flags);
 		});
 	}
 
