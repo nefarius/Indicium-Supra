@@ -234,9 +234,7 @@ void initGame()
 		}
 	});
 
-	while (true)
-	{
-		Sleep(100);
-	}
+	// block this thread infinitely
+	WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
 }
 
