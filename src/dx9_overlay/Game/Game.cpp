@@ -110,7 +110,10 @@ void initGame()
 	// get VTable for IDXGISwapChain
 	{
 		Direct3D10Hooking::Direct3D10 d3d10;
-		d3d10.GetSwapChainVTable(vtable10SwapChain);
+		if (!d3d10.GetSwapChainVTable(vtable10SwapChain))
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for IDXGISwapChain";
+		}
 	}
 
 	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
