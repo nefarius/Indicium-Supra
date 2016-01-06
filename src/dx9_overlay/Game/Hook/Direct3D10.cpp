@@ -3,18 +3,51 @@
 #include <vector>
 
 
-Direct3D10Hooking::Direct3D10::Direct3D10(): vtable(nullptr), vtableSwapChain(nullptr), pDevice(nullptr), pSwapChain(nullptr)
+Direct3D10Hooking::Direct3D10::Direct3D10() : vtable(nullptr), vtableSwapChain(nullptr), pDevice(nullptr), pSwapChain(nullptr)
 {
 	temp_window = new Window();
 
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for ID3D10Device and IDXGISwapChain...";
 
+	auto hModDXGI = GetModuleHandle("DXGI.dll");
+	auto hModD3D10 = GetModuleHandle("D3D10.dll");
+
+	if (hModDXGI == nullptr)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to DXGI.dll";
+		return;
+	}
+
+	if (hModD3D10 == nullptr)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to D3D10.dll";
+		return;
+	}
+
+	auto hCreateDXGIFactory = static_cast<LPVOID>(GetProcAddress(hModDXGI, "CreateDXGIFactory"));
+	if (hCreateDXGIFactory == nullptr)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to CreateDXGIFactory";
+		return;
+	}
+
 	IDXGIFactory* pFactory;
-	HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&pFactory));
+	auto hr = static_cast<HRESULT(WINAPI *)(
+		REFIID, 
+		void** ppFactory)>(hCreateDXGIFactory)(
+		__uuidof(IDXGIFactory), 
+		reinterpret_cast<void**>(&pFactory));
 
 	if (FAILED(hr))
 	{
 		BOOST_LOG_TRIVIAL(error) << "Couldn't create DXGI factory";
+		return;
+	}
+
+	auto hD3D10CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(hModD3D10, "D3D10CreateDeviceAndSwapChain"));
+	if (hD3D10CreateDeviceAndSwapChain == nullptr)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to D3D10CreateDeviceAndSwapChain";
 		return;
 	}
 
@@ -57,7 +90,25 @@ Direct3D10Hooking::Direct3D10::Direct3D10(): vtable(nullptr), vtableSwapChain(nu
 	scDesc.SampleDesc = sampleDesc;
 	scDesc.BufferDesc = modeDesc;
 
-	if (FAILED(D3D10CreateDeviceAndSwapChain(vAdapters[0], D3D10_DRIVER_TYPE_HARDWARE, NULL, 0, D3D10_SDK_VERSION, &scDesc, &pSwapChain, &pDevice)))
+	auto hr10 = static_cast<HRESULT(WINAPI *)(
+		IDXGIAdapter*, 
+		D3D10_DRIVER_TYPE, 
+		HMODULE, 
+		UINT, 
+		UINT, 
+		DXGI_SWAP_CHAIN_DESC*, 
+		IDXGISwapChain**, 
+		ID3D10Device**)>(hD3D10CreateDeviceAndSwapChain)(
+		vAdapters[0], 
+		D3D10_DRIVER_TYPE_HARDWARE, 
+		NULL, 
+		0, 
+		D3D10_SDK_VERSION, 
+		&scDesc, 
+		&pSwapChain, 
+		&pDevice);
+
+	if (FAILED(hr10))
 	{
 		BOOST_LOG_TRIVIAL(error) << "Couldn't create D3D10 device";
 		return;
@@ -97,7 +148,7 @@ bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINT32* pVTable) const
 		memcpy(pVTable, vtableSwapChain, SwapChainVTableElements * sizeof(UINT32));
 		return true;
 	}
-	
+
 	return false;
 }
 #else

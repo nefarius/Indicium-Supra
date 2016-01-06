@@ -2,8 +2,6 @@
 #include "Window.h"
 #include <dxgi.h>
 #include <d3d10.h>
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "d3d10.lib")
 
 namespace Direct3D10Hooking
 {
