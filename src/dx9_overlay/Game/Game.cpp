@@ -34,7 +34,8 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONS
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> g_reset9ExHook;
 
 // D3D10
-Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresentHook10;
+Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent10Hook;
+Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget10Hook;
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
@@ -184,11 +185,20 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
 
-		g_swapChainPresentHook10.apply(vtable10SwapChain[Direct3D10Hooking::Present], [](IDXGISwapChain *chain, UINT SyncInterval, UINT Flags) -> HRESULT
+		g_swapChainPresent10Hook.apply(vtable10SwapChain[Direct3D10Hooking::Present], [](IDXGISwapChain *chain, UINT SyncInterval, UINT Flags) -> HRESULT
 		{
 			BOOST_LOG_TRIVIAL(info) << "IDXGISwapChain::Present called";
 
-			return g_swapChainPresentHook10.callOrig(chain, SyncInterval, Flags);
+			return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeTarget";
+
+		g_swapChainResizeTarget10Hook.apply(vtable10SwapChain[Direct3D10Hooking::ResizeTarget], [](IDXGISwapChain *chain, const DXGI_MODE_DESC *pNewTargetParameters) -> HRESULT
+		{
+			BOOST_LOG_TRIVIAL(info) << "IDXGISwapChain::ResizeTarget called";
+
+			return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
 		});
 	}
 
