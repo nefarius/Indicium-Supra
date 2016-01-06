@@ -25,13 +25,13 @@
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
 
 // D3D9
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_presentHook;
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_resetHook;
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> g_endSceneHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_present9Hook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_reset9Hook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> g_endScene9Hook;
 
 // D3D9Ex
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> g_presentExHook;
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> g_resetExHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> g_present9ExHook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> g_reset9ExHook;
 
 // D3D10
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresentHook10;
@@ -126,34 +126,34 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
 
-		g_presentHook.apply(vtable[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
+		g_present9Hook.apply(vtable[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
 		{
 			g_bIsUsingPresent = true;
 
 			g_pRenderer.draw(dev);
 
-			return g_presentHook.callOrig(dev, a1, a2, a3, a4);
+			return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
 		});
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Reset";
 
-		g_resetHook.apply(vtable[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
+		g_reset9Hook.apply(vtable[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
 		{
 			g_pRenderer.reset(dev);
 
-			return g_resetHook.callOrig(dev, pp);
+			return g_reset9Hook.callOrig(dev, pp);
 		});
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::EndScene";
 
-		g_endSceneHook.apply(vtable[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
+		g_endScene9Hook.apply(vtable[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
 		{
 			if (!g_bIsUsingPresent)
 			{
 				g_pRenderer.draw(dev);
 			}
 
-			return g_endSceneHook.callOrig(dev);
+			return g_endScene9Hook.callOrig(dev);
 		});
 	}
 
@@ -161,22 +161,22 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
 
-		g_presentExHook.apply(vtableEx[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
+		g_present9ExHook.apply(vtableEx[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
 		{
 			g_bIsUsingPresent = true;
 
 			g_pRenderer.draw(dev);
 
-			return g_presentExHook.callOrig(dev, a1, a2, a3, a4, a5);
+			return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
 		});
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
 
-		g_resetExHook.apply(vtableEx[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
+		g_reset9ExHook.apply(vtableEx[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
 		{
 			g_pRenderer.reset(dev);
 
-			return g_resetExHook.callOrig(dev, pp, ppp);
+			return g_reset9ExHook.callOrig(dev, pp, ppp);
 		});
 	}
 
