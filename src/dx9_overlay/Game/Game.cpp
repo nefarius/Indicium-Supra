@@ -8,9 +8,6 @@
 #include "Rendering/Renderer.h"
 
 #include <d3dx9.h>
-#include <dxgi.h>
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "d3d10.lib")
 
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
@@ -88,6 +85,7 @@ void initGame()
 #else
 	UINT64 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { };
 	UINT64 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = {};
+	UINT64 vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = {};
 #endif
 
 	// get VTable for Direct3DCreate9
@@ -188,7 +186,7 @@ void initGame()
 
 		g_swapChainPresentHook10.apply(vtable10SwapChain[Direct3D10Hooking::Present], [](IDXGISwapChain *chain, UINT SyncInterval, UINT Flags) -> HRESULT
 		{
-			//BOOST_LOG_TRIVIAL(info) << "IDXGISwapChain::Present called";
+			BOOST_LOG_TRIVIAL(info) << "IDXGISwapChain::Present called";
 
 			return g_swapChainPresentHook10.callOrig(chain, SyncInterval, Flags);
 		});

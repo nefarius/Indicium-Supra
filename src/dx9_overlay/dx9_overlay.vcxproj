@@ -89,8 +89,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(BOOST_ROOT);$(DXSDK)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(BOOST_ROOT)\stage\lib;$(DXSDK)\Lib\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(BOOST_ROOT)\stage\lib\x64;$(DXSDK)\Lib\x64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\..\bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

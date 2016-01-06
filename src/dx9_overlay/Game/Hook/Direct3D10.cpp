@@ -9,7 +9,7 @@ Direct3D10Hooking::Direct3D10::Direct3D10(): vtable(nullptr), vtableSwapChain(nu
 
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for ID3D10Device and IDXGISwapChain...";
 
-	IDXGIFactory * pFactory;
+	IDXGIFactory* pFactory;
 	HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&pFactory));
 
 	if (FAILED(hr))
@@ -19,7 +19,7 @@ Direct3D10Hooking::Direct3D10::Direct3D10(): vtable(nullptr), vtableSwapChain(nu
 	}
 
 	UINT i = 0;
-	IDXGIAdapter * pAdapter;
+	IDXGIAdapter* pAdapter;
 	std::vector<IDXGIAdapter*> vAdapters;
 	while (pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND)
 	{
@@ -89,6 +89,7 @@ Direct3D10Hooking::Direct3D10::~Direct3D10()
 		delete temp_window;
 }
 
+#ifdef _M_IX86
 bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINT32* pVTable) const
 {
 	if (vtableSwapChain)
@@ -99,3 +100,16 @@ bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINT32* pVTable) const
 	
 	return false;
 }
+#else
+bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINT64* pVTable) const
+{
+	if (vtableSwapChain)
+	{
+		memcpy(pVTable, vtableSwapChain, SwapChainVTableElements * sizeof(UINT64));
+		return true;
+	}
+
+	return false;
+}
+#endif
+
