@@ -54,6 +54,7 @@ namespace expr = boost::log::expressions;
 void initGame()
 {
 	HMODULE hMod = nullptr;
+	bool d3d9_available, d3d9ex_available, d3d10_available;
 
 	logging::add_common_attributes();
 
@@ -92,7 +93,9 @@ void initGame()
 	// get VTable for Direct3DCreate9
 	{
 		Direct3D9Hooking::Direct3D9 d3d;
-		if (!d3d.GetVTable(vtable))
+		d3d9_available = d3d.GetVTable(vtable);
+
+		if (!d3d9_available)
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9";
 		}
@@ -101,7 +104,9 @@ void initGame()
 	// get VTable for Direct3DCreate9Ex
 	{
 		Direct3D9Hooking::Direct3D9Ex d3dEx;
-		if (!d3dEx.GetVTableEx(vtableEx))
+		d3d9ex_available = d3dEx.GetVTableEx(vtableEx);
+
+		if (!d3d9ex_available)
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9Ex";
 		}
@@ -110,7 +115,9 @@ void initGame()
 	// get VTable for IDXGISwapChain
 	{
 		Direct3D10Hooking::Direct3D10 d3d10;
-		if (!d3d10.GetSwapChainVTable(vtable10SwapChain))
+		d3d10_available = d3d10.GetSwapChainVTable(vtable10SwapChain);
+
+		if (!d3d10_available)
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for IDXGISwapChain";
 		}
@@ -126,7 +133,7 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
 
-	if (vtable)
+	if (d3d9_available)
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
 
@@ -161,7 +168,7 @@ void initGame()
 		});
 	}
 
-	if (vtableEx)
+	if (d3d9ex_available)
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
 
@@ -184,7 +191,7 @@ void initGame()
 		});
 	}
 
-	if (vtable10SwapChain)
+	if (d3d10_available)
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
 
