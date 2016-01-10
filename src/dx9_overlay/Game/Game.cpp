@@ -236,7 +236,13 @@ void initGame()
 
 		g_getDeviceState8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceState], [](LPDIRECTINPUTDEVICE8 dev, DWORD cbData, LPVOID lpvData) -> HRESULT
 		{
-			return g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
+			//auto hr = g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
+
+			ZeroMemory(lpvData, cbData);
+
+			BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetDeviceState called";
+			
+			return DI_OK;
 		});
 	}
 
