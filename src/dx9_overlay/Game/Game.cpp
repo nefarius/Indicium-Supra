@@ -39,7 +39,11 @@ Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChai
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget10Hook;
 
 //DInput8
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD> g_getDeviceData8Hook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEINSTANCE> g_getDeviceInfo8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_getDeviceState8Hook;
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTINSTANCE, DWORD, DWORD> g_getObjectInfo8Hook;
+
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
@@ -232,17 +236,41 @@ void initGame()
 
 	if (vtable8)
 	{
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetDeviceData";
+
+		g_getDeviceData8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceData], [](LPDIRECTINPUTDEVICE8 dev, DWORD cbObjectData, LPDIDEVICEOBJECTDATA rgdod, LPDWORD pdwInOut, DWORD dwFlags) -> HRESULT
+		{
+			BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetDeviceData called";
+
+			return g_getDeviceData8Hook.callOrig(dev, cbObjectData, rgdod, pdwInOut, dwFlags);
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetDeviceInfo ";
+
+		g_getDeviceInfo8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceInfo], [](LPDIRECTINPUTDEVICE8 dev, LPDIDEVICEINSTANCE pdidi) -> HRESULT
+		{
+			BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetDeviceInfo  called";
+
+			return g_getDeviceInfo8Hook.callOrig(dev, pdidi);
+		});
+
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetDeviceState";
 
 		g_getDeviceState8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceState], [](LPDIRECTINPUTDEVICE8 dev, DWORD cbData, LPVOID lpvData) -> HRESULT
 		{
-			//auto hr = g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
-
-			ZeroMemory(lpvData, cbData);
-
 			BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetDeviceState called";
 			
+			//return g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
 			return DI_OK;
+		});
+
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetObjectInfo";
+
+		g_getObjectInfo8Hook.apply(vtable8[DirectInput8Hooking::GetObjectInfo], [](LPDIRECTINPUTDEVICE8 dev, LPDIDEVICEOBJECTINSTANCE pdidoi, DWORD dwObj, DWORD dwHow) -> HRESULT
+		{
+			BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetObjectInfo called";
+
+			return g_getObjectInfo8Hook.callOrig(dev, pdidoi, dwObj, dwHow);
 		});
 	}
 
