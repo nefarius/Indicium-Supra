@@ -20,6 +20,7 @@
 #include <Game/Hook/Direct3D9.h>
 #include <Game/Hook/Direct3D9Ex.h>
 #include <Game/Hook/Direct3D10.h>
+#include <Game/Hook/DirectInput8.h>
 
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
@@ -36,6 +37,9 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMET
 // D3D10
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent10Hook;
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget10Hook;
+
+//DInput8
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_getDeviceState8Hook;
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;

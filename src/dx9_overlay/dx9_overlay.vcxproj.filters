@@ -62,6 +62,9 @@
     <ClCompile Include="Game\Hook\Direct3D10.cpp">
       <Filter>Game\Hook\D3D10</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Hook\DirectInput8.cpp">
+      <Filter>Game\Hook\DInput8</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -87,6 +90,9 @@
     </Filter>
     <Filter Include="Game\Hook\D3D10">
       <UniqueIdentifier>{9b51e062-9c73-4803-b205-97d83c8501b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Hook\DInput8">
+      <UniqueIdentifier>{2886b68a-63b5-495c-8bce-ef308db2b907}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="Game\Hook\Direct3D10.h">
       <Filter>Game\Hook\D3D10</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\DirectInput8.h">
+      <Filter>Game\Hook\DInput8</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
