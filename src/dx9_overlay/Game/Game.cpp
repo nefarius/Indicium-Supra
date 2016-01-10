@@ -79,19 +79,22 @@ void initGame()
 	BOOST_LOG_TRIVIAL(info) << "Library loaded into " << sz_ProcName;
 	free(sz_ProcName);
 
+#ifdef TEST
 	while ((hMod = GetModuleHandle("d3d9.dll")) == nullptr || g_bEnabled == false)
 		Sleep(200);
+#endif
 
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
 
 #ifdef _M_IX86
-	UINT32 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = {};
-	UINT32 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = {};
-	UINT32 vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = {};
+	UINT32 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
+	UINT32 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
+	UINT32 vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = { 0 };
 #else
-	UINT64 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { };
-	UINT64 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = {};
-	UINT64 vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = {};
+	UINT64 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
+	UINT64 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
+	UINT64 vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = { 0 };
+	UINT64 vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
 #endif
 
 	// get VTable for Direct3DCreate9
@@ -124,6 +127,17 @@ void initGame()
 		if (!d3d10_available)
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for IDXGISwapChain";
+		}
+	}
+
+	// Dinput8
+	{
+		DirectInput8Hooking::DirectInput8 di8;
+		di8.GetVTable(vtable8);
+
+		if (!vtable8)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for DirectInput8";
 		}
 	}
 
@@ -213,6 +227,16 @@ void initGame()
 			BOOST_LOG_TRIVIAL(info) << "IDXGISwapChain::ResizeTarget called";
 
 			return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
+		});
+	}
+
+	if (vtable8)
+	{
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetDeviceState";
+
+		g_getDeviceState8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceState], [](LPDIRECTINPUTDEVICE8 dev, DWORD cbData, LPVOID lpvData) -> HRESULT
+		{
+			return g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
 		});
 	}
 

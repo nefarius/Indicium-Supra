@@ -174,20 +174,31 @@ BOOL DirectInput8Hooking::DirectInput8::EnumJoysticksCallback(const DIDEVICEINST
 	auto pEnumContext = reinterpret_cast<DI_ENUM_CONTEXT*>(pContext);
 	HRESULT hr;
 
+	BOOST_LOG_TRIVIAL(info) << "Joystick found";
+
+#ifdef TEST
 	if (IsXInputDevice(&pdidInstance->guidProduct))
 	{
 		BOOST_LOG_TRIVIAL(info) << "Current device is XInput device";
 		return DIENUM_CONTINUE;
 	}
+#endif
 
+#ifdef TEST
 	// Skip anything other than the perferred joystick device as defined by the control panel.  
 	// Instead you could store all the enumerated joysticks and let the user pick.
 	if (pEnumContext->bPreferredJoyCfgValid &&
 		!IsEqualGUID(pdidInstance->guidInstance, pEnumContext->pPreferredJoyCfg->guidInstance))
 		return DIENUM_CONTINUE;
+#endif
 
 	// Obtain an interface to the enumerated joystick.
 	hr = pDI->CreateDevice(pdidInstance->guidInstance, &pJoystick, nullptr);
+
+	// If it failed, then we can't use this joystick. (Maybe the user unplugged
+	// it while we were in the middle of enumerating it.)
+	if (FAILED(hr))
+		return DIENUM_CONTINUE;
 
 #ifdef _M_IX86
 	vtable = *reinterpret_cast<UINT32 **>(pJoystick);
@@ -195,10 +206,7 @@ BOOL DirectInput8Hooking::DirectInput8::EnumJoysticksCallback(const DIDEVICEINST
 	vtable = *reinterpret_cast<UINT64 **>(pJoystick);
 #endif
 
-	// If it failed, then we can't use this joystick. (Maybe the user unplugged
-	// it while we were in the middle of enumerating it.)
-	if (FAILED(hr))
-		return DIENUM_CONTINUE;
+	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
 
 	// Stop enumeration. Note: we're just taking the first joystick we get. You
 	// could store all the enumerated joysticks and let the user pick.
@@ -221,7 +229,7 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
 		return;
 	}
 
-	SetupForIsXInputDevice();
+	//SetupForIsXInputDevice();
 
 	DIJOYCONFIG PreferredJoyCfg = { 0 };
 	DI_ENUM_CONTEXT enumContext;
@@ -241,6 +249,8 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
 		enumContext.bPreferredJoyCfgValid = true;
 	SAFE_RELEASE(pJoyConfig);
 
+	BOOST_LOG_TRIVIAL(error) << "Enumerating devices";
+
 	if (FAILED(hr = pDI->EnumDevices(DI8DEVCLASS_GAMECTRL,
 		StaticEnumJoysticksCallback,
 		&enumContext, DIEDFL_ATTACHEDONLY)))
@@ -249,7 +259,7 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
 		return;
 	}
 
-	CleanupForIsXInputDevice();
+	//CleanupForIsXInputDevice();
 
 	// Make sure we got a joystick
 	if (!pJoystick)
