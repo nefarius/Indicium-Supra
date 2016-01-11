@@ -88,7 +88,7 @@
     <LibraryPath>$(BOOST_ROOT)\stage\lib;$(DXSDK)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(BOOST_ROOT);$(DXSDK)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files (x86)\Windows Kits\8.1\Include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;C:\Program Files (x86)\Windows Kits\8.1\Include\km;C:\Program Files (x86)\Windows Kits\8.1\Include\shared;$(BOOST_ROOT);$(DXSDK)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LibraryPath>$(BOOST_ROOT)\stage\lib\x64;$(DXSDK)\Lib\x64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\..\bin\</OutDir>

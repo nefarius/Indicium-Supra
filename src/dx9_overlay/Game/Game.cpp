@@ -39,6 +39,7 @@ Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChai
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget10Hook;
 
 //DInput8
+Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8> g_acquire8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD> g_getDeviceData8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEINSTANCE> g_getDeviceInfo8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_getDeviceState8Hook;
@@ -58,6 +59,61 @@ namespace logging = boost::log;
 namespace keywords = boost::log::keywords;
 namespace expr = boost::log::expressions;
 
+
+template <typename T>
+inline MH_STATUS MH_CreateHookApiEx(
+	LPCWSTR pszModule, LPCSTR pszProcName, LPVOID pDetour, T** ppOriginal)
+{
+	return MH_CreateHookApi(
+		pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
+}
+
+/*************************************************************************************/
+#include <hidsdi.h>
+
+typedef BOOLEAN(WINAPI* tHidD_GetInputReport)(
+	_In_  HANDLE HidDeviceObject,
+	_Out_ PVOID  ReportBuffer,
+	_In_  ULONG  ReportBufferLength
+	);
+tHidD_GetInputReport OriginalHidD_GetInputReport = nullptr;
+
+BOOLEAN WINAPI DetourHidD_GetInputReport(
+	_In_  HANDLE HidDeviceObject,
+	_Out_ PVOID  ReportBuffer,
+	_In_  ULONG  ReportBufferLength
+	);
+
+typedef NTSTATUS (WINAPI* tHidP_GetData)(
+	_In_    HIDP_REPORT_TYPE     ReportType,
+	_Out_   PHIDP_DATA           DataList,
+	_Inout_ PULONG               DataLength,
+	_In_    PHIDP_PREPARSED_DATA PreparsedData,
+	_In_    PCHAR                Report,
+	_In_    ULONG                ReportLength
+	);
+tHidP_GetData OriginalHidP_GetData = nullptr;
+
+NTSTATUS WINAPI DetourHidP_GetData(
+	_In_    HIDP_REPORT_TYPE     ReportType,
+	_Out_   PHIDP_DATA           DataList,
+	_Inout_ PULONG               DataLength,
+	_In_    PHIDP_PREPARSED_DATA PreparsedData,
+	_In_    PCHAR                Report,
+	_In_    ULONG                ReportLength
+	);
+
+typedef BOOLEAN (WINAPI* tHidD_GetPreparsedData)(
+	_In_  HANDLE               HidDeviceObject,
+	_Out_ PHIDP_PREPARSED_DATA *PreparsedData
+	);
+tHidD_GetPreparsedData OriginalHidD_GetPreparsedData = nullptr;
+
+BOOLEAN WINAPI DetourHidD_GetPreparsedData(
+	_In_  HANDLE               HidDeviceObject,
+	_Out_ PHIDP_PREPARSED_DATA *PreparsedData
+	);
+/*************************************************************************************/
 
 void initGame()
 {
@@ -236,6 +292,15 @@ void initGame()
 
 	if (vtable8)
 	{
+		BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::Acquire";
+
+		g_acquire8Hook.apply(vtable8[DirectInput8Hooking::Acquire], [](LPDIRECTINPUTDEVICE8 dev) -> HRESULT
+		{
+			BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::Acquire called";
+
+			return g_acquire8Hook.callOrig(dev);
+		});
+
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetDeviceData";
 
 		g_getDeviceData8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceData], [](LPDIRECTINPUTDEVICE8 dev, DWORD cbObjectData, LPDIDEVICEOBJECTDATA rgdod, LPDWORD pdwInOut, DWORD dwFlags) -> HRESULT
@@ -260,8 +325,7 @@ void initGame()
 		{
 			BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetDeviceState called";
 			
-			//return g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
-			return DI_OK;
+			return g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
 		});
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetObjectInfo";
@@ -273,6 +337,41 @@ void initGame()
 			return g_getObjectInfo8Hook.callOrig(dev, pdidoi, dwObj, dwHow);
 		});
 	}
+
+	/*********************************************************************************************************************************************/
+	if (MH_CreateHookApiEx(L"hid", "HidD_GetInputReport", &DetourHidD_GetInputReport, &OriginalHidD_GetInputReport) != MH_OK)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't create HidD_GetInputReport hook";
+	}
+
+	if (MH_EnableHook(GetProcAddress(GetModuleHandle("hid"), "HidD_GetInputReport")) != MH_OK)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't enable HidD_GetInputReport hook";
+	}
+
+	/*********************************************************************************************************************************************/
+	if (MH_CreateHookApiEx(L"hid", "HidP_GetData", &DetourHidP_GetData, &OriginalHidP_GetData) != MH_OK)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't create HidD_GetInputReport hook";
+	}
+
+	if (MH_EnableHook(GetProcAddress(GetModuleHandle("hid"), "HidP_GetData")) != MH_OK)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't enable HidP_GetData hook";
+	}
+
+	/*********************************************************************************************************************************************/
+	if (MH_CreateHookApiEx(L"hid", "HidD_GetPreparsedData", &DetourHidD_GetPreparsedData, &OriginalHidD_GetPreparsedData) != MH_OK)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't create HidD_GetPreparsedData hook";
+	}
+
+	if (MH_EnableHook(GetProcAddress(GetModuleHandle("hid"), "HidD_GetPreparsedData")) != MH_OK)
+	{
+		BOOST_LOG_TRIVIAL(error) << "Couldn't enable HidD_GetPreparsedData hook";
+	}
+
+
 
 
 	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)>> MessagePaketHandler;
@@ -346,3 +445,37 @@ void initGame()
 	WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
 }
 
+BOOLEAN WINAPI DetourHidD_GetInputReport(
+	_In_  HANDLE HidDeviceObject,
+	_Out_ PVOID  ReportBuffer,
+	_In_  ULONG  ReportBufferLength
+	)
+{
+	BOOST_LOG_TRIVIAL(info) << "DetourHidD_GetInputReport called";
+
+	return OriginalHidD_GetInputReport(HidDeviceObject, ReportBuffer, ReportBufferLength);
+}
+
+NTSTATUS WINAPI DetourHidP_GetData(
+	_In_    HIDP_REPORT_TYPE     ReportType,
+	_Out_   PHIDP_DATA           DataList,
+	_Inout_ PULONG               DataLength,
+	_In_    PHIDP_PREPARSED_DATA PreparsedData,
+	_In_    PCHAR                Report,
+	_In_    ULONG                ReportLength
+	)
+{
+	BOOST_LOG_TRIVIAL(info) << "DetourHidP_GetData called";
+
+	return OriginalHidP_GetData(ReportType, DataList, DataLength, PreparsedData, Report, ReportLength);
+}
+
+BOOLEAN WINAPI DetourHidD_GetPreparsedData(
+	_In_  HANDLE               HidDeviceObject,
+	_Out_ PHIDP_PREPARSED_DATA *PreparsedData
+	)
+{
+	BOOST_LOG_TRIVIAL(info) << "DetourHidD_GetPreparsedData called";
+
+	return OriginalHidD_GetPreparsedData(HidDeviceObject, PreparsedData);
+}
