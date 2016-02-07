@@ -183,6 +183,10 @@
     <ClCompile Include="Game\Rendering\RenderBase.cpp" />
     <ClCompile Include="Game\Rendering\Renderer.cpp" />
     <ClCompile Include="Game\Rendering\Text.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_impl_dx9.cpp" />
     <ClCompile Include="Utils\Serializer.cpp" />
     <ClCompile Include="Utils\Misc.cpp" />
     <ClCompile Include="Utils\PipeClient.cpp" />
@@ -207,6 +211,13 @@
     <ClInclude Include="Game\Rendering\RenderBase.h" />
     <ClInclude Include="Game\Rendering\Renderer.h" />
     <ClInclude Include="Game\Rendering\Text.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_impl_dx9.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\stb_rect_pack.h" />
+    <ClInclude Include="imgui\stb_textedit.h" />
+    <ClInclude Include="imgui\stb_truetype.h" />
     <ClInclude Include="intarch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shared\Config.h" />
