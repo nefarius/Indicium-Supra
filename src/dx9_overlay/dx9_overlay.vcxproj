@@ -70,28 +70,29 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\bin\</OutDir>
+    <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
     <IncludePath>$(BOOST_ROOT);$(DXSDK)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(BOOST_ROOT)\stage\lib;$(DXSDK)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(BOOST_ROOT)\stage\lib\x86;$(DXSDK)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)</TargetName>
     <IncludePath>$(BOOST_ROOT);$(DXSDK)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LibraryPath>$(BOOST_ROOT)\stage\lib;$(DXSDK)\Lib\x86;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\bin\</OutDir>
+    <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
     <IncludePath>$(BOOST_ROOT);$(DXSDK)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(BOOST_ROOT)\stage\lib;$(DXSDK)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(BOOST_ROOT)\stage\lib\x86;$(DXSDK)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Program Files (x86)\Windows Kits\8.1\Include;C:\Program Files (x86)\Windows Kits\8.1\Include\um;C:\Program Files (x86)\Windows Kits\8.1\Include\km;C:\Program Files (x86)\Windows Kits\8.1\Include\shared;$(BOOST_ROOT);$(DXSDK)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LibraryPath>$(BOOST_ROOT)\stage\lib\x64;$(DXSDK)\Lib\x64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\bin\</OutDir>
+    <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

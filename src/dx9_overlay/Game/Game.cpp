@@ -68,53 +68,6 @@ inline MH_STATUS MH_CreateHookApiEx(
 		pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
 }
 
-/*************************************************************************************/
-#include <hidsdi.h>
-
-typedef BOOLEAN(WINAPI* tHidD_GetInputReport)(
-	_In_  HANDLE HidDeviceObject,
-	_Out_ PVOID  ReportBuffer,
-	_In_  ULONG  ReportBufferLength
-	);
-tHidD_GetInputReport OriginalHidD_GetInputReport = nullptr;
-
-BOOLEAN WINAPI DetourHidD_GetInputReport(
-	_In_  HANDLE HidDeviceObject,
-	_Out_ PVOID  ReportBuffer,
-	_In_  ULONG  ReportBufferLength
-	);
-
-typedef NTSTATUS (WINAPI* tHidP_GetData)(
-	_In_    HIDP_REPORT_TYPE     ReportType,
-	_Out_   PHIDP_DATA           DataList,
-	_Inout_ PULONG               DataLength,
-	_In_    PHIDP_PREPARSED_DATA PreparsedData,
-	_In_    PCHAR                Report,
-	_In_    ULONG                ReportLength
-	);
-tHidP_GetData OriginalHidP_GetData = nullptr;
-
-NTSTATUS WINAPI DetourHidP_GetData(
-	_In_    HIDP_REPORT_TYPE     ReportType,
-	_Out_   PHIDP_DATA           DataList,
-	_Inout_ PULONG               DataLength,
-	_In_    PHIDP_PREPARSED_DATA PreparsedData,
-	_In_    PCHAR                Report,
-	_In_    ULONG                ReportLength
-	);
-
-typedef BOOLEAN (WINAPI* tHidD_GetPreparsedData)(
-	_In_  HANDLE               HidDeviceObject,
-	_Out_ PHIDP_PREPARSED_DATA *PreparsedData
-	);
-tHidD_GetPreparsedData OriginalHidD_GetPreparsedData = nullptr;
-
-BOOLEAN WINAPI DetourHidD_GetPreparsedData(
-	_In_  HANDLE               HidDeviceObject,
-	_Out_ PHIDP_PREPARSED_DATA *PreparsedData
-	);
-/*************************************************************************************/
-
 void initGame()
 {
 	HMODULE hMod = nullptr;
@@ -146,16 +99,10 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
 
-#ifdef _M_IX86
-	UINT32 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
-	UINT32 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
-	UINT32 vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = { 0 };
-#else
-	UINT64 vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
-	UINT64 vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
-	UINT64 vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = { 0 };
-	UINT64 vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
-#endif
+	UINTX vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
+	UINTX vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
+	UINTX vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = { 0 };
+	UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
 
 	// get VTable for Direct3DCreate9
 	{
@@ -338,41 +285,6 @@ void initGame()
 		});
 	}
 
-	/*********************************************************************************************************************************************/
-	if (MH_CreateHookApiEx(L"hid", "HidD_GetInputReport", &DetourHidD_GetInputReport, &OriginalHidD_GetInputReport) != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't create HidD_GetInputReport hook";
-	}
-
-	if (MH_EnableHook(GetProcAddress(GetModuleHandle("hid"), "HidD_GetInputReport")) != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't enable HidD_GetInputReport hook";
-	}
-
-	/*********************************************************************************************************************************************/
-	if (MH_CreateHookApiEx(L"hid", "HidP_GetData", &DetourHidP_GetData, &OriginalHidP_GetData) != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't create HidD_GetInputReport hook";
-	}
-
-	if (MH_EnableHook(GetProcAddress(GetModuleHandle("hid"), "HidP_GetData")) != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't enable HidP_GetData hook";
-	}
-
-	/*********************************************************************************************************************************************/
-	if (MH_CreateHookApiEx(L"hid", "HidD_GetPreparsedData", &DetourHidD_GetPreparsedData, &OriginalHidD_GetPreparsedData) != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't create HidD_GetPreparsedData hook";
-	}
-
-	if (MH_EnableHook(GetProcAddress(GetModuleHandle("hid"), "HidD_GetPreparsedData")) != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't enable HidD_GetPreparsedData hook";
-	}
-
-
-
 
 	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)>> MessagePaketHandler;
 	MessagePaketHandler PaketHandler;
@@ -443,39 +355,4 @@ void initGame()
 
 	// block this thread infinitely
 	WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
-}
-
-BOOLEAN WINAPI DetourHidD_GetInputReport(
-	_In_  HANDLE HidDeviceObject,
-	_Out_ PVOID  ReportBuffer,
-	_In_  ULONG  ReportBufferLength
-	)
-{
-	BOOST_LOG_TRIVIAL(info) << "DetourHidD_GetInputReport called";
-
-	return OriginalHidD_GetInputReport(HidDeviceObject, ReportBuffer, ReportBufferLength);
-}
-
-NTSTATUS WINAPI DetourHidP_GetData(
-	_In_    HIDP_REPORT_TYPE     ReportType,
-	_Out_   PHIDP_DATA           DataList,
-	_Inout_ PULONG               DataLength,
-	_In_    PHIDP_PREPARSED_DATA PreparsedData,
-	_In_    PCHAR                Report,
-	_In_    ULONG                ReportLength
-	)
-{
-	BOOST_LOG_TRIVIAL(info) << "DetourHidP_GetData called";
-
-	return OriginalHidP_GetData(ReportType, DataList, DataLength, PreparsedData, Report, ReportLength);
-}
-
-BOOLEAN WINAPI DetourHidD_GetPreparsedData(
-	_In_  HANDLE               HidDeviceObject,
-	_Out_ PHIDP_PREPARSED_DATA *PreparsedData
-	)
-{
-	BOOST_LOG_TRIVIAL(info) << "DetourHidD_GetPreparsedData called";
-
-	return OriginalHidD_GetPreparsedData(HidDeviceObject, PreparsedData);
 }

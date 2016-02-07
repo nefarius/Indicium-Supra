@@ -1,5 +1,4 @@
 #pragma once
-#include <shared/basetsd.h>
 
 #ifdef _M_IX86
 #ifndef UINTX
