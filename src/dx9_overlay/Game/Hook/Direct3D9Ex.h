@@ -1,6 +1,7 @@
 #pragma once
 #include <d3dx9.h>
 #include "Window.h"
+#include <intarch.h>
 
 namespace Direct3D9Hooking
 {
@@ -25,11 +26,7 @@ namespace Direct3D9Hooking
 
 	class Direct3D9Ex
 	{
-#ifdef _M_IX86
-		UINT32 *vtable;
-#else
-		UINT64 *vtable;
-#endif
+		UINTX *vtable;
 		Window *temp_window;
 		IDirect3D9Ex *d3d9_ex;
 		IDirect3DDevice9Ex *d3d9_device_ex;
@@ -38,10 +35,6 @@ namespace Direct3D9Hooking
 		~Direct3D9Ex();
 		static const int VTableElements = 134;
 
-#ifdef _M_IX86
-		bool GetVTableEx(UINT32 *pVTable) const;
-#else
-		bool GetVTableEx(UINT64 *pVTable) const;
-#endif
+		bool GetVTableEx(UINTX *pVTable) const;
 	};
 }

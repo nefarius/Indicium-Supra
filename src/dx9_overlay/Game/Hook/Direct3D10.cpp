@@ -114,13 +114,8 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : vtable(nullptr), vtableSwapChain(n
 		return;
 	}
 
-#ifdef _M_IX86
-	vtable = *reinterpret_cast<UINT32 **>(pDevice);
-	vtableSwapChain = *reinterpret_cast<UINT32 **>(pSwapChain);
-#else
-	vtable = *reinterpret_cast<UINT64 **>(pDevice);
-	vtableSwapChain = *reinterpret_cast<UINT64 **>(pSwapChain);
-#endif
+	vtable = *reinterpret_cast<UINTX **>(pDevice);
+	vtableSwapChain = *reinterpret_cast<UINTX **>(pSwapChain);
 
 	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
 }
@@ -140,27 +135,13 @@ Direct3D10Hooking::Direct3D10::~Direct3D10()
 		delete temp_window;
 }
 
-#ifdef _M_IX86
-bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINT32* pVTable) const
+bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINTX* pVTable) const
 {
 	if (vtableSwapChain)
 	{
-		memcpy(pVTable, vtableSwapChain, SwapChainVTableElements * sizeof(UINT32));
+		memcpy(pVTable, vtableSwapChain, SwapChainVTableElements * sizeof(UINTX));
 		return true;
 	}
 
 	return false;
 }
-#else
-bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINT64* pVTable) const
-{
-	if (vtableSwapChain)
-	{
-		memcpy(pVTable, vtableSwapChain, SwapChainVTableElements * sizeof(UINT64));
-		return true;
-	}
-
-	return false;
-}
-#endif
-

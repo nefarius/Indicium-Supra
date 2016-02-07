@@ -2,6 +2,7 @@
 #include "Window.h"
 #include <dxgi.h>
 #include <d3d10.h>
+#include <intarch.h>
 
 namespace Direct3D10Hooking
 {
@@ -36,13 +37,8 @@ namespace Direct3D10Hooking
 	
 	class Direct3D10
 	{
-#ifdef _M_IX86
-		UINT32 *vtable;
-		UINT32 *vtableSwapChain;
-#else
-		UINT64 *vtable;
-		UINT64 *vtableSwapChain;
-#endif
+		UINTX *vtable;
+		UINTX *vtableSwapChain;
 		Window *temp_window;
 		ID3D10Device *pDevice;
 		IDXGISwapChain *pSwapChain;
@@ -53,10 +49,6 @@ namespace Direct3D10Hooking
 		static const int VTableElements = 98;
 		static const int SwapChainVTableElements = 18;
 
-#ifdef _M_IX86
-		bool GetSwapChainVTable(UINT32 *pVTable) const;
-#else
-		bool GetSwapChainVTable(UINT64 *pVTable) const;
-#endif
+		bool GetSwapChainVTable(UINTX *pVTable) const;
 	};
 }

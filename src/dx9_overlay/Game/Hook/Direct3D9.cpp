@@ -51,11 +51,7 @@ Direct3D9Hooking::Direct3D9::Direct3D9() : vtable(nullptr), temp_window(nullptr)
 		return;
 	}
 
-#ifdef _M_IX86
-	vtable = *reinterpret_cast<UINT32 **>(d3d9_device);
-#else
-	vtable = *((UINT64 **)d3d9_device);
-#endif
+	vtable = *reinterpret_cast<UINTX **>(d3d9_device);
 
 	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
 }
@@ -74,26 +70,13 @@ Direct3D9Hooking::Direct3D9::~Direct3D9()
 		delete temp_window;
 }
 
-#ifdef _M_IX86
-bool Direct3D9Hooking::Direct3D9::GetVTable(UINT32 *pVTable) const
+bool Direct3D9Hooking::Direct3D9::GetVTable(UINTX *pVTable) const
 {
 	if (vtable)
 	{
-		memcpy(pVTable, vtable, VTableElements * sizeof(UINT32));
-		return true;
-	}
-	
-	return false;
-}
-#else
-bool Direct3D9Hooking::Direct3D9::GetVTable(UINT64 *pVTable) const
-{
-	if (vtable)
-	{
-		memcpy(pVTable, vtable, VTableElements * sizeof(UINT64));
+		memcpy(pVTable, vtable, VTableElements * sizeof(UINTX));
 		return true;
 	}
 
 	return false;
 }
-#endif

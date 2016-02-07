@@ -179,6 +179,9 @@
     <ClInclude Include="Game\Hook\DirectInput8.h">
       <Filter>Game\Hook\DInput8</Filter>
     </ClInclude>
+    <ClInclude Include="intarch.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
