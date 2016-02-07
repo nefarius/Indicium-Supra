@@ -21,6 +21,7 @@
 #include <Game/Hook/Direct3D9Ex.h>
 #include <Game/Hook/Direct3D10.h>
 #include <Game/Hook/DirectInput8.h>
+#include <imgui/imgui_impl_dx9.h>
 
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
@@ -45,10 +46,15 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEINSTANC
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_getDeviceState8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTINSTANCE, DWORD, DWORD> g_getObjectInfo8Hook;
 
+// Windows API
+Hook<CallConvention::stdcall_t, LRESULT, const MSG *> g_dispatchMessageHook;
+
 
 Renderer g_pRenderer;
 bool g_bEnabled = false;
 bool g_bIsUsingPresent = false;
+bool g_bIsInitialized = false;
+HWND g_hWnd = nullptr;
 
 extern "C" __declspec(dllexport) void enable()
 {
@@ -67,6 +73,8 @@ inline MH_STATUS MH_CreateHookApiEx(
 	return MH_CreateHookApi(
 		pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
 }
+
+void renderScene9(LPDIRECT3DDEVICE9 dev);
 
 void initGame()
 {
@@ -158,6 +166,18 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
 
+	g_dispatchMessageHook.apply(reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "DispatchMessageA")), [](const MSG *lpmsg) -> LRESULT
+	{
+		if (!g_hWnd)
+		{
+			g_hWnd = lpmsg->hwnd;
+		}
+
+		ImGui_ImplDX9_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
+
+		return g_dispatchMessageHook.callOrig(lpmsg);
+	});
+
 	if (d3d9_available)
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
@@ -166,7 +186,8 @@ void initGame()
 		{
 			g_bIsUsingPresent = true;
 
-			g_pRenderer.draw(dev);
+			// g_pRenderer.draw(dev);
+			renderScene9(dev);
 
 			return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
 		});
@@ -186,7 +207,8 @@ void initGame()
 		{
 			if (!g_bIsUsingPresent)
 			{
-				g_pRenderer.draw(dev);
+				// g_pRenderer.draw(dev);
+				renderScene9(dev);
 			}
 
 			return g_endScene9Hook.callOrig(dev);
@@ -201,7 +223,8 @@ void initGame()
 		{
 			g_bIsUsingPresent = true;
 
-			g_pRenderer.draw(dev);
+			// g_pRenderer.draw(dev);
+			renderScene9(dev);
 
 			return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
 		});
@@ -355,4 +378,52 @@ void initGame()
 
 	// block this thread infinitely
 	WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
+}
+
+void renderScene9(LPDIRECT3DDEVICE9 dev)
+{
+	static bool show_test_window = true;
+	static bool show_another_window = false;
+	static ImVec4 clear_col = ImColor(114, 144, 154);
+
+	if (!g_bIsInitialized)
+	{
+		if (!g_hWnd) return;
+
+		ImGui_ImplDX9_Init(g_hWnd, dev);
+
+		g_bIsInitialized = true;
+	}
+
+	ImGui_ImplDX9_NewFrame();
+
+	// 1. Show a simple window
+	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+	{
+		static float f = 0.0f;
+		ImGui::Text("Hello, world!");
+		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+		ImGui::ColorEdit3("clear color", (float*)&clear_col);
+		if (ImGui::Button("Test Window")) show_test_window ^= 1;
+		if (ImGui::Button("Another Window")) show_another_window ^= 1;
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	}
+
+	// 2. Show another simple window, this time using an explicit Begin/End pair
+	if (show_another_window)
+	{
+		ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
+		ImGui::Begin("Another Window", &show_another_window);
+		ImGui::Text("Hello");
+		ImGui::End();
+	}
+
+	// 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
+	if (show_test_window)
+	{
+		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+		ImGui::ShowTestWindow(&show_test_window);
+	}
+
+	ImGui::Render();
 }
