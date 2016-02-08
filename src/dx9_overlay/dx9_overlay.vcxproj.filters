@@ -77,6 +77,9 @@
     <ClCompile Include="imgui\imgui_impl_dx9.cpp">
       <Filter>ImGUI\DX9</Filter>
     </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_dx10.cpp">
+      <Filter>ImGUI\DX10</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -111,6 +114,9 @@
     </Filter>
     <Filter Include="ImGUI\DX9">
       <UniqueIdentifier>{ac03c026-7baf-431a-82c2-2f88dd3a11ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGUI\DX10">
+      <UniqueIdentifier>{917ffe03-5a48-4bff-97c2-1c1ab2615405}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="imgui\stb_textedit.h">
       <Filter>ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_dx10.h">
+      <Filter>ImGUI\DX10</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

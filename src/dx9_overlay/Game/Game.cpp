@@ -21,7 +21,9 @@
 #include <Game/Hook/Direct3D9Ex.h>
 #include <Game/Hook/Direct3D10.h>
 #include <Game/Hook/DirectInput8.h>
+
 #include <imgui/imgui_impl_dx9.h>
+#include <imgui/imgui_impl_dx10.h>
 
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
@@ -53,7 +55,7 @@ Hook<CallConvention::stdcall_t, LRESULT, const MSG *> g_dispatchMessageHook;
 Renderer g_pRenderer;
 bool g_bEnabled = false;
 bool g_bIsUsingPresent = false;
-bool g_bIsInitialized = false;
+bool g_bIsImGuiInitialized = false;
 HWND g_hWnd = nullptr;
 
 extern "C" __declspec(dllexport) void enable()
@@ -74,7 +76,7 @@ inline MH_STATUS MH_CreateHookApiEx(
 		pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
 }
 
-void renderScene9(LPDIRECT3DDEVICE9 dev);
+void RenderScene();
 
 void initGame()
 {
@@ -174,6 +176,7 @@ void initGame()
 		}
 
 		ImGui_ImplDX9_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
+		ImGui_ImplDX10_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
 
 		return g_dispatchMessageHook.callOrig(lpmsg);
 	});
@@ -186,8 +189,20 @@ void initGame()
 		{
 			g_bIsUsingPresent = true;
 
-			// g_pRenderer.draw(dev);
-			renderScene9(dev);
+			if (!g_bIsImGuiInitialized)
+			{
+				if (g_hWnd)
+				{
+					ImGui_ImplDX9_Init(g_hWnd, dev);
+
+					g_bIsImGuiInitialized = true;
+				}
+			}
+			else
+			{
+				ImGui_ImplDX9_NewFrame();
+				RenderScene();
+			}
 
 			return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
 		});
@@ -207,8 +222,20 @@ void initGame()
 		{
 			if (!g_bIsUsingPresent)
 			{
-				// g_pRenderer.draw(dev);
-				renderScene9(dev);
+				if (!g_bIsImGuiInitialized)
+				{
+					if (g_hWnd)
+					{
+						ImGui_ImplDX9_Init(g_hWnd, dev);
+
+						g_bIsImGuiInitialized = true;
+					}
+				}
+				else
+				{
+					ImGui_ImplDX9_NewFrame();
+					RenderScene();
+				}
 			}
 
 			return g_endScene9Hook.callOrig(dev);
@@ -223,8 +250,20 @@ void initGame()
 		{
 			g_bIsUsingPresent = true;
 
-			// g_pRenderer.draw(dev);
-			renderScene9(dev);
+			if (!g_bIsImGuiInitialized)
+			{
+				if (g_hWnd)
+				{
+					ImGui_ImplDX9_Init(g_hWnd, dev);
+
+					g_bIsImGuiInitialized = true;
+				}
+			}
+			else
+			{
+				ImGui_ImplDX9_NewFrame();
+				RenderScene();
+			}
 
 			return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
 		});
@@ -380,22 +419,11 @@ void initGame()
 	WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
 }
 
-void renderScene9(LPDIRECT3DDEVICE9 dev)
+void RenderScene()
 {
 	static bool show_test_window = true;
 	static bool show_another_window = false;
 	static ImVec4 clear_col = ImColor(114, 144, 154);
-
-	if (!g_bIsInitialized)
-	{
-		if (!g_hWnd) return;
-
-		ImGui_ImplDX9_Init(g_hWnd, dev);
-
-		g_bIsInitialized = true;
-	}
-
-	ImGui_ImplDX9_NewFrame();
 
 	// 1. Show a simple window
 	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
