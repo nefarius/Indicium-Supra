@@ -86,6 +86,9 @@
     <ClCompile Include="Game\Hook\Direct3DBase.cpp">
       <Filter>Game\Hook</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Hook\Direct3D11.cpp">
+      <Filter>Game\Hook\D3D11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -126,6 +129,9 @@
     </Filter>
     <Filter Include="ImGUI\DX11">
       <UniqueIdentifier>{91805050-e810-4212-b22b-65b8d44de6be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Hook\D3D11">
+      <UniqueIdentifier>{170e4a2e-f495-444e-b4f2-491ad22e6b24}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +250,9 @@
     </ClInclude>
     <ClInclude Include="Game\Hook\Direct3DBase.h">
       <Filter>Game\Hook</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\Direct3D11.h">
+      <Filter>Game\Hook\D3D11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

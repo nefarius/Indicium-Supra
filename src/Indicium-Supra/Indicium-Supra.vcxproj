@@ -172,6 +172,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\Hook\Direct3D11.cpp" />
     <ClCompile Include="Game\Hook\Direct3DBase.cpp" />
     <ClCompile Include="Game\Hook\DirectInput8.cpp" />
     <ClCompile Include="Game\Hook\Direct3D10.cpp" />
@@ -203,6 +204,7 @@
     <ClCompile Include="Game\Hook\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\Hook\Direct3D11.h" />
     <ClInclude Include="Game\Hook\Direct3DBase.h" />
     <ClInclude Include="Game\Hook\DirectInput8.h" />
     <ClInclude Include="Game\Hook\Direct3D10.h" />
