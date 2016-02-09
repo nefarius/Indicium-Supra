@@ -1,6 +1,6 @@
-# DX9-Overlay-API (LGPL v3)
+# Indicium-Supra (LGPL v3)
 
-An overlay API for DirectX 9 based games, which is licensed and distributed under the terms of the LGPL v3
+An overlay API for DirectX based games, which is licensed and distributed under the terms of the LGPL v3
 
 ## More information
 
@@ -8,7 +8,7 @@ http://www.overlay-api.net/
 
 ## How to build
 1. Create an environment variable called `BOOST_ROOT` which points to your Boost root directory (e.g. `C:\Development\C++\boost_1_59_0`)
-2. Create an environment variable called `DXSDK` which points to your DirectX SDK installation path (e.g. `C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)`)
+2. Create an environment variable called `DXSDK_DIR` (should be auto-created by setup) which points to your DirectX SDK installation path (e.g. `C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)`)
 3. MinHook should be downloaded by Visual Studio automatically, if not use NuGet Shell: `PM> Install-Package minhook`
 
 ### Prerequisites
