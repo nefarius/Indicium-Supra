@@ -244,6 +244,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="dx9_overlay.rc" />
+    <ResourceCompile Include="Indicium-Supra.rc" />
   </ItemGroup>
 </Project>

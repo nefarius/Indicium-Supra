@@ -50,7 +50,8 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTINSTANCE, DWORD, DWORD> g_getObjectInfo8Hook;
 
 // Windows API
-Hook<CallConvention::stdcall_t, LRESULT, const MSG *> g_dispatchMessageHook;
+Hook<CallConvention::stdcall_t, LRESULT, const MSG *> g_dispatchMessageAHook;
+Hook<CallConvention::stdcall_t, LRESULT, const MSG *> g_dispatchMessageWHook;
 
 
 Renderer g_pRenderer;
@@ -78,6 +79,18 @@ inline MH_STATUS MH_CreateHookApiEx(
 }
 
 void RenderScene();
+
+void InternalDispatchMessage(const MSG* lpmsg)
+{
+	if (!g_hWnd)
+	{
+		g_hWnd = lpmsg->hwnd;
+	}
+
+	ImGui_ImplDX9_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
+	ImGui_ImplDX10_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
+	ImGui_ImplDX11_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
+}
 
 void initGame()
 {
@@ -164,18 +177,18 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
 
-	g_dispatchMessageHook.apply(reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "DispatchMessageA")), [](const MSG *lpmsg) -> LRESULT
+	g_dispatchMessageAHook.apply(reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "DispatchMessageA")), [](const MSG *lpmsg) -> LRESULT
 	{
-		if (!g_hWnd)
-		{
-			g_hWnd = lpmsg->hwnd;
-		}
+		InternalDispatchMessage(lpmsg);
 
-		ImGui_ImplDX9_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
-		ImGui_ImplDX10_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
-		ImGui_ImplDX11_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
+		return g_dispatchMessageAHook.callOrig(lpmsg);
+	});
 
-		return g_dispatchMessageHook.callOrig(lpmsg);
+	g_dispatchMessageWHook.apply(reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "DispatchMessageW")), [](const MSG *lpmsg) -> LRESULT
+	{
+		InternalDispatchMessage(lpmsg);
+
+		return g_dispatchMessageWHook.callOrig(lpmsg);
 	});
 
 	if (d3d9_available)
