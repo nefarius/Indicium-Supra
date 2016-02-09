@@ -248,7 +248,7 @@ void HookDX10(UINTX *vtable10SwapChain)
 	g_swapChainPresent10Hook.apply(vtable10SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
 	{
 		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present called"));
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present (v10) called"));
 
 		g_bIsUsingPresent = true;
 
@@ -278,7 +278,7 @@ void HookDX10(UINTX *vtable10SwapChain)
 	g_swapChainResizeTarget10Hook.apply(vtable10SwapChain[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
 	{
 		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget called"));
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget (v10) called"));
 
 		return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
 	});
@@ -291,7 +291,7 @@ void HookDX11(UINTX *vtable11SwapChain)
 	g_swapChainPresent11Hook.apply(vtable11SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
 	{
 		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present called"));
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present (v11) called"));
 
 		g_bIsUsingPresent = true;
 
@@ -299,17 +299,17 @@ void HookDX11(UINTX *vtable11SwapChain)
 		{
 			if (g_hWnd)
 			{
-				//ID3D10Device *dev = nullptr;
-				//chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
+				ID3D11Device *dev = nullptr;
+				chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
 
-				//ImGui_ImplDX11_Init(g_hWnd, dev);
+				ImGui_ImplDX11_Init(g_hWnd, dev, nullptr);
 
 				g_bIsImGuiInitialized = true;
 			}
 		}
 		else
 		{
-			//ImGui_ImplDX10_NewFrame();
+			ImGui_ImplDX11_NewFrame();
 			RenderScene();
 		}
 
@@ -321,7 +321,7 @@ void HookDX11(UINTX *vtable11SwapChain)
 	g_swapChainResizeTarget11Hook.apply(vtable11SwapChain[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
 	{
 		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget called"));
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget (v11) called"));
 
 		return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
 	});
