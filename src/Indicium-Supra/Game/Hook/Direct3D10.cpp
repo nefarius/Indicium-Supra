@@ -3,10 +3,8 @@
 #include <vector>
 
 
-Direct3D10Hooking::Direct3D10::Direct3D10() : vtable(nullptr), vtableSwapChain(nullptr), pDevice(nullptr), pSwapChain(nullptr)
+Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nullptr), pDevice(nullptr), pSwapChain(nullptr)
 {
-	temp_window = new Window();
-
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for ID3D10Device and IDXGISwapChain...";
 
 	auto hModDXGI = GetModuleHandle("DXGI.dll");
@@ -130,9 +128,17 @@ Direct3D10Hooking::Direct3D10::~Direct3D10()
 
 	if (pDevice)
 		pDevice->Release();
+}
 
-	if (temp_window)
-		delete temp_window;
+bool Direct3D10Hooking::Direct3D10::GetDeviceVTable(UINTX* pVTable) const
+{
+	if (vtable)
+	{
+		memcpy(pVTable, vtable, VTableElements * sizeof(UINTX));
+		return true;
+	}
+
+	return false;
 }
 
 bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINTX* pVTable) const

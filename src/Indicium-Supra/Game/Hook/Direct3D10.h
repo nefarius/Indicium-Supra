@@ -3,6 +3,7 @@
 #include <dxgi.h>
 #include <d3d10.h>
 #include <intarch.h>
+#include "Direct3DBase.h"
 
 namespace Direct3D10Hooking
 {
@@ -35,11 +36,9 @@ namespace Direct3D10Hooking
 		GetLastPresentCount = 17
 	};
 	
-	class Direct3D10
+	class Direct3D10 : Direct3DHooking::Direct3DBase
 	{
-		UINTX *vtable;
 		UINTX *vtableSwapChain;
-		Window *temp_window;
 		ID3D10Device *pDevice;
 		IDXGISwapChain *pSwapChain;
 
@@ -49,6 +48,7 @@ namespace Direct3D10Hooking
 		static const int VTableElements = 98;
 		static const int SwapChainVTableElements = 18;
 
+		bool GetDeviceVTable(UINTX* pVTable) const override;
 		bool GetSwapChainVTable(UINTX *pVTable) const;
 	};
 }
