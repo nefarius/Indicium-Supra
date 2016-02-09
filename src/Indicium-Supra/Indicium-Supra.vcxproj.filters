@@ -254,6 +254,9 @@
     <ClInclude Include="Game\Hook\Direct3D11.h">
       <Filter>Game\Hook\D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="Game\Hook\DXGI.h">
+      <Filter>Game\Hook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

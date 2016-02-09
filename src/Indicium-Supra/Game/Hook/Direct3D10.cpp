@@ -1,6 +1,7 @@
 #include "Direct3D10.h"
 #include <boost/log/trivial.hpp>
 #include <vector>
+#include "DXGI.h"
 
 
 Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nullptr), pDevice(nullptr), pSwapChain(nullptr)
@@ -145,7 +146,7 @@ bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINTX* pVTable) const
 {
 	if (vtableSwapChain)
 	{
-		memcpy(pVTable, vtableSwapChain, SwapChainVTableElements * sizeof(UINTX));
+		memcpy(pVTable, vtableSwapChain, DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
 		return true;
 	}
 

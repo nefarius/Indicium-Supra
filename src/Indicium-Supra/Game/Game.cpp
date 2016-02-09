@@ -19,6 +19,7 @@
 
 #include <Game/Hook/Direct3D9.h>
 #include <Game/Hook/Direct3D9Ex.h>
+#include <Game/Hook/DXGI.h>
 #include <Game/Hook/Direct3D10.h>
 #include <Game/Hook/DirectInput8.h>
 
@@ -123,15 +124,15 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
 
-	UINTX vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
-	UINTX vtableEx[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
-	UINTX vtable10SwapChain[Direct3D10Hooking::Direct3D10::SwapChainVTableElements] = { 0 };
+	UINTX vtable9[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
+	UINTX vtable9Ex[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
+	UINTX vtable10SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
 	UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
 
 	// get VTable for Direct3DCreate9
 	{
 		Direct3D9Hooking::Direct3D9 d3d;
-		d3d9_available = d3d.GetDeviceVTable(vtable);
+		d3d9_available = d3d.GetDeviceVTable(vtable9);
 
 		if (!d3d9_available)
 		{
@@ -142,7 +143,7 @@ void initGame()
 	// get VTable for Direct3DCreate9Ex
 	{
 		Direct3D9Hooking::Direct3D9Ex d3dEx;
-		d3d9ex_available = d3dEx.GetDeviceVTable(vtableEx);
+		d3d9ex_available = d3dEx.GetDeviceVTable(vtable9Ex);
 
 		if (!d3d9ex_available)
 		{
@@ -210,7 +211,7 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
 
-		g_present9Hook.apply(vtable[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
+		g_present9Hook.apply(vtable9[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
 		{
 			static boost::once_flag flag = BOOST_ONCE_INIT;
 			boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::Present called"));
@@ -237,7 +238,7 @@ void initGame()
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Reset";
 
-		g_reset9Hook.apply(vtable[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
+		g_reset9Hook.apply(vtable9[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
 		{
 			static boost::once_flag flag = BOOST_ONCE_INIT;
 			boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::Reset called"));
@@ -249,7 +250,7 @@ void initGame()
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::EndScene";
 
-		g_endScene9Hook.apply(vtable[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
+		g_endScene9Hook.apply(vtable9[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
 		{
 			static boost::once_flag flag = BOOST_ONCE_INIT;
 			boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::EndScene called"));
@@ -280,7 +281,7 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
 
-		g_present9ExHook.apply(vtableEx[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
+		g_present9ExHook.apply(vtable9Ex[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
 		{
 			static boost::once_flag flag = BOOST_ONCE_INIT;
 			boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9Ex::PresentEx called"));
@@ -307,7 +308,7 @@ void initGame()
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
 
-		g_reset9ExHook.apply(vtableEx[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
+		g_reset9ExHook.apply(vtable9Ex[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
 		{
 			static boost::once_flag flag = BOOST_ONCE_INIT;
 			boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9Ex::ResetEx called"));
@@ -322,7 +323,7 @@ void initGame()
 	{
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
 
-		g_swapChainPresent10Hook.apply(vtable10SwapChain[Direct3D10Hooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+		g_swapChainPresent10Hook.apply(vtable10SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
 		{
 			static boost::once_flag flag = BOOST_ONCE_INIT;
 			boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present called"));
@@ -332,7 +333,7 @@ void initGame()
 
 		BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeTarget";
 
-		g_swapChainResizeTarget10Hook.apply(vtable10SwapChain[Direct3D10Hooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+		g_swapChainResizeTarget10Hook.apply(vtable10SwapChain[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
 		{
 			static boost::once_flag flag = BOOST_ONCE_INIT;
 			boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget called"));

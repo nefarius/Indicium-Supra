@@ -204,6 +204,7 @@
     <ClCompile Include="Game\Hook\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\Hook\DXGI.h" />
     <ClInclude Include="Game\Hook\Direct3D11.h" />
     <ClInclude Include="Game\Hook\Direct3DBase.h" />
     <ClInclude Include="Game\Hook\DirectInput8.h" />
