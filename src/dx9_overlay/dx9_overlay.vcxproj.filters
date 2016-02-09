@@ -80,6 +80,9 @@
     <ClCompile Include="imgui\imgui_impl_dx10.cpp">
       <Filter>ImGUI\DX10</Filter>
     </ClCompile>
+    <ClCompile Include="imgui\imgui_impl_dx11.cpp">
+      <Filter>ImGUI\DX11</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -117,6 +120,9 @@
     </Filter>
     <Filter Include="ImGUI\DX10">
       <UniqueIdentifier>{917ffe03-5a48-4bff-97c2-1c1ab2615405}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGUI\DX11">
+      <UniqueIdentifier>{91805050-e810-4212-b22b-65b8d44de6be}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_dx10.h">
       <Filter>ImGUI\DX10</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_impl_dx11.h">
+      <Filter>ImGUI\DX11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
