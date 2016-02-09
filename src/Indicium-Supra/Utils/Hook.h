@@ -67,13 +67,13 @@ public:
 
 		if (MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_trampoline) != MH_OK)
 		{
-			BOOST_LOG_TRIVIAL(fatal) << "-> Couldn't create hook";
+			BOOST_LOG_TRIVIAL(fatal) << "!! Couldn't create hook";
 			return;
 		}
 
 		if (MH_EnableHook((PBYTE)pFunc) != MH_OK)
 		{
-			BOOST_LOG_TRIVIAL(fatal) << "-> Couldn't enable hook";
+			BOOST_LOG_TRIVIAL(fatal) << "!! Couldn't enable hook";
 			return;
 		}
 
