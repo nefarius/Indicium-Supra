@@ -1,5 +1,6 @@
 #pragma once
 #include "Direct3DBase.h"
+#include <d3d11.h>
 
 namespace Direct3D11Hooking
 {
@@ -56,11 +57,17 @@ namespace Direct3D11Hooking
 	class Direct3D11 :
 		public Direct3DHooking::Direct3DBase
 	{
+		UINTX					*vtableSwapChain;
+		ID3D11Device*            pd3dDevice;
+		ID3D11DeviceContext*     pd3dDeviceContext;
+		IDXGISwapChain*          pSwapChain;
+		ID3D11RenderTargetView*  mainRenderTargetView;
 	public:
 		Direct3D11();
 		~Direct3D11();
 		static const int VTableElements = 43;
 
 		bool GetDeviceVTable(UINTX* pVTable) const override;
+		bool GetSwapChainVTable(UINTX *pVTable) const;
 	};
 }

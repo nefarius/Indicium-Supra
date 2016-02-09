@@ -7,8 +7,7 @@
 
 #include "Rendering/Renderer.h"
 
-#include <d3dx9.h>
-
+#include <boost/thread/once.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/utility/setup/file.hpp>
@@ -21,12 +20,12 @@
 #include <Game/Hook/Direct3D9Ex.h>
 #include <Game/Hook/DXGI.h>
 #include <Game/Hook/Direct3D10.h>
+#include <Game/Hook/Direct3D11.h>
 #include <Game/Hook/DirectInput8.h>
 
 #include <imgui/imgui_impl_dx9.h>
 #include <imgui/imgui_impl_dx10.h>
 #include <imgui/imgui_impl_dx11.h>
-#include <boost/thread/once.hpp>
 
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
@@ -43,6 +42,10 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMET
 // D3D10
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent10Hook;
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget10Hook;
+
+// D3D11
+Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent11Hook;
+Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget11Hook;
 
 //DInput8
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8> g_acquire8Hook;
@@ -281,6 +284,49 @@ void HookDX10(UINTX *vtable10SwapChain)
 	});
 }
 
+void HookDX11(UINTX *vtable11SwapChain)
+{
+	BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
+
+	g_swapChainPresent11Hook.apply(vtable11SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+	{
+		static boost::once_flag flag = BOOST_ONCE_INIT;
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present called"));
+
+		g_bIsUsingPresent = true;
+
+		if (!g_bIsImGuiInitialized)
+		{
+			if (g_hWnd)
+			{
+				//ID3D10Device *dev = nullptr;
+				//chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
+
+				//ImGui_ImplDX11_Init(g_hWnd, dev);
+
+				g_bIsImGuiInitialized = true;
+			}
+		}
+		else
+		{
+			//ImGui_ImplDX10_NewFrame();
+			RenderScene();
+		}
+
+		return g_swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
+	});
+
+	BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeTarget";
+
+	g_swapChainResizeTarget11Hook.apply(vtable11SwapChain[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+	{
+		static boost::once_flag flag = BOOST_ONCE_INIT;
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget called"));
+
+		return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
+	});
+}
+
 void HookDInput8(UINTX *vtable8)
 {
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::Acquire";
@@ -331,7 +377,7 @@ void HookDInput8(UINTX *vtable8)
 
 void initGame()
 {
-	bool d3d9_available, d3d9ex_available, d3d10_available;
+	bool d3d9_available, d3d9ex_available, d3d10_available, d3d11_available, dinput8_available;
 
 	logging::add_common_attributes();
 
@@ -357,6 +403,7 @@ void initGame()
 	UINTX vtable9[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
 	UINTX vtable9Ex[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
 	UINTX vtable10SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
+	UINTX vtable11SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
 	UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
 
 	// get VTable for Direct3DCreate9
@@ -381,7 +428,7 @@ void initGame()
 		}
 	}
 
-	// get VTable for IDXGISwapChain
+	// get VTable for IDXGISwapChain (v10)
 	{
 		Direct3D10Hooking::Direct3D10 d3d10;
 		d3d10_available = d3d10.GetSwapChainVTable(vtable10SwapChain);
@@ -392,12 +439,23 @@ void initGame()
 		}
 	}
 
+	// get VTable for IDXGISwapChain (v11)
+	{
+		Direct3D11Hooking::Direct3D11 d3d11;
+		d3d11_available = d3d11.GetSwapChainVTable(vtable11SwapChain);
+
+		if (!d3d11_available)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for IDXGISwapChain";
+		}
+	}
+
 	// Dinput8
 	{
 		DirectInput8Hooking::DirectInput8 di8;
-		di8.GetVTable(vtable8);
+		dinput8_available = di8.GetVTable(vtable8);
 
-		if (!vtable8)
+		if (!dinput8_available)
 		{
 			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for DirectInput8";
 		}
@@ -430,7 +488,12 @@ void initGame()
 		HookDX10(vtable10SwapChain);
 	}
 
-	if (vtable8)
+	if (d3d11_available)
+	{
+		HookDX11(vtable11SwapChain);
+	}
+
+	if (dinput8_available)
 	{
 		HookDInput8(vtable8);
 	}

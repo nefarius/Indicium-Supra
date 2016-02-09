@@ -1,6 +1,7 @@
 #pragma once
 #include "Window.h"
 #include <dxgi.h>
+#include <d3d10_1.h>
 #include <d3d10.h>
 #include <intarch.h>
 #include "Direct3DBase.h"
