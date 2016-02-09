@@ -55,8 +55,8 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTINSTANCE, DWORD, DWORD> g_getObjectInfo8Hook;
 
 // Windows API
-Hook<CallConvention::stdcall_t, LRESULT, const MSG *> g_dispatchMessageAHook;
-Hook<CallConvention::stdcall_t, LRESULT, const MSG *> g_dispatchMessageWHook;
+Hook<CallConvention::stdcall_t, LRESULT, HWND, UINT, WPARAM, LPARAM> g_defWindowProcAHook;
+Hook<CallConvention::stdcall_t, LRESULT, HWND, UINT, WPARAM, LPARAM> g_defWindowProcWHook;
 
 
 Renderer g_pRenderer;
@@ -90,42 +90,50 @@ void logOnce(std::string message)
 
 void RenderScene();
 
-void InternalDispatchMessage(const MSG* lpmsg)
+void InternalDefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	if (!g_hWnd)
 	{
-		g_hWnd = lpmsg->hwnd;
+		g_hWnd = hWnd;
 	}
 
-	ImGui_ImplDX9_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
-	ImGui_ImplDX10_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
-	ImGui_ImplDX11_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
+	ImGui_ImplDX9_WndProcHandler(hWnd, Msg, wParam, lParam);
+	ImGui_ImplDX10_WndProcHandler(hWnd, Msg, wParam, lParam);
+	ImGui_ImplDX11_WndProcHandler(hWnd, Msg, wParam, lParam);
 }
 
-void HookDispatchMessage()
+void HookDefWindowProcA()
 {
-	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DispatchMessageA (ANSI)";
+	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DefWindowProcA (ANSI)";
 
-	g_dispatchMessageAHook.apply(reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "DispatchMessageA")), [](const MSG* lpmsg) -> LRESULT
+	auto addrA = reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32"), "DefWindowProcA"));
+
+	BOOST_LOG_TRIVIAL(info) << "DefWindowProcA: " << addrA;
+
+	g_defWindowProcAHook.apply(addrA, [](HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) -> LRESULT
 	{
 		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ USER32!DispatchMessageA (ANSI) called"));
+		boost::call_once(flag, boost::bind(&logOnce, "++ USER32!DefWindowProcA (ANSI) called"));
 
-		InternalDispatchMessage(lpmsg);
+		InternalDefWindowProc(hWnd, Msg, wParam, lParam);
 
-		return g_dispatchMessageAHook.callOrig(lpmsg);
+		return g_defWindowProcAHook.callOrig(hWnd, Msg, wParam, lParam);
 	});
 
-	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DispatchMessageW (Unicode)";
+	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DefWindowProcW (Unicode)";
 
-	g_dispatchMessageWHook.apply(reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "DispatchMessageW")), [](const MSG* lpmsg) -> LRESULT
+	auto addrW = reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32"), "DefWindowProcW"));
+
+	BOOST_LOG_TRIVIAL(info) << "DefWindowProcW: " << addrW;
+
+	g_defWindowProcWHook.apply(addrW, [](HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) -> LRESULT
 	{
 		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ USER32!DispatchMessageW (Unicode) called"));
+		boost::call_once(flag, boost::bind(&logOnce, "++ USER32!DefWindowProcW (Unicode) called"));
 
-		InternalDispatchMessage(lpmsg);
+		InternalDefWindowProc(hWnd, Msg, wParam, lParam);
 
-		return g_dispatchMessageWHook.callOrig(lpmsg);
+		return g_defWindowProcWHook.callOrig(hWnd, Msg, wParam, lParam);
 	});
 }
 
@@ -302,7 +310,14 @@ void HookDX11(UINTX *vtable11SwapChain)
 				ID3D11Device *dev = nullptr;
 				chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
 
-				ImGui_ImplDX11_Init(g_hWnd, dev, nullptr);
+				BOOST_LOG_TRIVIAL(info) << "ID3D11Device -> " << dev;
+
+				ID3D11DeviceContext *ctx;
+				dev->GetImmediateContext(&ctx);
+
+				BOOST_LOG_TRIVIAL(info) << "ID3D11DeviceContext -> " << ctx;
+
+				ImGui_ImplDX11_Init(g_hWnd, dev, ctx);
 
 				g_bIsImGuiInitialized = true;
 			}
@@ -471,7 +486,7 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
 
-	HookDispatchMessage();
+	HookDefWindowProcA();
 
 	if (d3d9_available)
 	{
