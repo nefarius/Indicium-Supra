@@ -1,7 +1,7 @@
 #pragma once
 #include <d3d9.h>
-#include "Window.h"
 #include <intarch.h>
+#include "Direct3DBase.h"
 
 namespace Direct3D9Hooking
 {
@@ -128,10 +128,8 @@ namespace Direct3D9Hooking
 		CreateQuery = 118,
 	};
 
-	class Direct3D9
+	class Direct3D9 : Direct3DHooking::Direct3DBase
 	{
-		UINTX *vtable;
-		Window *temp_window;
 		IDirect3D9 *d3d9;
 		IDirect3DDevice9 *d3d9_device;
 	public:
@@ -139,6 +137,6 @@ namespace Direct3D9Hooking
 		~Direct3D9();
 		static const int VTableElements = 119;
 
-		bool GetVTable(UINTX *pVTable) const;
+		bool GetDeviceVTable(UINTX *pVTable) const override;
 	};
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <d3dx9.h>
-#include "Window.h"
 #include <intarch.h>
+#include "Direct3DBase.h"
 
 namespace Direct3D9Hooking
 {
@@ -24,17 +24,16 @@ namespace Direct3D9Hooking
 		GetDisplayModeEx = 133,
 	};
 
-	class Direct3D9Ex
+	class Direct3D9Ex : Direct3DHooking::Direct3DBase
 	{
-		UINTX *vtable;
-		Window *temp_window;
-		IDirect3D9Ex *d3d9_ex;
-		IDirect3DDevice9Ex *d3d9_device_ex;
+		IDirect3D9Ex* d3d9_ex;
+		IDirect3DDevice9Ex* d3d9_device_ex;
 	public:
 		Direct3D9Ex();
 		~Direct3D9Ex();
 		static const int VTableElements = 134;
 
-		bool GetVTableEx(UINTX *pVTable) const;
+		bool GetDeviceVTable(UINTX* pVTable) const override;
 	};
 }
+

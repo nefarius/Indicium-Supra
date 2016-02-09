@@ -83,6 +83,9 @@
     <ClCompile Include="imgui\imgui_impl_dx11.cpp">
       <Filter>ImGUI\DX11</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Hook\Direct3DBase.cpp">
+      <Filter>Game\Hook</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Client">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_dx11.h">
       <Filter>ImGUI\DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\Direct3DBase.h">
+      <Filter>Game\Hook</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

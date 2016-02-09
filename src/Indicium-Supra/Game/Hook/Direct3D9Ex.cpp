@@ -2,10 +2,8 @@
 #include <boost/log/trivial.hpp>
 
 
-Direct3D9Hooking::Direct3D9Ex::Direct3D9Ex() : vtable(nullptr), temp_window(nullptr), d3d9_ex(nullptr), d3d9_device_ex(nullptr)
+Direct3D9Hooking::Direct3D9Ex::Direct3D9Ex() : Direct3DBase(), d3d9_ex(nullptr), d3d9_device_ex(nullptr)
 {
-	temp_window = new Window();
-
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for Direct3DCreate9Ex...";
 
 	auto hMod = GetModuleHandle("d3d9.dll");
@@ -23,7 +21,7 @@ Direct3D9Hooking::Direct3D9Ex::Direct3D9Ex() : vtable(nullptr), temp_window(null
 		return;
 	}
 
-	auto error_code = static_cast<HRESULT(WINAPI *)(UINT, IDirect3D9Ex **)>(Direct3DCreate9Ex)(D3D_SDK_VERSION, &d3d9_ex);
+	auto error_code = static_cast<HRESULT(WINAPI *)(UINT, IDirect3D9Ex**)>(Direct3DCreate9Ex)(D3D_SDK_VERSION, &d3d9_ex);
 	if (FAILED(error_code))
 	{
 		BOOST_LOG_TRIVIAL(fatal) << "Could not create the DirectX 9 interface";
@@ -65,12 +63,9 @@ Direct3D9Hooking::Direct3D9Ex::~Direct3D9Ex()
 
 	if (d3d9_ex)
 		d3d9_ex->Release();
-
-	if (temp_window)
-		delete temp_window;
 }
 
-bool Direct3D9Hooking::Direct3D9Ex::GetVTableEx(UINTX *pVTable) const
+bool Direct3D9Hooking::Direct3D9Ex::GetDeviceVTable(UINTX* pVTable) const
 {
 	if (vtable)
 	{
@@ -80,3 +75,4 @@ bool Direct3D9Hooking::Direct3D9Ex::GetVTableEx(UINTX *pVTable) const
 
 	return false;
 }
+

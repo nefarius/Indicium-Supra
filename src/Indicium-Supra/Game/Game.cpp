@@ -131,7 +131,7 @@ void initGame()
 	// get VTable for Direct3DCreate9
 	{
 		Direct3D9Hooking::Direct3D9 d3d;
-		d3d9_available = d3d.GetVTable(vtable);
+		d3d9_available = d3d.GetDeviceVTable(vtable);
 
 		if (!d3d9_available)
 		{
@@ -142,7 +142,7 @@ void initGame()
 	// get VTable for Direct3DCreate9Ex
 	{
 		Direct3D9Hooking::Direct3D9Ex d3dEx;
-		d3d9ex_available = d3dEx.GetVTableEx(vtableEx);
+		d3d9ex_available = d3dEx.GetDeviceVTable(vtableEx);
 
 		if (!d3d9ex_available)
 		{

@@ -2,10 +2,8 @@
 #include <boost/log/trivial.hpp>
 
 
-Direct3D9Hooking::Direct3D9::Direct3D9() : vtable(nullptr), temp_window(nullptr), d3d9(nullptr), d3d9_device(nullptr)
+Direct3D9Hooking::Direct3D9::Direct3D9() : Direct3DBase(), d3d9(nullptr), d3d9_device(nullptr)
 {
-	temp_window = new Window();
-
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for Direct3DCreate9...";
 
 	auto hMod = GetModuleHandle("d3d9.dll");
@@ -65,12 +63,9 @@ Direct3D9Hooking::Direct3D9::~Direct3D9()
 
 	if (d3d9)
 		d3d9->Release();
-
-	if (temp_window)
-		delete temp_window;
 }
 
-bool Direct3D9Hooking::Direct3D9::GetVTable(UINTX *pVTable) const
+bool Direct3D9Hooking::Direct3D9::GetDeviceVTable(UINTX *pVTable) const
 {
 	if (vtable)
 	{
