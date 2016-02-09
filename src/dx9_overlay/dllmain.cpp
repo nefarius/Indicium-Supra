@@ -3,19 +3,16 @@
 #include <Utils/Windows.h>
 #include <Game/Game.h>
 
-HANDLE g_hDllHandle = 0;
+HANDLE g_hDllHandle = nullptr;
 
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 {
 	g_hDllHandle = hInstance;
 
-	DisableThreadLibraryCalls((HMODULE) hInstance);
+	DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
 
 	if (dwReason != DLL_PROCESS_ATTACH)
 		return FALSE;
 
-	if (GetModuleHandle("d3d9.dll"))
-		return CreateThread(0, 0, (LPTHREAD_START_ROUTINE) initGame, 0, 0, 0) > 0;
-
-	return TRUE;
+	return CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(initGame), nullptr, 0, nullptr) > nullptr;
 }

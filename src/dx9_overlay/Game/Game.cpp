@@ -24,6 +24,7 @@
 
 #include <imgui/imgui_impl_dx9.h>
 #include <imgui/imgui_impl_dx10.h>
+#include <imgui/imgui_impl_dx11.h>
 
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
@@ -102,11 +103,6 @@ void initGame()
 	BOOST_LOG_TRIVIAL(info) << "Library loaded into " << sz_ProcName;
 	free(sz_ProcName);
 
-#ifdef TEST
-	while ((hMod = GetModuleHandle("d3d9.dll")) == nullptr || g_bEnabled == false)
-		Sleep(200);
-#endif
-
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
 
 	UINTX vtable[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
@@ -177,6 +173,7 @@ void initGame()
 
 		ImGui_ImplDX9_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
 		ImGui_ImplDX10_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
+		ImGui_ImplDX11_WndProcHandler(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
 
 		return g_dispatchMessageHook.callOrig(lpmsg);
 	});
