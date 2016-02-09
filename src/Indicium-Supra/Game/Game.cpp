@@ -101,7 +101,7 @@ void initGame()
 
 	logging::add_file_log
 		(
-		keywords::file_name = "dx9_overlay.log",
+		keywords::file_name = "Indicium-Supra.log",
 		keywords::auto_flush = true,
 		keywords::format = "[%TimeStamp%]: %Message%"
 		);
@@ -177,12 +177,16 @@ void initGame()
 
 	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
 
+	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DispatchMessageA (ANSI)";
+
 	g_dispatchMessageAHook.apply(reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "DispatchMessageA")), [](const MSG *lpmsg) -> LRESULT
 	{
 		InternalDispatchMessage(lpmsg);
 
 		return g_dispatchMessageAHook.callOrig(lpmsg);
 	});
+
+	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DispatchMessageW (Unicode)";
 
 	g_dispatchMessageWHook.apply(reinterpret_cast<DWORD>(GetProcAddress(GetModuleHandle("user32.dll"), "DispatchMessageW")), [](const MSG *lpmsg) -> LRESULT
 	{
