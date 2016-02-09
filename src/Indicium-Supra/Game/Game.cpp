@@ -100,7 +100,6 @@ void logOnce(std::string message)
 
 void initGame()
 {
-	HMODULE hMod = nullptr;
 	bool d3d9_available, d3d9ex_available, d3d10_available;
 
 	logging::add_common_attributes();
