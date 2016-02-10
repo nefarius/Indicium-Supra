@@ -319,7 +319,7 @@ void HookDX11(UINTX* vtable11SwapChain)
 				static ID3D11Device* dev = nullptr;
 				chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
 
-				static ID3D11DeviceContext* ctx;
+				static ID3D11DeviceContext* ctx = nullptr;
 				dev->GetImmediateContext(&ctx);
 
 				ImGui_ImplDX11_Init(g_hWnd, dev, ctx);
