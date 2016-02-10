@@ -270,25 +270,38 @@ void HookDX10(UINTX* vtable10SwapChain)
 		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present (v10) called"));
 
 		g_bIsUsingPresent = true;
+		static auto failed = false;
 
-		if (!g_bIsImGuiInitialized)
+		if (!failed)
 		{
-			if (g_hWnd)
+			if (!g_bIsImGuiInitialized)
 			{
-				static ID3D10Device* dev = nullptr;
-				chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
+				if (g_hWnd)
+				{
+					static ID3D10Device* dev = nullptr;
+					auto hr = chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
 
-				ImGui_ImplDX10_Init(g_hWnd, dev);
+					if (SUCCEEDED(hr))
+					{
+						ImGui_ImplDX10_Init(g_hWnd, dev);
 
-				BOOST_LOG_TRIVIAL(info) << "ImGui (DX10) initialized";
+						BOOST_LOG_TRIVIAL(info) << "ImGui (DX10) initialized";
 
-				g_bIsImGuiInitialized = true;
+						g_bIsImGuiInitialized = true;
+					}
+					else
+					{
+						BOOST_LOG_TRIVIAL(error) << "!! Couldn't get ID3D10Device";
+
+						failed = true;
+					}
+				}
 			}
-		}
-		else
-		{
-			ImGui_ImplDX10_NewFrame();
-			RenderScene();
+			else
+			{
+				ImGui_ImplDX10_NewFrame();
+				RenderScene();
+			}
 		}
 
 		return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
@@ -359,7 +372,8 @@ void HookDInput8(UINTX* vtable8)
 
 	g_acquire8Hook.apply(vtable8[DirectInput8Hooking::Acquire], [](LPDIRECTINPUTDEVICE8 dev) -> HRESULT
 	{
-		BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::Acquire called";
+		static boost::once_flag flag = BOOST_ONCE_INIT;
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::Acquire called"));
 
 		return g_acquire8Hook.callOrig(dev);
 	});
@@ -368,7 +382,8 @@ void HookDInput8(UINTX* vtable8)
 
 	g_getDeviceData8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceData], [](LPDIRECTINPUTDEVICE8 dev, DWORD cbObjectData, LPDIDEVICEOBJECTDATA rgdod, LPDWORD pdwInOut, DWORD dwFlags) -> HRESULT
 	{
-		BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetDeviceData called";
+		static boost::once_flag flag = BOOST_ONCE_INIT;
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::Acquire called"));
 
 		return g_getDeviceData8Hook.callOrig(dev, cbObjectData, rgdod, pdwInOut, dwFlags);
 	});
@@ -377,7 +392,8 @@ void HookDInput8(UINTX* vtable8)
 
 	g_getDeviceInfo8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceInfo], [](LPDIRECTINPUTDEVICE8 dev, LPDIDEVICEINSTANCE pdidi) -> HRESULT
 	{
-		BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetDeviceInfo  called";
+		static boost::once_flag flag = BOOST_ONCE_INIT;
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::GetDeviceInfo called"));
 
 		return g_getDeviceInfo8Hook.callOrig(dev, pdidi);
 	});
@@ -386,7 +402,8 @@ void HookDInput8(UINTX* vtable8)
 
 	g_getDeviceState8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceState], [](LPDIRECTINPUTDEVICE8 dev, DWORD cbData, LPVOID lpvData) -> HRESULT
 	{
-		BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetDeviceState called";
+		static boost::once_flag flag = BOOST_ONCE_INIT;
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::GetDeviceState called"));
 
 		return g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
 	});
@@ -395,7 +412,8 @@ void HookDInput8(UINTX* vtable8)
 
 	g_getObjectInfo8Hook.apply(vtable8[DirectInput8Hooking::GetObjectInfo], [](LPDIRECTINPUTDEVICE8 dev, LPDIDEVICEOBJECTINSTANCE pdidoi, DWORD dwObj, DWORD dwHow) -> HRESULT
 	{
-		BOOST_LOG_TRIVIAL(info) << "IDirectInputDevice8::GetObjectInfo called";
+		static boost::once_flag flag = BOOST_ONCE_INIT;
+		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::GetObjectInfo called"));
 
 		return g_getObjectInfo8Hook.callOrig(dev, pdidoi, dwObj, dwHow);
 	});
