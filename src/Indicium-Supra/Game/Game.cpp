@@ -161,6 +161,8 @@ void HookDX9(UINTX* vtable9)
 			{
 				ImGui_ImplDX9_Init(g_hWnd, dev);
 
+				BOOST_LOG_TRIVIAL(info) << "ImGui (DX9) initialized";
+
 				g_bIsImGuiInitialized = true;
 			}
 		}
@@ -230,6 +232,8 @@ void HookDX9Ex(UINTX* vtable9Ex)
 			if (g_hWnd)
 			{
 				ImGui_ImplDX9_Init(g_hWnd, dev);
+
+				BOOST_LOG_TRIVIAL(info) << "ImGui (DX9Ex) initialized";
 
 				g_bIsImGuiInitialized = true;
 			}
