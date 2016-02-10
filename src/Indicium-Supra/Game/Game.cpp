@@ -594,6 +594,7 @@ void initGame()
 
 void RenderScene()
 {
+	static bool show_overlay = false;
 	static bool show_test_window = true;
 	static bool show_another_window = false;
 	static ImVec4 clear_col = ImColor(114, 144, 154);
@@ -626,6 +627,27 @@ void RenderScene()
 		ImGui::ShowTestWindow(&show_test_window);
 	}
 
-	ImGui::Render();
+	static auto pressedPast = false, pressedNow = false;
+	if (GetKeyState(VK_F11) & 0x8000)
+	{
+		pressedNow = true;
+	}
+	else
+	{
+		pressedPast = false;
+		pressedNow = false;
+	}
+
+	if (!pressedPast && pressedNow)
+	{
+		show_overlay = !show_overlay;
+
+		pressedPast = true;
+	}
+
+	if (show_overlay)
+	{
+		ImGui::Render();
+	}
 }
 
