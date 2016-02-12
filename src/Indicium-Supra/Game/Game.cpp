@@ -7,11 +7,17 @@
 
 #include "Rendering/Renderer.h"
 
+// Boost includes
 #include <boost/thread/once.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
+
+// Boost namespaces
+namespace logging = boost::log;
+namespace keywords = boost::log::keywords;
+namespace expr = boost::log::expressions;
 
 #include <Psapi.h>
 #pragma comment(lib, "psapi.lib")
@@ -60,62 +66,213 @@ bool g_bEnabled = false;
 bool g_bIsUsingPresent = false;
 bool g_bIsImGuiInitialized = false;
 HWND g_hWnd = nullptr;
+tDefWindowProc OriginalDefWindowProc = nullptr;
 
 extern "C" __declspec(dllexport) void enable()
 {
 	g_bEnabled = true;
 }
 
-namespace logging = boost::log;
-namespace keywords = boost::log::keywords;
-namespace expr = boost::log::expressions;
 
-void logOnce(std::string message);
-
-template <typename T>
-inline MH_STATUS MH_CreateHookApiEx(
-	LPCWSTR pszModule, LPCSTR pszProcName, LPVOID pDetour, T** ppOriginal)
+void initGame()
 {
-	return MH_CreateHookApi(
-		pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
-}
+	bool d3d9_available, d3d9ex_available, d3d10_available, d3d11_available, dinput8_available;
 
-typedef LRESULT(WINAPI *tDefWindowProc)(
-	_In_ HWND hWnd,
-	_In_ UINT Msg,
-	_In_ WPARAM wParam,
-	_In_ LPARAM lParam
-	);
-tDefWindowProc OriginalDefWindowProc = nullptr;
+	logging::add_common_attributes();
 
-LRESULT WINAPI DetourDefWindowProc(
-	_In_ HWND hWnd,
-	_In_ UINT Msg,
-	_In_ WPARAM wParam,
-	_In_ LPARAM lParam
-	)
-{
-	static boost::once_flag flag = BOOST_ONCE_INIT;
-	boost::call_once(flag, boost::bind(&logOnce, "++ USER32!DefWindowProc called"));
+	logging::add_file_log
+		(
+		keywords::file_name = "Indicium-Supra.log",
+		keywords::auto_flush = true,
+		keywords::format = "[%TimeStamp%]: %Message%"
+		);
 
-	if (!g_hWnd)
+	logging::core::get()->set_filter
+		(
+		logging::trivial::severity >= logging::trivial::info
+		);
+
+	auto sz_ProcName = static_cast<LPSTR>(malloc(MAX_PATH + 1));
+	GetProcessImageFileName(GetCurrentProcess(), sz_ProcName, MAX_PATH);
+	BOOST_LOG_TRIVIAL(info) << "Library loaded into " << sz_ProcName;
+	free(sz_ProcName);
+
+	BOOST_LOG_TRIVIAL(info) << "Library enabled";
+
+	UINTX vtable9[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
+	UINTX vtable9Ex[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
+	UINTX vtable10SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
+	UINTX vtable11SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
+	UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
+
+	// get VTable for Direct3DCreate9
 	{
-		g_hWnd = hWnd;
+		Direct3D9Hooking::Direct3D9 d3d;
+		d3d9_available = d3d.GetDeviceVTable(vtable9);
+
+		if (!d3d9_available)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9";
+		}
 	}
 
-	ImGui_ImplDX9_WndProcHandler(hWnd, Msg, wParam, lParam);
-	ImGui_ImplDX10_WndProcHandler(hWnd, Msg, wParam, lParam);
-	ImGui_ImplDX11_WndProcHandler(hWnd, Msg, wParam, lParam);
+	// get VTable for Direct3DCreate9Ex
+	{
+		Direct3D9Hooking::Direct3D9Ex d3dEx;
+		d3d9ex_available = d3dEx.GetDeviceVTable(vtable9Ex);
 
-	return OriginalDefWindowProc(hWnd, Msg, wParam, lParam);
+		if (!d3d9ex_available)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9Ex";
+		}
+	}
+
+	// get VTable for IDXGISwapChain (v10)
+	{
+		Direct3D10Hooking::Direct3D10 d3d10;
+		d3d10_available = d3d10.GetSwapChainVTable(vtable10SwapChain);
+
+		if (!d3d10_available)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for IDXGISwapChain";
+		}
+	}
+
+	// get VTable for IDXGISwapChain (v11)
+	{
+		Direct3D11Hooking::Direct3D11 d3d11;
+		d3d11_available = d3d11.GetSwapChainVTable(vtable11SwapChain);
+
+		if (!d3d11_available)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for IDXGISwapChain";
+		}
+	}
+
+	// Dinput8
+	{
+		DirectInput8Hooking::DirectInput8 di8;
+		dinput8_available = di8.GetVTable(vtable8);
+
+		if (!dinput8_available)
+		{
+			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for DirectInput8";
+		}
+	}
+
+	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
+
+	if (MH_Initialize() != MH_OK)
+	{
+		BOOST_LOG_TRIVIAL(fatal) << "Couldn't initialize hook engine";
+		return;
+	}
+
+	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
+
+	HookDefWindowProc();
+
+	if (d3d9_available)
+	{
+		HookDX9(vtable9);
+	}
+
+	if (d3d9ex_available)
+	{
+		HookDX9Ex(vtable9Ex);
+	}
+
+	if (d3d10_available)
+	{
+		HookDX10(vtable10SwapChain);
+	}
+
+	if (d3d11_available)
+	{
+		HookDX11(vtable11SwapChain);
+	}
+
+	if (dinput8_available)
+	{
+		HookDInput8(vtable8);
+	}
+
+
+	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)>> MessagePaketHandler;
+	MessagePaketHandler PaketHandler;
+
+	BIND(TextCreate);
+	BIND(TextDestroy);
+	BIND(TextSetShadow);
+	BIND(TextSetShown);
+	BIND(TextSetColor);
+	BIND(TextSetPos);
+	BIND(TextSetString);
+	BIND(TextUpdate);
+
+	BIND(BoxCreate);
+	BIND(BoxDestroy);
+	BIND(BoxSetShown);
+	BIND(BoxSetBorder);
+	BIND(BoxSetBorderColor);
+	BIND(BoxSetColor);
+	BIND(BoxSetHeight);
+	BIND(BoxSetPos);
+	BIND(BoxSetWidth);
+
+	BIND(LineCreate);
+	BIND(LineDestroy);
+	BIND(LineSetShown);
+	BIND(LineSetColor);
+	BIND(LineSetWidth);
+	BIND(LineSetPos);
+
+	BIND(ImageCreate);
+	BIND(ImageDestroy);
+	BIND(ImageSetShown);
+	BIND(ImageSetAlign);
+	BIND(ImageSetPos);
+	BIND(ImageSetRotation);
+	BIND(ImageSetScale);
+
+	BIND(DestroyAllVisual);
+	BIND(ShowAllVisual);
+	BIND(HideAllVisual);
+
+	BIND(GetFrameRate);
+	BIND(GetScreenSpecs);
+
+	BIND(SetCalculationRatio);
+	BIND(SetOverlayPriority);
+
+	new PipeServer([&](Serializer& serializerIn, Serializer& serializerOut)
+	{
+		SERIALIZATION_READ(serializerIn, PipeMessages, eMessage);
+
+		try
+		{
+			auto it = PaketHandler.find(eMessage);
+			if (it == PaketHandler.end())
+				return;
+
+			if (!PaketHandler[eMessage])
+				return;
+
+			PaketHandler[eMessage](serializerIn, serializerOut);
+		}
+		catch (...)
+		{
+		}
+	});
+
+	// block this thread infinitely
+	WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
 }
 
 void logOnce(std::string message)
 {
 	BOOST_LOG_TRIVIAL(info) << message;
 }
-
-void RenderScene();
 
 void HookDefWindowProc()
 {
@@ -142,6 +299,28 @@ void HookDefWindowProc()
 	}
 
 	BOOST_LOG_TRIVIAL(info) << "DefWindowProc hooked";
+}
+
+LRESULT WINAPI DetourDefWindowProc(
+	_In_ HWND hWnd,
+	_In_ UINT Msg,
+	_In_ WPARAM wParam,
+	_In_ LPARAM lParam
+	)
+{
+	static boost::once_flag flag = BOOST_ONCE_INIT;
+	boost::call_once(flag, boost::bind(&logOnce, "++ USER32!DefWindowProc called"));
+
+	if (!g_hWnd)
+	{
+		g_hWnd = hWnd;
+	}
+
+	ImGui_ImplDX9_WndProcHandler(hWnd, Msg, wParam, lParam);
+	ImGui_ImplDX10_WndProcHandler(hWnd, Msg, wParam, lParam);
+	ImGui_ImplDX11_WndProcHandler(hWnd, Msg, wParam, lParam);
+
+	return OriginalDefWindowProc(hWnd, Msg, wParam, lParam);
 }
 
 void HookDX9(UINTX* vtable9)
@@ -419,201 +598,6 @@ void HookDInput8(UINTX* vtable8)
 	});
 }
 
-void initGame()
-{
-	bool d3d9_available, d3d9ex_available, d3d10_available, d3d11_available, dinput8_available;
-
-	logging::add_common_attributes();
-
-	logging::add_file_log
-		(
-		keywords::file_name = "Indicium-Supra.log",
-		keywords::auto_flush = true,
-		keywords::format = "[%TimeStamp%]: %Message%"
-		);
-
-	logging::core::get()->set_filter
-		(
-		logging::trivial::severity >= logging::trivial::info
-		);
-
-	auto sz_ProcName = static_cast<LPSTR>(malloc(MAX_PATH + 1));
-	GetProcessImageFileName(GetCurrentProcess(), sz_ProcName, MAX_PATH);
-	BOOST_LOG_TRIVIAL(info) << "Library loaded into " << sz_ProcName;
-	free(sz_ProcName);
-
-	BOOST_LOG_TRIVIAL(info) << "Library enabled";
-
-	UINTX vtable9[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
-	UINTX vtable9Ex[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
-	UINTX vtable10SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
-	UINTX vtable11SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
-	UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
-
-	// get VTable for Direct3DCreate9
-	{
-		Direct3D9Hooking::Direct3D9 d3d;
-		d3d9_available = d3d.GetDeviceVTable(vtable9);
-
-		if (!d3d9_available)
-		{
-			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9";
-		}
-	}
-
-	// get VTable for Direct3DCreate9Ex
-	{
-		Direct3D9Hooking::Direct3D9Ex d3dEx;
-		d3d9ex_available = d3dEx.GetDeviceVTable(vtable9Ex);
-
-		if (!d3d9ex_available)
-		{
-			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for Direct3DCreate9Ex";
-		}
-	}
-
-	// get VTable for IDXGISwapChain (v10)
-	{
-		Direct3D10Hooking::Direct3D10 d3d10;
-		d3d10_available = d3d10.GetSwapChainVTable(vtable10SwapChain);
-
-		if (!d3d10_available)
-		{
-			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for IDXGISwapChain";
-		}
-	}
-
-	// get VTable for IDXGISwapChain (v11)
-	{
-		Direct3D11Hooking::Direct3D11 d3d11;
-		d3d11_available = d3d11.GetSwapChainVTable(vtable11SwapChain);
-
-		if (!d3d11_available)
-		{
-			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for IDXGISwapChain";
-		}
-	}
-
-	// Dinput8
-	{
-		DirectInput8Hooking::DirectInput8 di8;
-		dinput8_available = di8.GetVTable(vtable8);
-
-		if (!dinput8_available)
-		{
-			BOOST_LOG_TRIVIAL(error) << "Couldn't get VTable for DirectInput8";
-		}
-	}
-
-	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
-
-	if (MH_Initialize() != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(fatal) << "Couldn't initialize hook engine";
-		return;
-	}
-
-	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
-
-	HookDefWindowProc();
-
-	if (d3d9_available)
-	{
-		HookDX9(vtable9);
-	}
-
-	if (d3d9ex_available)
-	{
-		HookDX9Ex(vtable9Ex);
-	}
-
-	if (d3d10_available)
-	{
-		HookDX10(vtable10SwapChain);
-	}
-
-	if (d3d11_available)
-	{
-		HookDX11(vtable11SwapChain);
-	}
-
-	if (dinput8_available)
-	{
-		HookDInput8(vtable8);
-	}
-
-
-	typedef std::map<PipeMessages, std::function<void(Serializer&, Serializer&)>> MessagePaketHandler;
-	MessagePaketHandler PaketHandler;
-
-	BIND(TextCreate);
-	BIND(TextDestroy);
-	BIND(TextSetShadow);
-	BIND(TextSetShown);
-	BIND(TextSetColor);
-	BIND(TextSetPos);
-	BIND(TextSetString);
-	BIND(TextUpdate);
-
-	BIND(BoxCreate);
-	BIND(BoxDestroy);
-	BIND(BoxSetShown);
-	BIND(BoxSetBorder);
-	BIND(BoxSetBorderColor);
-	BIND(BoxSetColor);
-	BIND(BoxSetHeight);
-	BIND(BoxSetPos);
-	BIND(BoxSetWidth);
-
-	BIND(LineCreate);
-	BIND(LineDestroy);
-	BIND(LineSetShown);
-	BIND(LineSetColor);
-	BIND(LineSetWidth);
-	BIND(LineSetPos);
-
-	BIND(ImageCreate);
-	BIND(ImageDestroy);
-	BIND(ImageSetShown);
-	BIND(ImageSetAlign);
-	BIND(ImageSetPos);
-	BIND(ImageSetRotation);
-	BIND(ImageSetScale);
-
-	BIND(DestroyAllVisual);
-	BIND(ShowAllVisual);
-	BIND(HideAllVisual);
-
-	BIND(GetFrameRate);
-	BIND(GetScreenSpecs);
-
-	BIND(SetCalculationRatio);
-	BIND(SetOverlayPriority);
-
-	new PipeServer([&](Serializer& serializerIn, Serializer& serializerOut)
-	{
-		SERIALIZATION_READ(serializerIn, PipeMessages, eMessage);
-
-		try
-		{
-			auto it = PaketHandler.find(eMessage);
-			if (it == PaketHandler.end())
-				return;
-
-			if (!PaketHandler[eMessage])
-				return;
-
-			PaketHandler[eMessage](serializerIn, serializerOut);
-		}
-		catch (...)
-		{
-		}
-	});
-
-	// block this thread infinitely
-	WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
-}
-
 void RenderScene()
 {
 	static bool show_overlay = false;
@@ -672,4 +656,3 @@ void RenderScene()
 		ImGui::Render();
 	}
 }
-
