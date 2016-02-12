@@ -11,8 +11,18 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
 	DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
 
-	if (dwReason != DLL_PROCESS_ATTACH)
-		return FALSE;
+	switch (dwReason)
+	{
+	case DLL_PROCESS_ATTACH:
+		return CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(initGame), nullptr, 0, nullptr) > nullptr;
+	case DLL_PROCESS_DETACH:
+		{
+			MH_DisableHook(MH_ALL_HOOKS);
+			MH_Uninitialize();
+		}
+		break;
+	};
 
-	return CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(initGame), nullptr, 0, nullptr) > nullptr;
+	return TRUE;
 }
+
