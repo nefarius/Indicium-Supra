@@ -3,7 +3,18 @@
 #include <intarch.h>
 #include <Utils/Windows.h>
 #include <MinHook.h>
+
+// Boost includes
 #include <boost/log/trivial.hpp>
+#include <boost/thread/once.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+
+// Boost namespaces
+namespace logging = boost::log;
+namespace keywords = boost::log::keywords;
+namespace expr = boost::log::expressions;
 
 extern class Renderer g_pRenderer;
 
