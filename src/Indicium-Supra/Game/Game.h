@@ -3,6 +3,7 @@
 #include <intarch.h>
 #include <Utils/Windows.h>
 #include <MinHook.h>
+#include <boost/log/trivial.hpp>
 
 extern class Renderer g_pRenderer;
 
