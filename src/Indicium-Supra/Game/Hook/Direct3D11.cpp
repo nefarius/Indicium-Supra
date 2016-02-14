@@ -3,7 +3,7 @@
 #include "DXGI.h"
 
 
-Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr), mainRenderTargetView(nullptr)
+Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
 {
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for ID3D11Device and IDXGISwapChain...";
 
@@ -103,9 +103,6 @@ Direct3D11Hooking::Direct3D11::~Direct3D11()
 
 	if (pd3dDeviceContext)
 		pd3dDeviceContext->Release();
-
-	if (mainRenderTargetView)
-		mainRenderTargetView->Release();
 }
 
 bool Direct3D11Hooking::Direct3D11::GetDeviceVTable(UINTX* pVTable) const

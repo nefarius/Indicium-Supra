@@ -61,7 +61,6 @@ namespace Direct3D11Hooking
 		ID3D11Device*            pd3dDevice;
 		ID3D11DeviceContext*     pd3dDeviceContext;
 		IDXGISwapChain*          pSwapChain;
-		ID3D11RenderTargetView*  mainRenderTargetView;
 	public:
 		Direct3D11();
 		~Direct3D11();
