@@ -2,10 +2,6 @@
 
 An overlay API for DirectX based games, which is licensed and distributed under the terms of the LGPL v3
 
-## More information
-
-http://www.overlay-api.net/
-
 ## How to build
 1. Create an environment variable called `BOOST_ROOT` which points to your Boost root directory (e.g. `C:\Development\C++\boost_1_59_0`)
 2. Create an environment variable called `DXSDK_DIR` (should be auto-created by setup) which points to your DirectX SDK installation path (e.g. `C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)`)
