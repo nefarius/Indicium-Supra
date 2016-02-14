@@ -482,6 +482,9 @@ void HookDX11(UINTX* vtable11SwapChain)
 
 		g_bIsUsingPresent = true;
 
+		static ID3D11DeviceContext* ctx = nullptr;
+		static ID3D11RenderTargetView* view = nullptr;
+
 		if (!g_bIsImGuiInitialized)
 		{
 			if (g_hWnd)
@@ -489,8 +492,21 @@ void HookDX11(UINTX* vtable11SwapChain)
 				static ID3D11Device* dev = nullptr;
 				chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
 
-				static ID3D11DeviceContext* ctx = nullptr;
 				dev->GetImmediateContext(&ctx);
+
+				DXGI_SWAP_CHAIN_DESC sd;
+				chain->GetDesc(&sd);
+
+				// Create the render target
+				ID3D11Texture2D* pBackBuffer;
+				D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc;
+				ZeroMemory(&render_target_view_desc, sizeof(render_target_view_desc));
+				render_target_view_desc.Format = sd.BufferDesc.Format;
+				render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+				chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
+				dev->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &view);
+				ctx->OMSetRenderTargets(1, &view, nullptr);
+				pBackBuffer->Release();
 
 				ImGui_ImplDX11_Init(g_hWnd, dev, ctx);
 
@@ -502,6 +518,10 @@ void HookDX11(UINTX* vtable11SwapChain)
 		else
 		{
 			ImGui_ImplDX11_NewFrame();
+
+			//static ImVec4 clear_col = ImColor(114, 144, 154, 20);
+			//ctx->ClearRenderTargetView(view, (float*)&clear_col);
+
 			RenderScene();
 		}
 
@@ -608,7 +628,7 @@ void RenderScene()
 	}
 
 	static auto pressedPast = false, pressedNow = false;
-	if (GetKeyState(VK_F11) & 0x8000)
+	if (GetAsyncKeyState(VK_F11) & 0x8000)
 	{
 		pressedNow = true;
 	}
