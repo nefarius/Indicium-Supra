@@ -510,6 +510,9 @@ void HookDX11(UINTX* vtable11SwapChain)
 			DXGI_SWAP_CHAIN_DESC sd;
 			chain->GetDesc(&sd);
 
+			if (view)
+				view->Release();
+
 			// Create the render target
 			ID3D11Texture2D* pBackBuffer;
 			D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc;
