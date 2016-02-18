@@ -460,6 +460,7 @@ bool    ImGui_ImplDX10_Init(void* hwnd, ID3D10Device* device)
 
     io.RenderDrawListsFn = ImGui_ImplDX10_RenderDrawLists;  // Alternatively you can set this to NULL and call ImGui::GetDrawData() after ImGui::Render() to get the same ImDrawData pointer.
     io.ImeWindowHandle = g_hWnd;
+	io.MouseDrawCursor = true;
 
     return true;
 }
