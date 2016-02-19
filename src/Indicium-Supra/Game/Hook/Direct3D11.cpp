@@ -3,7 +3,7 @@
 #include "DXGI.h"
 
 
-Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
+Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nullptr), pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
 {
 	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for ID3D11Device and IDXGISwapChain...";
 
