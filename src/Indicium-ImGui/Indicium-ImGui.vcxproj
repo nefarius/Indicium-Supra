@@ -19,37 +19,36 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DB383579-DA7F-48C0-AB1F-7C4C93544E2C}</ProjectGuid>
+    <ProjectGuid>{FC86B49A-3A73-4D82-81BA-D72B54C9132D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Indicium_Supra</RootNamespace>
-    <ProjectName>Indicium-Supra</ProjectName>
+    <RootNamespace>IndiciumImGui</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -67,66 +66,66 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <NuGetPackageImportStamp>7074a979</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>ba879133</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
-    <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(BOOST_ROOT);$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
+    <IncludePath>$(BOOST_ROOT);$(DXSDK_DIR)\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(BOOST_ROOT)\stage\lib\x86;$(DXSDK_DIR)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
+    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(BOOST_ROOT);$(DXSDK)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(BOOST_ROOT)\stage\lib\x64;$(DXSDK)\Lib\x64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(BOOST_ROOT);$(DXSDK_DIR)\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(BOOST_ROOT)\stage\lib\x64;$(DXSDK_DIR)\Lib\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
+    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
-    <IncludePath>$(BOOST_ROOT);$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
+    <IncludePath>$(BOOST_ROOT);$(DXSDK_DIR)\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(BOOST_ROOT)\stage\lib\x86;$(DXSDK_DIR)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
+    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(BOOST_ROOT);$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(BOOST_ROOT)\stage\lib\x64;$(DXSDK)\Lib\x64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(BOOST_ROOT);$(DXSDK_DIR)\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(BOOST_ROOT)\stage\lib\x64;$(DXSDK_DIR)\Lib\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
+    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DX9_OVERLAY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;INDICIUMIMGUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3d10.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DX9_OVERLAY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;INDICIUMIMGUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3d10.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -137,18 +136,16 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DX9_OVERLAY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;INDICIUMIMGUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3d10.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,88 +156,41 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DX9_OVERLAY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;INDICIUMIMGUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3d10.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Game\Hook\Direct3D11.cpp" />
-    <ClCompile Include="Game\Hook\Direct3DBase.cpp" />
-    <ClCompile Include="Game\Hook\DirectInput8.cpp" />
-    <ClCompile Include="Game\Hook\Direct3D10.cpp" />
-    <ClCompile Include="Game\Rendering\C2DFont.cpp" />
-    <ClCompile Include="Client\Client.cpp" />
-    <ClCompile Include="Client\Render.cpp" />
-    <ClCompile Include="Game\Hook\Direct3D9.cpp" />
-    <ClCompile Include="Game\Hook\Direct3D9Ex.cpp" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_demo.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_impl_dx10.cpp" />
+    <ClCompile Include="imgui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="imgui\imgui_impl_dx9.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Game\Game.cpp" />
-    <ClCompile Include="Game\Messagehandler.cpp" />
-    <ClCompile Include="Game\Rendering\Box.cpp" />
-    <ClCompile Include="Game\Rendering\dx_utils.cpp" />
-    <ClCompile Include="Game\Rendering\Image.cpp" />
-    <ClCompile Include="Game\Rendering\Line.cpp" />
-    <ClCompile Include="Game\Rendering\RenderBase.cpp" />
-    <ClCompile Include="Game\Rendering\Renderer.cpp" />
-    <ClCompile Include="Game\Rendering\Text.cpp" />
-    <ClCompile Include="Utils\PluginManager.cpp" />
-    <ClCompile Include="Utils\Serializer.cpp" />
-    <ClCompile Include="Utils\Misc.cpp" />
-    <ClCompile Include="Utils\PipeClient.cpp" />
-    <ClCompile Include="Utils\PipeServer.cpp" />
-    <ClCompile Include="Game\Hook\Window.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Game\Hook\DXGI.h" />
-    <ClInclude Include="Game\Hook\Direct3D11.h" />
-    <ClInclude Include="Game\Hook\Direct3DBase.h" />
-    <ClInclude Include="Game\Hook\DirectInput8.h" />
-    <ClInclude Include="Game\Hook\Direct3D10.h" />
-    <ClInclude Include="Game\Rendering\C2DFont.h" />
-    <ClInclude Include="Client\Client.h" />
-    <ClInclude Include="Client\Render.h" />
-    <ClInclude Include="Game\Hook\Direct3D9.h" />
-    <ClInclude Include="Game\Hook\Direct3D9Ex.h" />
-    <ClInclude Include="dllmain.h" />
-    <ClInclude Include="Game\Game.h" />
-    <ClInclude Include="Game\Messagehandler.h" />
-    <ClInclude Include="Game\Rendering\Box.h" />
-    <ClInclude Include="Game\Rendering\dx_utils.h" />
-    <ClInclude Include="Game\Rendering\Image.h" />
-    <ClInclude Include="Game\Rendering\Line.h" />
-    <ClInclude Include="Game\Rendering\RenderBase.h" />
-    <ClInclude Include="Game\Rendering\Renderer.h" />
-    <ClInclude Include="Game\Rendering\Text.h" />
-    <ClInclude Include="intarch.h" />
-    <ClInclude Include="Utils\PluginManager.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="Shared\Config.h" />
-    <ClInclude Include="Shared\PipeMessages.h" />
-    <ClInclude Include="Utils\algorithm.h" />
-    <ClInclude Include="Utils\Serializer.h" />
-    <ClInclude Include="Utils\Hook.h" />
-    <ClInclude Include="Utils\Misc.h" />
-    <ClInclude Include="Utils\PipeClient.h" />
-    <ClInclude Include="Utils\PipeServer.h" />
-    <ClInclude Include="Utils\SafeBlock.h" />
-    <ClInclude Include="Utils\Windows.h" />
-    <ClInclude Include="Game\Hook\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Indicium-Supra.rc" />
+    <ClInclude Include="dllmain.h" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_impl_dx10.h" />
+    <ClInclude Include="imgui\imgui_impl_dx11.h" />
+    <ClInclude Include="imgui\imgui_impl_dx9.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\stb_rect_pack.h" />
+    <ClInclude Include="imgui\stb_textedit.h" />
+    <ClInclude Include="imgui\stb_truetype.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

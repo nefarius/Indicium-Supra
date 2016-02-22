@@ -17,9 +17,7 @@
 #include <Game/Hook/Direct3D11.h>
 #include <Game/Hook/DirectInput8.h>
 
-#include <imgui/imgui_impl_dx9.h>
-#include <imgui/imgui_impl_dx10.h>
-#include <imgui/imgui_impl_dx11.h>
+#include <Utils/PluginManager.h>
 
 
 #define BIND(T) PaketHandler[PipeMessages::T] = std::bind(T, std::placeholders::_1, std::placeholders::_2);
@@ -41,7 +39,7 @@ Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*>
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent11Hook;
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget11Hook;
 
-//DInput8
+// DInput8
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8> g_acquire8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD> g_getDeviceData8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEINSTANCE> g_getDeviceInfo8Hook;
@@ -49,12 +47,10 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTINSTANCE, DWORD, DWORD> g_getObjectInfo8Hook;
 
 
+PluginManager g_plugins;
 Renderer g_pRenderer;
 bool g_bEnabled = false;
 bool g_bIsUsingPresent = false;
-bool g_bIsImGuiInitialized = false;
-HWND g_hWnd = nullptr;
-tDefWindowProc OriginalDefWindowProc = nullptr;
 
 extern "C" __declspec(dllexport) void enable()
 {
@@ -65,13 +61,16 @@ extern "C" __declspec(dllexport) void enable()
 void initGame()
 {
 	bool d3d9_available, d3d9ex_available, d3d10_available, d3d11_available, dinput8_available;
-	
+
 	auto sz_ProcName = static_cast<LPSTR>(malloc(MAX_PATH + 1));
 	GetProcessImageFileName(GetCurrentProcess(), sz_ProcName, MAX_PATH);
 	BOOST_LOG_TRIVIAL(info) << "Library loaded into " << sz_ProcName;
 	free(sz_ProcName);
 
 	BOOST_LOG_TRIVIAL(info) << "Library enabled";
+
+	g_plugins.refresh();
+	g_plugins.load();
 
 	UINTX vtable9[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
 	UINTX vtable9Ex[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
@@ -143,8 +142,6 @@ void initGame()
 	}
 
 	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
-
-	HookDefWindowProc();
 
 	if (d3d9_available)
 	{
@@ -248,55 +245,6 @@ void logOnce(std::string message)
 	BOOST_LOG_TRIVIAL(info) << message;
 }
 
-void HookDefWindowProc()
-{
-	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DefWindowProcA (ANSI)";
-
-	if (MH_CreateHookApiEx(L"user32", "DefWindowProcA", &DetourDefWindowProc, &OriginalDefWindowProc) != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't hook USER32!DefWindowProcA (ANSI)";
-		return;
-	}
-
-	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DefWindowProcW (Unicode)";
-
-	if (MH_CreateHookApiEx(L"user32", "DefWindowProcW", &DetourDefWindowProc, &OriginalDefWindowProc) != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't hook USER32!DefWindowProcW (Unicode)";
-		return;
-	}
-
-	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
-	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't enable DefWindowProc hooks";
-		return;
-	}
-
-	BOOST_LOG_TRIVIAL(info) << "DefWindowProc hooked";
-}
-
-LRESULT WINAPI DetourDefWindowProc(
-	_In_ HWND hWnd,
-	_In_ UINT Msg,
-	_In_ WPARAM wParam,
-	_In_ LPARAM lParam
-	)
-{
-	static boost::once_flag flag = BOOST_ONCE_INIT;
-	boost::call_once(flag, boost::bind(&logOnce, "++ USER32!DefWindowProc called"));
-
-	if (!g_hWnd)
-	{
-		g_hWnd = hWnd;
-	}
-
-	ImGui_ImplDX9_WndProcHandler(hWnd, Msg, wParam, lParam);
-	ImGui_ImplDX10_WndProcHandler(hWnd, Msg, wParam, lParam);
-	ImGui_ImplDX11_WndProcHandler(hWnd, Msg, wParam, lParam);
-
-	return OriginalDefWindowProc(hWnd, Msg, wParam, lParam);
-}
-
 void HookDX9(UINTX* vtable9)
 {
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
@@ -306,24 +254,7 @@ void HookDX9(UINTX* vtable9)
 		static boost::once_flag flag = BOOST_ONCE_INIT;
 		boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::Present called"));
 
-		g_bIsUsingPresent = true;
-
-		if (!g_bIsImGuiInitialized)
-		{
-			if (g_hWnd)
-			{
-				ImGui_ImplDX9_Init(g_hWnd, dev);
-
-				BOOST_LOG_TRIVIAL(info) << "ImGui (DX9) initialized";
-
-				g_bIsImGuiInitialized = true;
-			}
-		}
-		else
-		{
-			ImGui_ImplDX9_NewFrame();
-			RenderScene();
-		}
+		g_plugins.present(IID_IDirect3DDevice9, dev);
 
 		return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
 	});
@@ -347,7 +278,7 @@ void HookDX9(UINTX* vtable9)
 		static boost::once_flag flag = BOOST_ONCE_INIT;
 		boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::EndScene called"));
 
-		if (!g_bIsUsingPresent)
+/* 		if (!g_bIsUsingPresent)
 		{
 			if (!g_bIsImGuiInitialized)
 			{
@@ -364,6 +295,7 @@ void HookDX9(UINTX* vtable9)
 				RenderScene();
 			}
 		}
+		*/
 
 		return g_endScene9Hook.callOrig(dev);
 	});
@@ -378,24 +310,7 @@ void HookDX9Ex(UINTX* vtable9Ex)
 		static boost::once_flag flag = BOOST_ONCE_INIT;
 		boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9Ex::PresentEx called"));
 
-		g_bIsUsingPresent = true;
-
-		if (!g_bIsImGuiInitialized)
-		{
-			if (g_hWnd)
-			{
-				ImGui_ImplDX9_Init(g_hWnd, dev);
-
-				BOOST_LOG_TRIVIAL(info) << "ImGui (DX9Ex) initialized";
-
-				g_bIsImGuiInitialized = true;
-			}
-		}
-		else
-		{
-			ImGui_ImplDX9_NewFrame();
-			RenderScene();
-		}
+		g_plugins.present(IID_IDirect3DDevice9Ex, dev);
 
 		return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
 	});
@@ -419,13 +334,9 @@ void HookDX10(UINTX* vtable10SwapChain)
 
 	g_swapChainPresent10Hook.apply(vtable10SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
 	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present (v10) called"));
+		g_plugins.present(IID_IDXGISwapChain, chain);
 
-		g_bIsUsingPresent = true;
-		static auto failed = false;
-
-		if (!failed)
+		/* if (!failed)
 		{
 			if (!g_bIsImGuiInitialized)
 			{
@@ -455,7 +366,7 @@ void HookDX10(UINTX* vtable10SwapChain)
 				ImGui_ImplDX10_NewFrame();
 				RenderScene();
 			}
-		}
+		}*/
 
 		return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
 	});
@@ -480,54 +391,7 @@ void HookDX11(UINTX* vtable11SwapChain)
 		static boost::once_flag flag = BOOST_ONCE_INIT;
 		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present (v11) called"));
 
-		g_bIsUsingPresent = true;
-
-		static ID3D11DeviceContext* ctx = nullptr;
-		static ID3D11RenderTargetView* view = nullptr;
-		static ID3D11Device* dev = nullptr;
-
-		if (!g_bIsImGuiInitialized)
-		{
-			// window handle available, initialize
-			if (g_hWnd)
-			{
-				// get device
-				chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
-
-				// get device context
-				dev->GetImmediateContext(&ctx);
-				
-				// initialize ImGui
-				ImGui_ImplDX11_Init(g_hWnd, dev, ctx);
-
-				BOOST_LOG_TRIVIAL(info) << "ImGui (DX11) initialized";
-
-				g_bIsImGuiInitialized = true;
-			}
-		}
-		else
-		{
-			DXGI_SWAP_CHAIN_DESC sd;
-			chain->GetDesc(&sd);
-
-			if (view)
-				view->Release();
-
-			// Create the render target
-			ID3D11Texture2D* pBackBuffer;
-			D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc;
-			ZeroMemory(&render_target_view_desc, sizeof(render_target_view_desc));
-			render_target_view_desc.Format = sd.BufferDesc.Format;
-			render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-			chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
-			dev->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &view);
-			ctx->OMSetRenderTargets(1, &view, nullptr);
-			pBackBuffer->Release();
-
-			ImGui_ImplDX11_NewFrame();
-
-			RenderScene();
-		}
+		g_plugins.present(IID_IDXGISwapChain, chain);
 
 		return g_swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
 	});
@@ -596,61 +460,3 @@ void HookDInput8(UINTX* vtable8)
 	});
 }
 
-void RenderScene()
-{
-	static bool show_overlay = false;
-	static bool show_test_window = true;
-	static bool show_another_window = false;
-	static ImVec4 clear_col = ImColor(114, 144, 154);
-
-	// 1. Show a simple window
-	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
-	{
-		static float f = 0.0f;
-		ImGui::Text("Hello, world!");
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-		ImGui::ColorEdit3("clear color", (float*)&clear_col);
-		if (ImGui::Button("Test Window")) show_test_window ^= 1;
-		if (ImGui::Button("Another Window")) show_another_window ^= 1;
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-	}
-
-	// 2. Show another simple window, this time using an explicit Begin/End pair
-	if (show_another_window)
-	{
-		ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
-		ImGui::Begin("Another Window", &show_another_window);
-		ImGui::Text("Hello");
-		ImGui::End();
-	}
-
-	// 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
-	if (show_test_window)
-	{
-		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-		ImGui::ShowTestWindow(&show_test_window);
-	}
-
-	static auto pressedPast = false, pressedNow = false;
-	if (GetAsyncKeyState(VK_F11) & 0x8000)
-	{
-		pressedNow = true;
-	}
-	else
-	{
-		pressedPast = false;
-		pressedNow = false;
-	}
-
-	if (!pressedPast && pressedNow)
-	{
-		show_overlay = !show_overlay;
-
-		pressedPast = true;
-	}
-
-	if (show_overlay)
-	{
-		ImGui::Render();
-	}
-}
