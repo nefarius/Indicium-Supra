@@ -72,11 +72,11 @@ void initGame()
 	g_plugins.refresh();
 	g_plugins.load();
 
-	UINTX vtable9[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
-	UINTX vtable9Ex[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
-	UINTX vtable10SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
-	UINTX vtable11SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
-	UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
+	UINTX vtable9[Direct3D9Hooking::Direct3D9::VTableElements] = {0};
+	UINTX vtable9Ex[Direct3D9Hooking::Direct3D9Ex::VTableElements] = {0};
+	UINTX vtable10SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = {0};
+	UINTX vtable11SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = {0};
+	UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = {0};
 
 	// get VTable for Direct3DCreate9
 	{
@@ -217,24 +217,24 @@ void initGame()
 	BIND(SetOverlayPriority);
 
 	new PipeServer([&](Serializer& serializerIn, Serializer& serializerOut)
-	{
-		SERIALIZATION_READ(serializerIn, PipeMessages, eMessage);
-
-		try
 		{
-			auto it = PaketHandler.find(eMessage);
-			if (it == PaketHandler.end())
-				return;
+			SERIALIZATION_READ(serializerIn, PipeMessages, eMessage);
 
-			if (!PaketHandler[eMessage])
-				return;
+			try
+			{
+				auto it = PaketHandler.find(eMessage);
+				if (it == PaketHandler.end())
+					return;
 
-			PaketHandler[eMessage](serializerIn, serializerOut);
-		}
-		catch (...)
-		{
-		}
-	});
+				if (!PaketHandler[eMessage])
+					return;
+
+				PaketHandler[eMessage](serializerIn, serializerOut);
+			}
+			catch (...)
+			{
+			}
+		});
 
 	// block this thread infinitely
 	WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
@@ -250,55 +250,55 @@ void HookDX9(UINTX* vtable9)
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Present";
 
 	g_present9Hook.apply(vtable9[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::Present called"));
+	                     {
+		                     static boost::once_flag flag = BOOST_ONCE_INIT;
+		                     boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::Present called"));
 
-		g_plugins.present(IID_IDirect3DDevice9, dev);
+		                     g_plugins.present(IID_IDirect3DDevice9, dev);
 
-		return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
-	});
+		                     return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
+	                     });
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::Reset";
 
 	g_reset9Hook.apply(vtable9[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::Reset called"));
+	                   {
+		                   static boost::once_flag flag = BOOST_ONCE_INIT;
+		                   boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::Reset called"));
 
-		// g_pRenderer.reset(dev);
+		                   // g_pRenderer.reset(dev);
 
-		return g_reset9Hook.callOrig(dev, pp);
-	});
+		                   return g_reset9Hook.callOrig(dev, pp);
+	                   });
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9::EndScene";
 
 	g_endScene9Hook.apply(vtable9[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::EndScene called"));
+	                      {
+		                      static boost::once_flag flag = BOOST_ONCE_INIT;
+		                      boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9::EndScene called"));
 
-/* 		if (!g_bIsUsingPresent)
-		{
-			if (!g_bIsImGuiInitialized)
-			{
-				if (g_hWnd)
-				{
-					ImGui_ImplDX9_Init(g_hWnd, dev);
+		                      /* 		if (!g_bIsUsingPresent)
+				                      {
+					                      if (!g_bIsImGuiInitialized)
+					                      {
+						                      if (g_hWnd)
+						                      {
+							                      ImGui_ImplDX9_Init(g_hWnd, dev);
+		                      
+							                      g_bIsImGuiInitialized = true;
+						                      }
+					                      }
+					                      else
+					                      {
+						                      ImGui_ImplDX9_NewFrame();
+						                      RenderScene();
+					                      }
+				                      }
+				                      */
 
-					g_bIsImGuiInitialized = true;
-				}
-			}
-			else
-			{
-				ImGui_ImplDX9_NewFrame();
-				RenderScene();
-			}
-		}
-		*/
-
-		return g_endScene9Hook.callOrig(dev);
-	});
+		                      return g_endScene9Hook.callOrig(dev);
+	                      });
 }
 
 void HookDX9Ex(UINTX* vtable9Ex)
@@ -306,26 +306,26 @@ void HookDX9Ex(UINTX* vtable9Ex)
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
 
 	g_present9ExHook.apply(vtable9Ex[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9Ex::PresentEx called"));
+	                       {
+		                       static boost::once_flag flag = BOOST_ONCE_INIT;
+		                       boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9Ex::PresentEx called"));
 
-		g_plugins.present(IID_IDirect3DDevice9Ex, dev);
+		                       g_plugins.present(IID_IDirect3DDevice9Ex, dev);
 
-		return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
-	});
+		                       return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
+	                       });
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
 
 	g_reset9ExHook.apply(vtable9Ex[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9Ex::ResetEx called"));
+	                     {
+		                     static boost::once_flag flag = BOOST_ONCE_INIT;
+		                     boost::call_once(flag, boost::bind(&logOnce, "++ IDirect3DDevice9Ex::ResetEx called"));
 
-		// g_pRenderer.reset(dev);
+		                     // g_pRenderer.reset(dev);
 
-		return g_reset9ExHook.callOrig(dev, pp, ppp);
-	});
+		                     return g_reset9ExHook.callOrig(dev, pp, ppp);
+	                     });
 }
 
 void HookDX10(UINTX* vtable10SwapChain)
@@ -333,53 +333,53 @@ void HookDX10(UINTX* vtable10SwapChain)
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
 
 	g_swapChainPresent10Hook.apply(vtable10SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
-	{
-		g_plugins.present(IID_IDXGISwapChain, chain);
+	                               {
+		                               g_plugins.present(IID_IDXGISwapChain, chain);
 
-		/* if (!failed)
-		{
-			if (!g_bIsImGuiInitialized)
-			{
-				if (g_hWnd)
-				{
-					static ID3D10Device* dev = nullptr;
-					auto hr = chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
+		                               /* if (!failed)
+		                               {
+			                               if (!g_bIsImGuiInitialized)
+			                               {
+				                               if (g_hWnd)
+				                               {
+					                               static ID3D10Device* dev = nullptr;
+					                               auto hr = chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
+                               
+					                               if (SUCCEEDED(hr))
+					                               {
+						                               ImGui_ImplDX10_Init(g_hWnd, dev);
+                               
+						                               BOOST_LOG_TRIVIAL(info) << "ImGui (DX10) initialized";
+                               
+						                               g_bIsImGuiInitialized = true;
+					                               }
+					                               else
+					                               {
+						                               BOOST_LOG_TRIVIAL(error) << "!! Couldn't get ID3D10Device";
+                               
+						                               failed = true;
+					                               }
+				                               }
+			                               }
+			                               else
+			                               {
+				                               ImGui_ImplDX10_NewFrame();
+				                               RenderScene();
+			                               }
+		                               }*/
 
-					if (SUCCEEDED(hr))
-					{
-						ImGui_ImplDX10_Init(g_hWnd, dev);
-
-						BOOST_LOG_TRIVIAL(info) << "ImGui (DX10) initialized";
-
-						g_bIsImGuiInitialized = true;
-					}
-					else
-					{
-						BOOST_LOG_TRIVIAL(error) << "!! Couldn't get ID3D10Device";
-
-						failed = true;
-					}
-				}
-			}
-			else
-			{
-				ImGui_ImplDX10_NewFrame();
-				RenderScene();
-			}
-		}*/
-
-		return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
-	});
+		                               return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
+	                               });
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeTarget";
 
 	g_swapChainResizeTarget10Hook.apply(vtable10SwapChain[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget (v10) called"));
+	                                    {
+		                                    static boost::once_flag flag = BOOST_ONCE_INIT;
+		                                    boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget (v10) called"));
 
-		return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
-	});
+		                                    return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
+	                                    });
 }
 
 void HookDX11(UINTX* vtable11SwapChain)
@@ -387,24 +387,24 @@ void HookDX11(UINTX* vtable11SwapChain)
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
 
 	g_swapChainPresent11Hook.apply(vtable11SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present (v11) called"));
+	                               {
+		                               static boost::once_flag flag = BOOST_ONCE_INIT;
+		                               boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::Present (v11) called"));
 
-		g_plugins.present(IID_IDXGISwapChain, chain);
+		                               g_plugins.present(IID_IDXGISwapChain, chain);
 
-		return g_swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
-	});
+		                               return g_swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
+	                               });
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeTarget";
 
 	g_swapChainResizeTarget11Hook.apply(vtable11SwapChain[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget (v11) called"));
+	                                    {
+		                                    static boost::once_flag flag = BOOST_ONCE_INIT;
+		                                    boost::call_once(flag, boost::bind(&logOnce, "++ IDXGISwapChain::ResizeTarget (v11) called"));
 
-		return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
-	});
+		                                    return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
+	                                    });
 }
 
 void HookDInput8(UINTX* vtable8)
@@ -412,51 +412,51 @@ void HookDInput8(UINTX* vtable8)
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::Acquire";
 
 	g_acquire8Hook.apply(vtable8[DirectInput8Hooking::Acquire], [](LPDIRECTINPUTDEVICE8 dev) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::Acquire called"));
+	                     {
+		                     static boost::once_flag flag = BOOST_ONCE_INIT;
+		                     boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::Acquire called"));
 
-		return g_acquire8Hook.callOrig(dev);
-	});
+		                     return g_acquire8Hook.callOrig(dev);
+	                     });
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetDeviceData";
 
 	g_getDeviceData8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceData], [](LPDIRECTINPUTDEVICE8 dev, DWORD cbObjectData, LPDIDEVICEOBJECTDATA rgdod, LPDWORD pdwInOut, DWORD dwFlags) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::Acquire called"));
+	                           {
+		                           static boost::once_flag flag = BOOST_ONCE_INIT;
+		                           boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::Acquire called"));
 
-		return g_getDeviceData8Hook.callOrig(dev, cbObjectData, rgdod, pdwInOut, dwFlags);
-	});
+		                           return g_getDeviceData8Hook.callOrig(dev, cbObjectData, rgdod, pdwInOut, dwFlags);
+	                           });
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetDeviceInfo ";
 
 	g_getDeviceInfo8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceInfo], [](LPDIRECTINPUTDEVICE8 dev, LPDIDEVICEINSTANCE pdidi) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::GetDeviceInfo called"));
+	                           {
+		                           static boost::once_flag flag = BOOST_ONCE_INIT;
+		                           boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::GetDeviceInfo called"));
 
-		return g_getDeviceInfo8Hook.callOrig(dev, pdidi);
-	});
+		                           return g_getDeviceInfo8Hook.callOrig(dev, pdidi);
+	                           });
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetDeviceState";
 
 	g_getDeviceState8Hook.apply(vtable8[DirectInput8Hooking::GetDeviceState], [](LPDIRECTINPUTDEVICE8 dev, DWORD cbData, LPVOID lpvData) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::GetDeviceState called"));
+	                            {
+		                            static boost::once_flag flag = BOOST_ONCE_INIT;
+		                            boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::GetDeviceState called"));
 
-		return g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
-	});
+		                            return g_getDeviceState8Hook.callOrig(dev, cbData, lpvData);
+	                            });
 
 	BOOST_LOG_TRIVIAL(info) << "Hooking IDirectInputDevice8::GetObjectInfo";
 
 	g_getObjectInfo8Hook.apply(vtable8[DirectInput8Hooking::GetObjectInfo], [](LPDIRECTINPUTDEVICE8 dev, LPDIDEVICEOBJECTINSTANCE pdidoi, DWORD dwObj, DWORD dwHow) -> HRESULT
-	{
-		static boost::once_flag flag = BOOST_ONCE_INIT;
-		boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::GetObjectInfo called"));
+	                           {
+		                           static boost::once_flag flag = BOOST_ONCE_INIT;
+		                           boost::call_once(flag, boost::bind(&logOnce, "++ IDirectInputDevice8::GetObjectInfo called"));
 
-		return g_getObjectInfo8Hook.callOrig(dev, pdidoi, dwObj, dwHow);
-	});
+		                           return g_getObjectInfo8Hook.callOrig(dev, pdidoi, dwObj, dwHow);
+	                           });
 }
 

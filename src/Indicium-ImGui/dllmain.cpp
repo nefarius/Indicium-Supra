@@ -35,14 +35,14 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
 	logging::add_file_log
 		(
-		keywords::file_name = "Indicium-ImGui.Plugin.log",
-		keywords::auto_flush = true,
-		keywords::format = "[%TimeStamp%]: %Message%"
+			keywords::file_name = "Indicium-ImGui.Plugin.log",
+			keywords::auto_flush = true,
+			keywords::format = "[%TimeStamp%]: %Message%"
 		);
 
 	logging::core::get()->set_filter
 		(
-		logging::trivial::severity >= logging::trivial::info
+			logging::trivial::severity >= logging::trivial::info
 		);
 
 	return CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(init), nullptr, 0, nullptr) > nullptr;
@@ -194,10 +194,10 @@ void HookDefWindowProc()
 
 LRESULT WINAPI DetourDefWindowProc(
 	_In_ HWND hWnd,
-	_In_ UINT Msg,
-	_In_ WPARAM wParam,
-	_In_ LPARAM lParam
-	)
+	     _In_ UINT Msg,
+	     _In_ WPARAM wParam,
+	     _In_ LPARAM lParam
+)
 {
 	static boost::once_flag flag = BOOST_ONCE_INIT;
 	boost::call_once(flag, boost::bind(&logOnce, "++ USER32!DefWindowProc called"));
@@ -272,3 +272,4 @@ void RenderScene()
 		ImGui::Render();
 	}
 }
+

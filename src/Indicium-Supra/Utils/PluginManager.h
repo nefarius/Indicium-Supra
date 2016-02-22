@@ -17,7 +17,7 @@ class PluginManager
 	std::vector<LPVOID> m_presentFuncs;
 	std::vector<LPVOID> m_resetFuncs;
 
-	bool findStringIC(const std::string & strHaystack, const std::string & strNeedle) const;
+	bool findStringIC(const std::string& strHaystack, const std::string& strNeedle) const;
 public:
 	PluginManager();
 	~PluginManager();

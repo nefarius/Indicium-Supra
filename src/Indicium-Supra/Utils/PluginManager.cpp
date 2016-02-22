@@ -17,7 +17,10 @@ bool PluginManager::findStringIC(const std::string& strHaystack, const std::stri
 	auto it = std::search(
 		strHaystack.begin(), strHaystack.end(),
 		strNeedle.begin(), strNeedle.end(),
-		[](char ch1, char ch2) { return ::toupper(ch1) == ::toupper(ch2); }
+		[](char ch1, char ch2)
+		{
+			return ::toupper(ch1) == ::toupper(ch2);
+		}
 	);
 	return (it != strHaystack.end());
 }
@@ -57,7 +60,7 @@ void PluginManager::load()
 {
 	this->refresh();
 
-	for (const auto &path : m_pluginPaths)
+	for (const auto& path : m_pluginPaths)
 	{
 		auto hMod = LoadLibrary(path.c_str());
 
@@ -66,7 +69,7 @@ void PluginManager::load()
 			BOOST_LOG_TRIVIAL(error) << "Couldn't load Indicium plugin from file " << path;
 			continue;
 		}
-		
+
 		auto present = static_cast<LPVOID>(GetProcAddress(hMod, "Present"));
 
 		if (present == nullptr)
@@ -87,7 +90,7 @@ void PluginManager::unload()
 
 void PluginManager::present(IID guid, LPVOID unknown)
 {
-	for (const auto &func : m_presentFuncs)
+	for (const auto& func : m_presentFuncs)
 	{
 		static_cast<VOID(__cdecl*)(IID, LPVOID)>(func)(guid, unknown);
 	}
@@ -95,8 +98,9 @@ void PluginManager::present(IID guid, LPVOID unknown)
 
 void PluginManager::reset(IID guid, LPVOID unknown)
 {
-	for (const auto &func : m_resetFuncs)
+	for (const auto& func : m_resetFuncs)
 	{
 		static_cast<VOID(__cdecl*)(IID, LPVOID)>(func)(guid, unknown);
 	}
 }
+
