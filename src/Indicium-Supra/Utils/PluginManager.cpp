@@ -1,7 +1,5 @@
 #include "PluginManager.h"
 #include <Shlwapi.h>
-#pragma comment(lib, "shlwapi.lib")
-
 #include <algorithm>
 
 #define BOOST_FILESYSTEM_VERSION 3
