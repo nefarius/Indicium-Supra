@@ -17,9 +17,10 @@ namespace keywords = boost::log::keywords;
 namespace expr = boost::log::expressions;
 
 // ImGui includes
-#include "imgui/imgui_impl_dx9.h"
-#include "imgui/imgui_impl_dx10.h"
-#include "imgui/imgui_impl_dx11.h"
+#include <imgui.h>
+#include <imgui_impl_dx9.h>
+#include <imgui_impl_dx10.h>
+#include <imgui_impl_dx11.h>
 
 HWND g_hWnd = nullptr;
 tDefWindowProc OriginalDefWindowProc = nullptr;
