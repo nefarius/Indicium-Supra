@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <vector>
+#include <mutex>
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
@@ -16,6 +17,7 @@ class PluginManager
 	std::vector<HMODULE> m_pluginMods;
 	std::vector<LPVOID> m_presentFuncs;
 	std::vector<LPVOID> m_resetFuncs;
+	std::mutex m_mutex;
 
 	bool findStringIC(const std::string& strHaystack, const std::string& strNeedle) const;
 public:

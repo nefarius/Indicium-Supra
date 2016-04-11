@@ -25,7 +25,6 @@ bool PluginManager::findStringIC(const std::string& strHaystack, const std::stri
 
 PluginManager::PluginManager()
 {
-	ZeroMemory(m_DllPath, _countof(m_DllPath));
 	GetModuleFileName(reinterpret_cast<HINSTANCE>(&__ImageBase), m_DllPath, _countof(m_DllPath));
 	PathRemoveFileSpec(m_DllPath);
 }
@@ -58,6 +57,8 @@ void PluginManager::load()
 {
 	this->refresh();
 
+	m_mutex.lock();
+
 	for (const auto& path : m_pluginPaths)
 	{
 		auto hMod = LoadLibrary(path.c_str());
@@ -80,25 +81,40 @@ void PluginManager::load()
 		m_pluginMods.push_back(hMod);
 		m_presentFuncs.push_back(present);
 	}
+
+	m_mutex.unlock();
 }
 
 void PluginManager::unload()
 {
+	m_mutex.lock();
+
+	// TODO: implement!
+
+	m_mutex.unlock();
 }
 
 void PluginManager::present(IID guid, LPVOID unknown)
 {
+	m_mutex.try_lock();
+
 	for (const auto& func : m_presentFuncs)
 	{
 		static_cast<VOID(__cdecl*)(IID, LPVOID)>(func)(guid, unknown);
 	}
+
+	m_mutex.unlock();
 }
 
 void PluginManager::reset(IID guid, LPVOID unknown)
 {
+	m_mutex.try_lock();
+
 	for (const auto& func : m_resetFuncs)
 	{
 		static_cast<VOID(__cdecl*)(IID, LPVOID)>(func)(guid, unknown);
 	}
+
+	m_mutex.unlock();
 }
 
