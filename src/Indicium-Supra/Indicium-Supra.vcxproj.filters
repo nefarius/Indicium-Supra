@@ -103,18 +103,6 @@
     <Filter Include="Game\Hook\DInput8">
       <UniqueIdentifier>{2886b68a-63b5-495c-8bce-ef308db2b907}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ImGUI">
-      <UniqueIdentifier>{2b46b72f-b2a2-46b5-bb60-4be1adc13ba6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImGUI\DX9">
-      <UniqueIdentifier>{ac03c026-7baf-431a-82c2-2f88dd3a11ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImGUI\DX10">
-      <UniqueIdentifier>{917ffe03-5a48-4bff-97c2-1c1ab2615405}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ImGUI\DX11">
-      <UniqueIdentifier>{91805050-e810-4212-b22b-65b8d44de6be}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Game\Hook\D3D11">
       <UniqueIdentifier>{170e4a2e-f495-444e-b4f2-491ad22e6b24}</UniqueIdentifier>
     </Filter>
