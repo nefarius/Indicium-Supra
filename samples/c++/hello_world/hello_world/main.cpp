@@ -5,7 +5,7 @@
 
 int main()
 {
-	SetParam("process", "gfxtest.exe");
+	SetParam("process", "hl2.exe");
 
 	struct _{
 		_() : _id(TextCreate("Arial", 12, false, false, 200, 200, 0xFF00FFFF, "Hello world", true, true)) { }

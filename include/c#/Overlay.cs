@@ -57,7 +57,7 @@ namespace DX9OverlayAPI
         public static extern int LineSetPos(int id, int x1, int y1, int x2, int y2);
 
         [DllImport(PATH, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int ImageCreate(string path, int x, int y, int rotation, int align, bool bShow);
+        public static extern int ImageCreate(string path, int x, int y, float scaleX, float scaleY, int rotation, int align, bool bShow);
         [DllImport(PATH, CallingConvention = CallingConvention.Cdecl)]
         public static extern int ImageDestroy(int id);
         [DllImport(PATH, CallingConvention = CallingConvention.Cdecl)]
