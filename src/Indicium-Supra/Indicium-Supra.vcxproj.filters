@@ -208,9 +208,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ResourceCompile Include="Indicium-Supra.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Indicium-Supra.rc" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

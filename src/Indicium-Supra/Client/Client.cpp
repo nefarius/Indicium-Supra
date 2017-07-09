@@ -1,13 +1,10 @@
 #include "Client.h"
 
 #include <dllmain.h>
-#include <ShlObj.h>
 #include <Psapi.h>
 
 #include <Shared/PipeMessages.h>
 #include <Utils/Misc.h>
-
-#include <string>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/log/trivial.hpp>

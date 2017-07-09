@@ -173,3 +173,7 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 *.bak
+/bin/Win32
+/src/Indicium-Supra.VC.VC.opendb
+/src/Indicium-Supra.VC.db
+/src/.vs/Indicium-Supra/v15
