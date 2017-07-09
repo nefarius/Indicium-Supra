@@ -19,7 +19,7 @@ namespace expr = boost::log::expressions;
 extern class Renderer g_pRenderer;
 
 void initGame();
-void logOnce(std::string message);
+void logInfo(std::string message);
 
 void HookDX9(UINTX* vtable9);
 void HookDX9Ex(UINTX* vtable9Ex);

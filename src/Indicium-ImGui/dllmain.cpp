@@ -66,7 +66,7 @@ int init()
 	return WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
 }
 
-void logOnce(std::string message)
+void logInfo(std::string message)
 {
 	BOOST_LOG_TRIVIAL(info) << message;
 }
@@ -201,7 +201,7 @@ LRESULT WINAPI DetourDefWindowProc(
 )
 {
 	static boost::once_flag flag = BOOST_ONCE_INIT;
-	boost::call_once(flag, boost::bind(&logOnce, "++ USER32!DefWindowProc called"));
+	boost::call_once(flag, boost::bind(&logInfo, "++ USER32!DefWindowProc called"));
 
 	if (!g_hWnd)
 	{
@@ -218,7 +218,7 @@ LRESULT WINAPI DetourDefWindowProc(
 void RenderScene()
 {
     static boost::once_flag flag = BOOST_ONCE_INIT;
-    boost::call_once(flag, boost::bind(&logOnce, "++ RenderScene called"));
+    boost::call_once(flag, boost::bind(&logInfo, "++ RenderScene called"));
 
 	static bool show_overlay = false;
 	static bool show_test_window = true;
