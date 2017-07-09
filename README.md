@@ -1,6 +1,6 @@
-# Indicium-Supra (LGPL v3)
+# Indicium-Supra
 
-An overlay API for DirectX based games, which is licensed and distributed under the terms of the LGPL v3
+API-Hooking and rendering framework for DirectX-based games.
 
 ## Prerequisites
  * Visual Studio **2015** ([Community Edition](https://go.microsoft.com/fwlink/p/?LinkId=534599) is just fine)
@@ -8,6 +8,12 @@ An overlay API for DirectX based games, which is licensed and distributed under 
  * [Microsoft DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812)
  * [Boost libraries](http://www.boost.org/)
  * [MinHook](https://github.com/TsudaKageyu/minhook)
+ 
+## Supported DirectX versions
+ * DirectX 9.0
+ * DirectX 9.0 Extended
+ * DirectX 10
+ * DirectX 11
 
 ## How to build
 ### Build Boost Libraries
