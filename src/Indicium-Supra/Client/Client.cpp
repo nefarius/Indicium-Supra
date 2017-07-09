@@ -176,8 +176,8 @@ EXPORT int Init()
 		}
 
 
-		auto pFunc = reinterpret_cast<DWORD_PTR>(GetProcAddress(static_cast<HMODULE>(g_hDllHandle), "enable"));
-		pFunc -= reinterpret_cast<DWORD_PTR>(g_hDllHandle);
+		auto pFunc = reinterpret_cast<DWORD>(GetProcAddress(static_cast<HMODULE>(g_hDllHandle), "enable"));
+		pFunc -= reinterpret_cast<DWORD>(g_hDllHandle);
 		pFunc += static_cast<DWORD>(dwBase);
 
 		if (pFunc == NULL)
