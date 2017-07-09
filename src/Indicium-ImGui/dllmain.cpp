@@ -217,6 +217,9 @@ LRESULT WINAPI DetourDefWindowProc(
 
 void RenderScene()
 {
+    static boost::once_flag flag = BOOST_ONCE_INIT;
+    boost::call_once(flag, boost::bind(&logOnce, "++ RenderScene called"));
+
 	static bool show_overlay = false;
 	static bool show_test_window = true;
 	static bool show_another_window = false;

@@ -39,7 +39,7 @@ class Hook
 {
 	typedef typename convention<cc, retn, args...>::type type;
 
-	DWORD_PTR _orig;
+	size_t _orig;
 	type _trampoline;
 	type _detour;
 
