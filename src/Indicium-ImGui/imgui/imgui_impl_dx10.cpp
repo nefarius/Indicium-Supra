@@ -34,6 +34,7 @@ static ID3D10SamplerState*      g_pFontSampler = NULL;
 static ID3D10ShaderResourceView*g_pFontTextureView = NULL;
 static ID3D10RasterizerState*   g_pRasterizerState = NULL;
 static ID3D10BlendState*        g_pBlendState = NULL;
+static ID3D10DepthStencilState* g_pDepthStencilState = NULL;
 static int                      g_VertexBufferSize = 5000, g_IndexBufferSize = 10000;
 
 struct VERTEX_CONSTANT_BUFFER
@@ -86,10 +87,10 @@ void ImGui_ImplDX10_RenderDrawLists(ImDrawData* draw_data)
     for (int n = 0; n < draw_data->CmdListsCount; n++)
     {
         const ImDrawList* cmd_list = draw_data->CmdLists[n];
-        memcpy(vtx_dst, &cmd_list->VtxBuffer[0], cmd_list->VtxBuffer.size() * sizeof(ImDrawVert));
-        memcpy(idx_dst, &cmd_list->IdxBuffer[0], cmd_list->IdxBuffer.size() * sizeof(ImDrawIdx));
-        vtx_dst += cmd_list->VtxBuffer.size();
-        idx_dst += cmd_list->IdxBuffer.size();
+        memcpy(vtx_dst, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
+        memcpy(idx_dst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
+        vtx_dst += cmd_list->VtxBuffer.Size;
+        idx_dst += cmd_list->IdxBuffer.Size;
     }
     g_pVB->Unmap();
     g_pIB->Unmap();
@@ -125,6 +126,8 @@ void ImGui_ImplDX10_RenderDrawLists(ImDrawData* draw_data)
         ID3D10BlendState*           BlendState;
         FLOAT                       BlendFactor[4];
         UINT                        SampleMask;
+        UINT                        StencilRef;
+        ID3D10DepthStencilState*    DepthStencilState;
         ID3D10ShaderResourceView*   PSShaderResource;
         ID3D10SamplerState*         PSSampler;
         ID3D10PixelShader*          PS;
@@ -141,6 +144,7 @@ void ImGui_ImplDX10_RenderDrawLists(ImDrawData* draw_data)
     ctx->RSGetViewports(&old.ViewportsCount, old.Viewports);
     ctx->RSGetState(&old.RS);
     ctx->OMGetBlendState(&old.BlendState, old.BlendFactor, &old.SampleMask);
+    ctx->OMGetDepthStencilState(&old.DepthStencilState, &old.StencilRef);
     ctx->PSGetShaderResources(0, 1, &old.PSShaderResource);
     ctx->PSGetSamplers(0, 1, &old.PSSampler);
     ctx->PSGetShader(&old.PS);
@@ -176,6 +180,7 @@ void ImGui_ImplDX10_RenderDrawLists(ImDrawData* draw_data)
     // Setup render state
     const float blend_factor[4] = { 0.f, 0.f, 0.f, 0.f };
     ctx->OMSetBlendState(g_pBlendState, blend_factor, 0xffffffff);
+    ctx->OMSetDepthStencilState(g_pDepthStencilState, 0);
     ctx->RSSetState(g_pRasterizerState);
 
     // Render command lists
@@ -184,7 +189,7 @@ void ImGui_ImplDX10_RenderDrawLists(ImDrawData* draw_data)
     for (int n = 0; n < draw_data->CmdListsCount; n++)
     {
         const ImDrawList* cmd_list = draw_data->CmdLists[n];
-        for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.size(); cmd_i++)
+        for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
         {
             const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
             if (pcmd->UserCallback)
@@ -200,7 +205,7 @@ void ImGui_ImplDX10_RenderDrawLists(ImDrawData* draw_data)
             }
             idx_offset += pcmd->ElemCount;
         }
-        vtx_offset += cmd_list->VtxBuffer.size();
+        vtx_offset += cmd_list->VtxBuffer.Size;
     }
 
     // Restore modified DX state
@@ -208,6 +213,7 @@ void ImGui_ImplDX10_RenderDrawLists(ImDrawData* draw_data)
     ctx->RSSetViewports(old.ViewportsCount, old.Viewports);
     ctx->RSSetState(old.RS); if (old.RS) old.RS->Release();
     ctx->OMSetBlendState(old.BlendState, old.BlendFactor, old.SampleMask); if (old.BlendState) old.BlendState->Release();
+    ctx->OMSetDepthStencilState(old.DepthStencilState, old.StencilRef); if (old.DepthStencilState) old.DepthStencilState->Release();
     ctx->PSSetShaderResources(0, 1, &old.PSShaderResource); if (old.PSShaderResource) old.PSShaderResource->Release();
     ctx->PSSetSamplers(0, 1, &old.PSSampler); if (old.PSSampler) old.PSSampler->Release();
     ctx->PSSetShader(old.PS); if (old.PS) old.PS->Release();
@@ -337,6 +343,12 @@ bool    ImGui_ImplDX10_CreateDeviceObjects()
     if (g_pFontSampler)
         ImGui_ImplDX10_InvalidateDeviceObjects();
 
+    // By using D3DCompile() from <d3dcompiler.h> / d3dcompiler.lib, we introduce a dependency to a given version of d3dcompiler_XX.dll (see D3DCOMPILER_DLL_A)
+    // If you would like to use this DX11 sample code but remove this dependency you can: 
+    //  1) compile once, save the compiled shader blobs into a file or source code and pass them to CreateVertexShader()/CreatePixelShader() [preferred solution]
+    //  2) use code to detect any version of the DLL and grab a pointer to D3DCompile from the DLL. 
+    // See https://github.com/ocornut/imgui/pull/638 for sources and details.
+
     // Create the vertex shader
     {
         static const char* vertexShader =
@@ -447,6 +459,20 @@ bool    ImGui_ImplDX10_CreateDeviceObjects()
         g_pd3dDevice->CreateRasterizerState(&desc, &g_pRasterizerState);
     }
 
+    // Create depth-stencil State
+    {
+        D3D10_DEPTH_STENCIL_DESC desc;
+        ZeroMemory(&desc, sizeof(desc));
+        desc.DepthEnable = false;
+        desc.DepthWriteMask = D3D10_DEPTH_WRITE_MASK_ALL;
+        desc.DepthFunc = D3D10_COMPARISON_ALWAYS;
+        desc.StencilEnable = false;
+        desc.FrontFace.StencilFailOp = desc.FrontFace.StencilDepthFailOp = desc.FrontFace.StencilPassOp = D3D10_STENCIL_OP_KEEP;
+        desc.FrontFace.StencilFunc = D3D10_COMPARISON_ALWAYS;
+        desc.BackFace = desc.FrontFace;
+        g_pd3dDevice->CreateDepthStencilState(&desc, &g_pDepthStencilState);
+    }
+
     ImGui_ImplDX10_CreateFontsTexture();
 
     return true;
@@ -458,11 +484,12 @@ void    ImGui_ImplDX10_InvalidateDeviceObjects()
         return;
 
     if (g_pFontSampler) { g_pFontSampler->Release(); g_pFontSampler = NULL; }
-    if (g_pFontTextureView) { g_pFontTextureView->Release(); g_pFontTextureView = NULL; ImGui::GetIO().Fonts->TexID = 0; }
+    if (g_pFontTextureView) { g_pFontTextureView->Release(); g_pFontTextureView = NULL; ImGui::GetIO().Fonts->TexID = NULL; } // We copied g_pFontTextureView to io.Fonts->TexID so let's clear that as well.
     if (g_pIB) { g_pIB->Release(); g_pIB = NULL; }
     if (g_pVB) { g_pVB->Release(); g_pVB = NULL; }
 
     if (g_pBlendState) { g_pBlendState->Release(); g_pBlendState = NULL; }
+    if (g_pDepthStencilState) { g_pDepthStencilState->Release(); g_pDepthStencilState = NULL; }
     if (g_pRasterizerState) { g_pRasterizerState->Release(); g_pRasterizerState = NULL; }
     if (g_pPixelShader) { g_pPixelShader->Release(); g_pPixelShader = NULL; }
     if (g_pPixelShaderBlob) { g_pPixelShaderBlob->Release(); g_pPixelShaderBlob = NULL; }
@@ -505,7 +532,6 @@ bool    ImGui_ImplDX10_Init(void* hwnd, ID3D10Device* device)
 
     io.RenderDrawListsFn = ImGui_ImplDX10_RenderDrawLists;  // Alternatively you can set this to NULL and call ImGui::GetDrawData() after ImGui::Render() to get the same ImDrawData pointer.
     io.ImeWindowHandle = g_hWnd;
-	io.MouseDrawCursor = true;
 
     return true;
 }
@@ -547,7 +573,8 @@ void ImGui_ImplDX10_NewFrame()
     // io.MouseWheel : filled by WM_MOUSEWHEEL events
 
     // Hide OS mouse cursor if ImGui is drawing it
-    SetCursor(io.MouseDrawCursor ? NULL : LoadCursor(NULL, IDC_ARROW));
+    if (io.MouseDrawCursor)
+        SetCursor(NULL);
 
     // Start the frame
     ImGui::NewFrame();

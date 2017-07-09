@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <string>
 #include <MinHook.h>
+#include "imgui.h"
 
 #define INDICIUM_EXPORT extern "C" __declspec(dllexport) VOID __cdecl
 
@@ -32,3 +33,7 @@ void HookDefWindowProc();
 int init();
 void logOnce(std::string message);
 void RenderScene();
+
+IMGUI_API LRESULT   ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+IMGUI_API LRESULT   ImGui_ImplDX10_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+IMGUI_API LRESULT   ImGui_ImplDX11_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
