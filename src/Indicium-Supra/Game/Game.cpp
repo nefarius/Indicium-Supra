@@ -140,26 +140,31 @@ void initGame()
 
     if (d3d9_available)
     {
+        logger.information("Game uses Direct3D9");
         HookDX9(vtable9);
     }
 
     if (d3d9ex_available)
     {
+        logger.information("Game uses Direct3D9Ex (Vista +)");
         HookDX9Ex(vtable9Ex);
     }
 
     if (d3d10_available)
     {
+        logger.information("Game uses Direct3D10");
         HookDX10(vtable10SwapChain);
     }
 
     if (d3d11_available)
     {
+        logger.information("Game uses Direct3D11");
         HookDX11(vtable11SwapChain);
     }
 
     if (dinput8_available)
     {
+        logger.information("Game uses DirectInput8");
         HookDInput8(vtable8);
     }
 
@@ -211,7 +216,7 @@ void HookDX9(UINTX* vtable9)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Reset called"); });
 
-        // g_pRenderer.reset(dev);
+        g_plugins.reset(IID_IDirect3DDevice9, dev);
 
         return g_reset9Hook.callOrig(dev, pp);
     });
@@ -223,24 +228,7 @@ void HookDX9(UINTX* vtable9)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::EndScene called"); });
 
-        /* 		if (!g_bIsUsingPresent)
-                {
-                    if (!g_bIsImGuiInitialized)
-                    {
-                        if (g_hWnd)
-                        {
-                            ImGui_ImplDX9_Init(g_hWnd, dev);
-
-                            g_bIsImGuiInitialized = true;
-                        }
-                    }
-                    else
-                    {
-                        ImGui_ImplDX9_NewFrame();
-                        RenderScene();
-                    }
-                }
-                */
+        g_plugins.endScene(IID_IDirect3DDevice9, dev);
 
         return g_endScene9Hook.callOrig(dev);
     });
@@ -268,7 +256,7 @@ void HookDX9Ex(UINTX* vtable9Ex)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::ResetEx called"); });
 
-        // g_pRenderer.reset(dev);
+        g_plugins.reset(IID_IDirect3DDevice9Ex, dev);
 
         return g_reset9ExHook.callOrig(dev, pp, ppp);
     });
@@ -286,38 +274,6 @@ void HookDX10(UINTX* vtable10SwapChain)
 
         g_plugins.present(IID_IDXGISwapChain, chain);
 
-        /* if (!failed)
-        {
-            if (!g_bIsImGuiInitialized)
-            {
-                if (g_hWnd)
-                {
-                    static ID3D10Device* dev = nullptr;
-                    auto hr = chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
-
-                    if (SUCCEEDED(hr))
-                    {
-                        ImGui_ImplDX10_Init(g_hWnd, dev);
-
-                        BOOST_LOG_TRIVIAL(info) << "ImGui (DX10) initialized";
-
-                        g_bIsImGuiInitialized = true;
-                    }
-                    else
-                    {
-                        BOOST_LOG_TRIVIAL(error) << "!! Couldn't get ID3D10Device";
-
-                        failed = true;
-                    }
-                }
-            }
-            else
-            {
-                ImGui_ImplDX10_NewFrame();
-                RenderScene();
-            }
-        }*/
-
         return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
     });
 
@@ -327,6 +283,8 @@ void HookDX10(UINTX* vtable10SwapChain)
     {
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::ResizeTarget called"); });
+
+        g_plugins.resizeTarget(IID_IDXGISwapChain, chain);
 
         return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
     });
@@ -353,6 +311,8 @@ void HookDX11(UINTX* vtable11SwapChain)
     {
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::ResizeTarget called"); });
+
+        g_plugins.resizeTarget(IID_IDXGISwapChain, chain);
 
         return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
     });
