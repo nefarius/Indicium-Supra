@@ -31,7 +31,6 @@ LRESULT WINAPI DetourDefWindowProc(
 
 void HookDefWindowProc();
 int init();
-void logInfo(std::string message);
 void RenderScene();
 
 IMGUI_API LRESULT   ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

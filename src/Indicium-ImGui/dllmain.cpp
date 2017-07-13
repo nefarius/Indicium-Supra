@@ -4,17 +4,21 @@
 #include <dxgi.h>
 #include <d3d11.h>
 
-// Boost includes
-#include <boost/log/trivial.hpp>
-#include <boost/thread/once.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
+// POCO
+#include <Poco/Message.h>
+#include <Poco/Logger.h>
+#include <Poco/FileChannel.h>
+#include <Poco/AutoPtr.h>
+#include <Poco/PatternFormatter.h>
+#include <Poco/FormattingChannel.h>
+#include <mutex>
 
-// Boost namespaces
-namespace logging = boost::log;
-namespace keywords = boost::log::keywords;
-namespace expr = boost::log::expressions;
+using Poco::Message;
+using Poco::Logger;
+using Poco::FileChannel;
+using Poco::AutoPtr;
+using Poco::PatternFormatter;
+using Poco::FormattingChannel;
 
 // ImGui includes
 #include <imgui.h>
@@ -32,47 +36,43 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 	if (dwReason != DLL_PROCESS_ATTACH)
 		return TRUE;
 
-	logging::add_common_attributes();
+    AutoPtr<FileChannel> pFileChannel(new FileChannel);
+    pFileChannel->setProperty("path", "Indicium-ImGui.Plugin.log");
+    AutoPtr<PatternFormatter> pPF(new PatternFormatter);
+    pPF->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i %s [%p]: %t");
+    AutoPtr<FormattingChannel> pFC(new FormattingChannel(pPF, pFileChannel));
 
-	logging::add_file_log
-		(
-			keywords::file_name = "Indicium-ImGui.Plugin.log",
-			keywords::auto_flush = true,
-			keywords::format = "[%TimeStamp%]: %Message%"
-		);
+    Logger::root().setChannel(pFC);
 
-	logging::core::get()->set_filter
-		(
-			logging::trivial::severity >= logging::trivial::info
-		);
+    auto& logger = Logger::get("DLL_PROCESS_ATTACH");
+
+    logger.information("Loading ImGui plugin");
 
 	return CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(init), nullptr, 0, nullptr) > nullptr;
 }
 
 int init()
 {
-	BOOST_LOG_TRIVIAL(info) << "Initializing hook engine...";
+    auto& logger = Logger::get("init");
+
+	logger.information("Initializing hook engine...");
 
 	if (MH_Initialize() != MH_OK)
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Couldn't initialize hook engine";
+		logger.fatal("Couldn't initialize hook engine");
 		return -1;
 	}
 
-	BOOST_LOG_TRIVIAL(info) << "Hook engine initialized";
+	logger.information("Hook engine initialized");
 
 	HookDefWindowProc();
 
-	return WaitForSingleObject(INVALID_HANDLE_VALUE, INFINITE);
-}
-
-void logInfo(std::string message)
-{
-	BOOST_LOG_TRIVIAL(info) << message;
+	return 0;
 }
 
 INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
 {
+    static auto& logger = Logger::get("Present");
 	static auto bIsImGuiInitialized = false;
 
 	if (guid == IID_IDirect3DDevice9)
@@ -83,7 +83,7 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
 			{
 				ImGui_ImplDX9_Init(g_hWnd, static_cast<IDirect3DDevice9*>(unknown));
 
-				BOOST_LOG_TRIVIAL(info) << "ImGui (DX9) initialized";
+				logger.information("ImGui (DX9) initialized");
 
 				bIsImGuiInitialized = true;
 			}
@@ -102,7 +102,7 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
 			{
 				ImGui_ImplDX9_Init(g_hWnd, static_cast<IDirect3DDevice9Ex*>(unknown));
 
-				BOOST_LOG_TRIVIAL(info) << "ImGui (DX9Ex) initialized";
+				logger.information("ImGui (DX9Ex) initialized");
 
 				bIsImGuiInitialized = true;
 			}
@@ -135,7 +135,7 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
 				// initialize ImGui
 				ImGui_ImplDX11_Init(g_hWnd, dev, ctx);
 
-				BOOST_LOG_TRIVIAL(info) << "ImGui (DX11) initialized";
+				logger.information("ImGui (DX11) initialized");
 
 				bIsImGuiInitialized = true;
 			}
@@ -168,29 +168,29 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
 
 void HookDefWindowProc()
 {
-	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DefWindowProcA (ANSI)";
+    auto& logger = Logger::get("HookDefWindowProc");
+
+	logger.information("Hooking USER32!DefWindowProcA (ANSI)");
 
 	if (MH_CreateHookApiEx(L"user32", "DefWindowProcA", &DetourDefWindowProc, &OriginalDefWindowProc) != MH_OK)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't hook USER32!DefWindowProcA (ANSI)";
-		return;
+		logger.error("Couldn't hook USER32!DefWindowProcA (ANSI)");
 	}
 
-	BOOST_LOG_TRIVIAL(info) << "Hooking USER32!DefWindowProcW (Unicode)";
+	logger.information("Hooking USER32!DefWindowProcW (Unicode)");
 
 	if (MH_CreateHookApiEx(L"user32", "DefWindowProcW", &DetourDefWindowProc, &OriginalDefWindowProc) != MH_OK)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't hook USER32!DefWindowProcW (Unicode)";
-		return;
+		logger.error("Couldn't hook USER32!DefWindowProcW (Unicode)");
 	}
 
 	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't enable DefWindowProc hooks";
+		logger.error("Couldn't enable DefWindowProc hooks");
 		return;
 	}
 
-	BOOST_LOG_TRIVIAL(info) << "DefWindowProc hooked";
+	logger.information("DefWindowProc hooked");
 }
 
 LRESULT WINAPI DetourDefWindowProc(
@@ -200,8 +200,8 @@ LRESULT WINAPI DetourDefWindowProc(
 	     _In_ LPARAM lParam
 )
 {
-	static boost::once_flag flag = BOOST_ONCE_INIT;
-	boost::call_once(flag, boost::bind(&logInfo, "++ USER32!DefWindowProc called"));
+	static std::once_flag flag;
+    std::call_once(flag, []() {Logger::get("DetourDefWindowProc").information("++ USER32!DefWindowProc called"); });
 
 	if (!g_hWnd)
 	{
@@ -217,8 +217,8 @@ LRESULT WINAPI DetourDefWindowProc(
 
 void RenderScene()
 {
-    static boost::once_flag flag = BOOST_ONCE_INIT;
-    boost::call_once(flag, boost::bind(&logInfo, "++ RenderScene called"));
+    static std::once_flag flag;
+    std::call_once(flag, []() {Logger::get("RenderScene").information("++ RenderScene called"); });
 
 	static bool show_overlay = false;
 	static bool show_test_window = true;

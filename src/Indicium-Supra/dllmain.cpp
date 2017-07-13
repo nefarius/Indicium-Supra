@@ -3,14 +3,18 @@
 #include <MinHook.h>
 #include <Utils/Windows.h>
 #include <Game/Game.h>
+
+// STL
+#include <thread>
+#include <mutex>
+
+// POCO
 #include <Poco/Message.h>
 #include <Poco/Logger.h>
 #include <Poco/FileChannel.h>
 #include <Poco/AutoPtr.h>
 #include <Poco/PatternFormatter.h>
 #include <Poco/FormattingChannel.h>
-#include <thread>
-#include <mutex>
 
 using Poco::Message;
 using Poco::Logger;
