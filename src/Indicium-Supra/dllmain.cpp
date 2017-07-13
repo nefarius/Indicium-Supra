@@ -1,78 +1,78 @@
 #include "dllmain.h"
 
+#include <MinHook.h>
 #include <Utils/Windows.h>
 #include <Game/Game.h>
-#include <boost/log/support/date_time.hpp>
+#include <Poco/Message.h>
+#include <Poco/Logger.h>
+#include <Poco/FileChannel.h>
+#include <Poco/AutoPtr.h>
+#include <Poco/PatternFormatter.h>
+#include <Poco/FormattingChannel.h>
+#include <thread>
+#include <mutex>
+
+using Poco::Message;
+using Poco::Logger;
+using Poco::FileChannel;
+using Poco::AutoPtr;
+using Poco::PatternFormatter;
+using Poco::FormattingChannel;
 
 HANDLE g_hDllHandle = nullptr;
+std::once_flag flag;
+
 
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 {
-	g_hDllHandle = hInstance;
+    g_hDllHandle = hInstance;
 
-	DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
+    DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
 
-	switch (dwReason)
-	{
-	case DLL_PROCESS_ATTACH:
-		{
-			logging::add_common_attributes();
+    AutoPtr<FileChannel> pFileChannel(new FileChannel);
+    pFileChannel->setProperty("path", "Indicium-Supra.log");
+    AutoPtr<PatternFormatter> pPF(new PatternFormatter);
+    pPF->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i %s [%p]: %t");
+    AutoPtr<FormattingChannel> pFC(new FormattingChannel(pPF, pFileChannel));
 
-			logging::add_file_log
-				(
-					keywords::file_name = "Indicium-Supra.log",
-					keywords::auto_flush = true,
-					keywords::format = (
-						expr::stream
-						<< expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%d.%m.%Y - %H:%M:%S")
-						<< ": [" << logging::trivial::severity
-						<< "] " << expr::smessage
-					)
-				);
+    // ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
+    switch (dwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+    {
+        Logger::root().setChannel(pFC);
 
-			logging::core::get()->set_filter
-				(
-					logging::trivial::severity >= logging::trivial::info
-				);
+        auto& logger = Logger::get("DLL_PROCESS_ATTACH");
 
-			BOOST_LOG_TRIVIAL(info) << "Library loaded, attempting to launch main thread";
+        logger.information("Library loaded, attempting to launch main thread");
 
-			auto hMain = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(initGame), nullptr, 0, nullptr);
+        std::call_once(flag, []()
+        {
+            auto& logger = Logger::get("std::call_once");
+            auto hMain = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(initGame), nullptr, 0, nullptr);
 
-			if (hMain == nullptr)
-			{
-				BOOST_LOG_TRIVIAL(error) << "Couldn't create main thread, library unusable";
-				return FALSE;
-			}
+            if (hMain == nullptr)
+            {
+                logger.fatal("Couldn't create main thread, library unusable");
+            }
+            else
+            {
+                logger.information("Main thread created successfully");
+            }
+        });
 
-			BOOST_LOG_TRIVIAL(info) << "Main thread created successfully";
-			return TRUE;
-		}
-	case DLL_PROCESS_DETACH:
-		{
-			BOOST_LOG_TRIVIAL(info) << "Shutting down hooks...";
+        return TRUE;
+    }
+    case DLL_PROCESS_DETACH:
+    {
+        auto& logger = Logger::get("DLL_PROCESS_DETACH");
 
-			if (MH_DisableHook(MH_ALL_HOOKS) != MH_OK)
-			{
-				BOOST_LOG_TRIVIAL(error) << "Couldn't disable hooks, host process might crash";
-			}
-			else
-			{
-				BOOST_LOG_TRIVIAL(info) << "Hooks disabled";
-			}
+        logger.information("Library unloading");
 
-			if (MH_Uninitialize() != MH_OK)
-			{
-				BOOST_LOG_TRIVIAL(error) << "Couldn't shut down hook engine, host process might crash";
-			}
-			else
-			{
-				BOOST_LOG_TRIVIAL(info) << "Hook engine disabled";
-			}
-		}
-		break;
-	};
+        break;
+    }
+    };
 
-	return TRUE;
+    return TRUE;
 }
 
