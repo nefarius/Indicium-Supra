@@ -16,6 +16,9 @@
 #define SAFE_DELETE(p)  { if(p) { delete (p);     (p)=nullptr; } }
 #define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=nullptr; } }
 
+#include <Poco/Logger.h>
+using Poco::Logger;
+
 namespace DirectInput8Hooking
 {
 	enum DirectInputDevice8FunctionOrdinals : short
@@ -85,6 +88,8 @@ namespace DirectInput8Hooking
 		XINPUT_DEVICE_NODE*     pXInputDeviceList;
 		LPDIRECTINPUTDEVICE8    pJoystick = nullptr;
 		LPDIRECTINPUT8          pDI = nullptr;
+
+        Logger& logger = Logger::get(typeid(this).name());
 	public:
 		DirectInput8();
 		~DirectInput8();

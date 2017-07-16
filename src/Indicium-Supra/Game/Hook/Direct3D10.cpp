@@ -1,32 +1,31 @@
 #include "Direct3D10.h"
-#include <boost/log/trivial.hpp>
 #include <vector>
 #include "DXGI.h"
 
 
 Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nullptr), pDevice(nullptr), pSwapChain(nullptr)
 {
-	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for ID3D10Device and IDXGISwapChain...";
+	logger.information("Acquiring VTable for ID3D10Device and IDXGISwapChain...");
 
 	auto hModDXGI = GetModuleHandle("DXGI.dll");
 	auto hModD3D10 = GetModuleHandle("D3D10.dll");
 
 	if (hModDXGI == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to DXGI.dll";
+        logger.error("Couldn't get handle to DXGI.dll");
 		return;
 	}
 
 	if (hModD3D10 == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to D3D10.dll";
+        logger.error("Couldn't get handle to D3D10.dll");
 		return;
 	}
 
 	auto hCreateDXGIFactory = static_cast<LPVOID>(GetProcAddress(hModDXGI, "CreateDXGIFactory"));
 	if (hCreateDXGIFactory == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to CreateDXGIFactory";
+        logger.error("Couldn't get handle to CreateDXGIFactory");
 		return;
 	}
 
@@ -39,14 +38,14 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nu
 
 	if (FAILED(hr))
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't create DXGI factory";
+        logger.error("Couldn't create DXGI factory");
 		return;
 	}
 
 	auto hD3D10CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(hModD3D10, "D3D10CreateDeviceAndSwapChain"));
 	if (hD3D10CreateDeviceAndSwapChain == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to D3D10CreateDeviceAndSwapChain";
+        logger.error("Couldn't get handle to D3D10CreateDeviceAndSwapChain");
 		return;
 	}
 
@@ -61,7 +60,7 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nu
 
 	if (vAdapters.empty())
 	{
-		BOOST_LOG_TRIVIAL(error) << "No adapters found";
+        logger.error("No adapters found");
 		return;
 	}
 
@@ -109,20 +108,20 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nu
 
 	if (FAILED(hr10))
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't create D3D10 device";
+        logger.error("Couldn't create D3D10 device");
 		return;
 	}
 
 	vtable = *reinterpret_cast<UINTX **>(pDevice);
 	vtableSwapChain = *reinterpret_cast<UINTX **>(pSwapChain);
 
-	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
+	logger.information("VTable acquired");
 }
 
 
 Direct3D10Hooking::Direct3D10::~Direct3D10()
 {
-	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
+	logger.information("Releasing temporary objects");
 
 	if (pSwapChain)
 		pSwapChain->Release();

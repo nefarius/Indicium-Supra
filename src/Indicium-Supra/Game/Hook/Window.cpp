@@ -1,5 +1,4 @@
 #include "Window.h"
-#include <boost/log/trivial.hpp>
 
 
 Window::Window() : temp_window(nullptr)
@@ -14,13 +13,13 @@ Window::Window() : temp_window(nullptr)
 	window_class.hInstance = GetModuleHandle(nullptr);
 	if (window_class.hInstance == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get the instance handle";
+		logger.fatal("Could not get the instance handle");
 		return;
 	}
 
 	if (!RegisterClassEx(&window_class))
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get register the window class";
+        logger.fatal("Could not get register the window class");
 		return;
 	}
 
@@ -28,7 +27,7 @@ Window::Window() : temp_window(nullptr)
 		WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, window_class.hInstance, NULL);
 	if (temp_window == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get create the temporary window";
+        logger.fatal("Could not get create the temporary window");
 		return;
 	}
 }
@@ -36,10 +35,10 @@ Window::Window() : temp_window(nullptr)
 Window::~Window()
 {
 	if (!DestroyWindow(temp_window))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not release the temporary window";
+        logger.fatal("Could not release the temporary window");
 
 	if (!UnregisterClass(window_class.lpszClassName, window_class.hInstance))
-		BOOST_LOG_TRIVIAL(fatal) << "Could not release the window class";
+        logger.fatal("Could not release the window class");
 }
 
 HWND Window::GetWindowHandle() const

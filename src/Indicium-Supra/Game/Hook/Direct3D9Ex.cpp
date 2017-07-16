@@ -1,37 +1,36 @@
 #include "Direct3D9Ex.h"
-#include <boost/log/trivial.hpp>
 
 
 Direct3D9Hooking::Direct3D9Ex::Direct3D9Ex() : Direct3DBase(), d3d9_ex(nullptr), d3d9_device_ex(nullptr)
 {
-	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for Direct3DCreate9Ex...";
+	logger.information("Acquiring VTable for Direct3DCreate9Ex...");
 
 	auto hMod = GetModuleHandle("d3d9.dll");
 
 	if (hMod == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not get the handle to d3d9.dll";
+		logger.error("Could not get the handle to d3d9.dll");
 		return;
 	}
 
 	auto Direct3DCreate9Ex = static_cast<LPVOID>(GetProcAddress(hMod, "Direct3DCreate9Ex"));
 	if (Direct3DCreate9Ex == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not locate the Direct3DCreate9 procedure entry point";
+		logger.error("Could not locate the Direct3DCreate9 procedure entry point");
 		return;
 	}
 
 	auto error_code = static_cast<HRESULT(WINAPI *)(UINT, IDirect3D9Ex**)>(Direct3DCreate9Ex)(D3D_SDK_VERSION, &d3d9_ex);
 	if (FAILED(error_code))
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not create the DirectX 9 interface";
+        logger.error("Could not create the DirectX 9 interface");
 		return;
 	}
 
 	D3DDISPLAYMODE display_mode;
 	if (FAILED(d3d9_ex->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &display_mode)))
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not determine the current display mode";
+        logger.error("Could not determine the current display mode");
 		return;
 	}
 
@@ -45,18 +44,18 @@ Direct3D9Hooking::Direct3D9Ex::Direct3D9Ex() : Direct3DBase(), d3d9_ex(nullptr),
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, nullptr, &d3d9_device_ex);
 	if (FAILED(error_code))
 	{
-		BOOST_LOG_TRIVIAL(fatal) << "Could not create the Direct3D 9 device";
+        logger.error("Could not create the Direct3D 9 device");
 		return;
 	}
 
 	vtable = *reinterpret_cast<UINTX **>(d3d9_device_ex);
 
-	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
+	logger.information("VTable acquired");
 }
 
 Direct3D9Hooking::Direct3D9Ex::~Direct3D9Ex()
 {
-	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
+	logger.information("Releasing temporary objects");
 
 	if (d3d9_device_ex)
 		d3d9_device_ex->Release();

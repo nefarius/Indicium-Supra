@@ -1,5 +1,4 @@
 #include "DirectInput8.h"
-#include <boost/log/trivial.hpp>
 #include <wbemidl.h>
 
 #pragma comment(lib, "dxguid.lib")
@@ -174,7 +173,7 @@ BOOL DirectInput8Hooking::DirectInput8::EnumJoysticksCallback(const DIDEVICEINST
 	auto pEnumContext = reinterpret_cast<DI_ENUM_CONTEXT*>(pContext);
 	HRESULT hr;
 
-	BOOST_LOG_TRIVIAL(info) << "Joystick found";
+	logger.information("Joystick found");
 
 #ifdef TEST
 	if (IsXInputDevice(&pdidInstance->guidProduct))
@@ -206,7 +205,7 @@ BOOL DirectInput8Hooking::DirectInput8::EnumJoysticksCallback(const DIDEVICEINST
 	vtable = *reinterpret_cast<UINT64 **>(pJoystick);
 #endif
 
-	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
+	logger.information("VTable acquired");
 
 	// Stop enumeration. Note: we're just taking the first joystick we get. You
 	// could store all the enumerated joysticks and let the user pick.
@@ -215,7 +214,7 @@ BOOL DirectInput8Hooking::DirectInput8::EnumJoysticksCallback(const DIDEVICEINST
 
 DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
 {
-	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for IDirectInputDevice8...";
+	logger.information("Acquiring VTable for IDirectInputDevice8...");
 
 	HRESULT hr;
 
@@ -225,7 +224,7 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
 	if (FAILED(hr = DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION,
 		IID_IDirectInput8, (VOID**)&pDI, nullptr)))
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't create DirectInput device";
+		logger.error("Couldn't create DirectInput device");
 		return;
 	}
 
@@ -240,7 +239,7 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
 	IDirectInputJoyConfig8* pJoyConfig = nullptr;
 	if (FAILED(hr = pDI->QueryInterface(IID_IDirectInputJoyConfig8, reinterpret_cast<void**>(&pJoyConfig))))
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't query IID_IDirectInputJoyConfig8 interface";
+        logger.error("Couldn't query IID_IDirectInputJoyConfig8 interface");
 		return;
 	}
 
@@ -249,13 +248,13 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
 		enumContext.bPreferredJoyCfgValid = true;
 	SAFE_RELEASE(pJoyConfig);
 
-	BOOST_LOG_TRIVIAL(error) << "Enumerating devices";
+    logger.information("Enumerating devices");
 
 	if (FAILED(hr = pDI->EnumDevices(DI8DEVCLASS_GAMECTRL,
 		StaticEnumJoysticksCallback,
 		&enumContext, DIEDFL_ATTACHEDONLY)))
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't enumerate devices";
+        logger.error("Couldn't enumerate devices");
 		return;
 	}
 
@@ -264,7 +263,7 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
 	// Make sure we got a joystick
 	if (!pJoystick)
 	{
-		BOOST_LOG_TRIVIAL(warning) << "No joystick device found";
+		logger.warning("No joystick device found");
 		return;
 	}
 }
@@ -272,7 +271,7 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
 
 DirectInput8Hooking::DirectInput8::~DirectInput8()
 {
-	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
+	logger.information("Releasing temporary objects");
 
 	// Unacquire the device one last time just in case 
 	// the app tried to exit while the device is still acquired.

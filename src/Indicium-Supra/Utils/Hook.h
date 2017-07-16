@@ -5,7 +5,8 @@
 
 #include <type_traits>
 
-#include <boost/log/trivial.hpp>
+#include <Poco/Logger.h>
+using Poco::Logger;
 
 enum class CallConvention
 {
@@ -44,6 +45,8 @@ class Hook
 	type _detour;
 
 	bool _isApplied;
+
+    Logger& logger = Logger::get(typeid(this).name());
 public:
 	Hook() : _orig(0), _trampoline(0), _detour(0), _isApplied(false)
 	{
@@ -67,17 +70,17 @@ public:
 
 		if (MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_trampoline) != MH_OK)
 		{
-			BOOST_LOG_TRIVIAL(fatal) << "!! Couldn't create hook";
+			logger.fatal("Couldn't create hook");
 			return;
 		}
 
 		if (MH_EnableHook((PBYTE)pFunc) != MH_OK)
 		{
-			BOOST_LOG_TRIVIAL(fatal) << "!! Couldn't enable hook";
+			logger.fatal("Couldn't enable hook");
 			return;
 		}
 
-		BOOST_LOG_TRIVIAL(info) << "-> Hook created and enabled";
+		logger.information("Hook created and enabled");
 
 		_isApplied = true;
 	}

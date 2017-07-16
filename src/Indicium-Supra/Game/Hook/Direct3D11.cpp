@@ -1,24 +1,23 @@
 #include "Direct3D11.h"
-#include <boost/log/trivial.hpp>
 #include "DXGI.h"
 
 
 Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nullptr), pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
 {
-	BOOST_LOG_TRIVIAL(info) << "Acquiring VTable for ID3D11Device and IDXGISwapChain...";
+	logger.information("Acquiring VTable for ID3D11Device and IDXGISwapChain...");
 
 	auto hModDXGI = GetModuleHandle("DXGI.dll");
 	auto hModD3D11 = GetModuleHandle("D3D11.dll");
 
 	if (hModDXGI == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to DXGI.dll";
+        logger.error("Couldn't get handle to DXGI.dll");
 		return;
 	}
 
 	if (hModD3D11 == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to D3D11.dll";
+        logger.error("Couldn't get handle to D3D11.dll");
 		return;
 	}
 
@@ -48,7 +47,7 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nu
 	auto hD3D11CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(hModD3D11, "D3D11CreateDeviceAndSwapChain"));
 	if (hD3D11CreateDeviceAndSwapChain == nullptr)
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't get handle to D3D11CreateDeviceAndSwapChain";
+        logger.error("Couldn't get handle to D3D11CreateDeviceAndSwapChain");
 		return;
 	}
 
@@ -80,20 +79,20 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nu
 
 	if (FAILED(hr11))
 	{
-		BOOST_LOG_TRIVIAL(error) << "Couldn't create D3D11 device";
+        logger.error("Couldn't create D3D11 device");
 		return;
 	}
 
 	vtable = *reinterpret_cast<UINTX **>(pd3dDevice);
 	vtableSwapChain = *reinterpret_cast<UINTX **>(pSwapChain);
 
-	BOOST_LOG_TRIVIAL(info) << "VTable acquired";
+	logger.information("VTable acquired");
 }
 
 
 Direct3D11Hooking::Direct3D11::~Direct3D11()
 {
-	BOOST_LOG_TRIVIAL(info) << "Releasing temporary objects";
+	logger.information("Releasing temporary objects");
 
 	if (pSwapChain)
 		pSwapChain->Release();
