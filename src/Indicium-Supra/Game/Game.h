@@ -4,10 +4,6 @@
 #include <Utils/Windows.h>
 
 
-// Boost includes
-#include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup/file.hpp>
-
 void initGame();
 
 void HookDX9(UINTX* vtable9);
