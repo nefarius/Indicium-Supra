@@ -46,13 +46,13 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     {
         Logger::root().setChannel(pFC);
 
-        auto& logger = Logger::get("DLL_PROCESS_ATTACH");
+        auto& logger = Logger::get(__func__);
 
         logger.information("Library loaded, attempting to launch main thread");
 
         std::call_once(flag, []()
         {
-            auto& logger = Logger::get("std::call_once");
+            auto& logger = Logger::get(__func__);
             auto hMain = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(initGame), nullptr, 0, nullptr);
 
             if (hMain == nullptr)
@@ -69,7 +69,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     }
     case DLL_PROCESS_DETACH:
     {
-        auto& logger = Logger::get("DLL_PROCESS_DETACH");
+        auto& logger = Logger::get(__func__);
 
         logger.information("Library unloading");
 

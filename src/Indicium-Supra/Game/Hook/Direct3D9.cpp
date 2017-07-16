@@ -1,8 +1,11 @@
 #include "Direct3D9.h"
+#include "Utils/Misc.h"
 
 
 Direct3D9Hooking::Direct3D9::Direct3D9() : Direct3DBase(), d3d9(nullptr), d3d9_device(nullptr)
 {
+    auto& logger = Logger::get(LOG_REGION());
+
 	logger.information("Acquiring VTable for Direct3DCreate9...");
 
 	auto hMod = GetModuleHandle("d3d9.dll");
@@ -55,6 +58,8 @@ Direct3D9Hooking::Direct3D9::Direct3D9() : Direct3DBase(), d3d9(nullptr), d3d9_d
 
 Direct3D9Hooking::Direct3D9::~Direct3D9()
 {
+    auto& logger = Logger::get(LOG_REGION());
+
 	logger.information("Releasing temporary objects");
 
 	if (d3d9_device)

@@ -1,10 +1,13 @@
 #include "Direct3D10.h"
 #include <vector>
 #include "DXGI.h"
+#include "Utils/Misc.h"
 
 
 Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nullptr), pDevice(nullptr), pSwapChain(nullptr)
 {
+    auto& logger = Logger::get(LOG_REGION());
+
 	logger.information("Acquiring VTable for ID3D10Device and IDXGISwapChain...");
 
 	auto hModDXGI = GetModuleHandle("DXGI.dll");
@@ -121,6 +124,8 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nu
 
 Direct3D10Hooking::Direct3D10::~Direct3D10()
 {
+    auto& logger = Logger::get(LOG_REGION());
+
 	logger.information("Releasing temporary objects");
 
 	if (pSwapChain)

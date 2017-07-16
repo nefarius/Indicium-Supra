@@ -13,7 +13,6 @@ namespace Direct3DHooking
 	protected:
 		UINTX* vtable;
 		Window* temp_window;
-        Logger& logger = Logger::get(typeid(this).name());
 	public:
 		Direct3DBase();
 		virtual ~Direct3DBase();

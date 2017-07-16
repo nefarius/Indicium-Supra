@@ -4,6 +4,7 @@
 
 #define POCO_NO_UNWINDOWS
 #include <Poco/Logger.h>
+#include "Misc.h"
 using Poco::Logger;
 
 #define BOOST_FILESYSTEM_VERSION 3
@@ -39,7 +40,7 @@ PluginManager::~PluginManager()
 
 void PluginManager::refresh()
 {
-    auto& logger = Logger::get("PluginManager::refresh");
+    auto& logger = Logger::get(LOG_REGION());
     std::lock_guard<std::mutex> lock(m_pluginPaths_m);
 
     m_pluginPaths.clear();
@@ -62,7 +63,7 @@ void PluginManager::refresh()
 
 void PluginManager::load()
 {
-    auto& logger = Logger::get("PluginManager::load");
+    auto& logger = Logger::get(LOG_REGION());
     this->refresh();
 
     std::lock_guard<std::mutex> pLock(m_pluginPaths_m), mLock(m_pluginMods_m);

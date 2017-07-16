@@ -1,9 +1,12 @@
 #include "Direct3D11.h"
 #include "DXGI.h"
+#include "Utils/Misc.h"
 
 
 Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nullptr), pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
 {
+    auto& logger = Logger::get(LOG_REGION());
+
 	logger.information("Acquiring VTable for ID3D11Device and IDXGISwapChain...");
 
 	auto hModDXGI = GetModuleHandle("DXGI.dll");
@@ -92,6 +95,8 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nu
 
 Direct3D11Hooking::Direct3D11::~Direct3D11()
 {
+    auto& logger = Logger::get(LOG_REGION());
+
 	logger.information("Releasing temporary objects");
 
 	if (pSwapChain)

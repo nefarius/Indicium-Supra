@@ -8,7 +8,6 @@ class Window
 {
 	WNDCLASSEX window_class;
 	HWND temp_window;
-    Logger& logger = Logger::get(typeid(this).name());
 public:
 	Window();
 	~Window();

@@ -178,7 +178,7 @@ BOOL DirectInput8Hooking::DirectInput8::EnumJoysticksCallback(const DIDEVICEINST
 #ifdef TEST
 	if (IsXInputDevice(&pdidInstance->guidProduct))
 	{
-		BOOST_LOG_TRIVIAL(info) << "Current device is XInput device";
+        logger.information("Current device is XInput device");
 		return DIENUM_CONTINUE;
 	}
 #endif

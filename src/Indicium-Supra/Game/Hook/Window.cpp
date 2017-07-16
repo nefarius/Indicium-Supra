@@ -1,8 +1,11 @@
 #include "Window.h"
+#include "Utils/Misc.h"
 
 
 Window::Window() : temp_window(nullptr)
 {
+    auto& logger = Logger::get(LOG_REGION());
+
 	ZeroMemory(&window_class, sizeof(WNDCLASSEX));
 
 	window_class.cbSize = sizeof(WNDCLASSEX);
@@ -34,6 +37,8 @@ Window::Window() : temp_window(nullptr)
 
 Window::~Window()
 {
+    auto& logger = Logger::get(LOG_REGION());
+
 	if (!DestroyWindow(temp_window))
         logger.fatal("Could not release the temporary window");
 

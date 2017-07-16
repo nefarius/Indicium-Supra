@@ -53,7 +53,7 @@ PluginManager g_plugins;
 
 void initGame()
 {
-    auto& logger = Logger::get("initGame");
+    auto& logger = Logger::get(__func__);
 
     bool d3d9_available, d3d9ex_available, d3d10_available, d3d11_available, dinput8_available;
 
@@ -64,7 +64,6 @@ void initGame()
 
     logger.information("Library enabled");
 
-    g_plugins.refresh();
     g_plugins.load();
 
     UINTX vtable9[Direct3D9Hooking::Direct3D9::VTableElements] = { 0 };
@@ -196,7 +195,7 @@ void initGame()
 
 void HookDX9(UINTX* vtable9)
 {
-    auto& logger = Logger::get("HookDX9");
+    auto& logger = Logger::get(__func__);
     logger.information("Hooking IDirect3DDevice9::Present");
 
     g_present9Hook.apply(vtable9[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
@@ -236,7 +235,7 @@ void HookDX9(UINTX* vtable9)
 
 void HookDX9Ex(UINTX* vtable9Ex)
 {
-    auto& logger = Logger::get("HookDX9Ex");
+    auto& logger = Logger::get(__func__);
     logger.information("Hooking IDirect3DDevice9Ex::PresentEx");
 
     g_present9ExHook.apply(vtable9Ex[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
@@ -264,7 +263,7 @@ void HookDX9Ex(UINTX* vtable9Ex)
 
 void HookDX10(UINTX* vtable10SwapChain)
 {
-    auto& logger = Logger::get("HookDX10");
+    auto& logger = Logger::get(__func__);
     logger.information("Hooking IDXGISwapChain::Present");
 
     g_swapChainPresent10Hook.apply(vtable10SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
@@ -292,7 +291,7 @@ void HookDX10(UINTX* vtable10SwapChain)
 
 void HookDX11(UINTX* vtable11SwapChain)
 {
-    auto& logger = Logger::get("HookDX11");
+    auto& logger = Logger::get(__func__);
     logger.information("Hooking IDXGISwapChain::Present");
 
     g_swapChainPresent11Hook.apply(vtable11SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
@@ -320,7 +319,7 @@ void HookDX11(UINTX* vtable11SwapChain)
 
 void HookDInput8(UINTX* vtable8)
 {
-    auto& logger = Logger::get("HookDInput8");
+    auto& logger = Logger::get(__func__);
     logger.information("Hooking IDirectInputDevice8::Acquire");
 
     g_acquire8Hook.apply(vtable8[DirectInput8Hooking::Acquire], [](LPDIRECTINPUTDEVICE8 dev) -> HRESULT
