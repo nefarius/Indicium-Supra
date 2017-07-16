@@ -1,17 +1,17 @@
 #include "PluginManager.h"
+#include "Misc.h"
+
 #include <Shlwapi.h>
 #include <algorithm>
 
 #define POCO_NO_UNWINDOWS
 #include <Poco/Logger.h>
-#include "Misc.h"
+#include <Poco/Path.h>
+#include <Poco/File.h>
+
 using Poco::Logger;
-
-#define BOOST_FILESYSTEM_VERSION 3
-#define BOOST_FILESYSTEM_NO_DEPRECATED 
-#include <boost/filesystem.hpp>
-
-namespace fs = ::boost::filesystem;
+using Poco::Path;
+using Poco::File;
 
 
 bool PluginManager::findStringIC(const std::string& strHaystack, const std::string& strNeedle) const
@@ -45,19 +45,17 @@ void PluginManager::refresh()
 
     m_pluginPaths.clear();
 
-    fs::path dllRoot(m_DllPath);
-    fs::recursive_directory_iterator it(dllRoot);
-    fs::recursive_directory_iterator endit;
+    File root(m_DllPath);
+    std::vector<File> files;
+    root.list(files);
 
-    while (it != endit)
+    for (auto it = files.begin(); it != files.end(); ++it)
     {
-        if (fs::is_regular_file(*it) && findStringIC(it->path().filename().string(), ".Plugin.dll"))
+        if ((*it).isFile() && findStringIC((*it).path(), ".Plugin.dll"))
         {
-            logger.information("Found plugin %s", it->path().string());
-            m_pluginPaths.push_back(it->path().string());
+            logger.information("Found plugin %s", it->path());
+            m_pluginPaths.push_back(it->path());
         }
-
-        ++it;
     }
 }
 
