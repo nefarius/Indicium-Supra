@@ -15,4 +15,4 @@ API-Hooking and rendering framework for DirectX-based games.
  * DirectX 11
 
 ## How to build
-Building should be pretty straight-forward since the POCO libraries get fetched [pre-compiled via NuGet](https://www.nuget.org/packages/poco-basic-windows-v140/) on first build automatically.
+Building should be pretty straight-forward since the POCO libraries get fetched [pre-compiled via NuGet](https://www.nuget.org/packages/poco-basic-windows-v140/) on first build automatically. The only manual additional step is to install the DirectX SDK.
