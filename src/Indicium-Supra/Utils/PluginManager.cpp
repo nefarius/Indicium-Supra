@@ -72,7 +72,7 @@ void PluginManager::load()
 
         if (hMod == nullptr)
         {
-            logger.error("Couldn't load Indicium plugin from file %s", path);
+            logger.error("Couldn't load Indicium plugin from file %s (%lu)", path, GetLastError());
             continue;
         }
 
