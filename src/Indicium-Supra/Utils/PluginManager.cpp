@@ -63,7 +63,7 @@ void PluginManager::load()
             }
             catch (Poco::LibraryLoadException lle)
             {
-                logger.error("Couldn't load plugin %s: %s", it->path(), lle.what());
+                logger.error("Couldn't load plugin %s: %s", it->path(), std::string(lle.what()));
                 delete plugin;
                 continue;
             }
