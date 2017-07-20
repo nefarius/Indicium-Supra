@@ -14,6 +14,16 @@ using Poco::Path;
 using Poco::File;
 
 
+PluginManager::PluginManager()
+{
+    GetModuleFileName(reinterpret_cast<HINSTANCE>(&__ImageBase), m_DllPath, _countof(m_DllPath));
+    PathRemoveFileSpec(m_DllPath);
+}
+
+PluginManager::~PluginManager()
+{
+}
+
 bool PluginManager::findStringIC(const std::string& strHaystack, const std::string& strNeedle) const
 {
     auto it = std::search(
@@ -27,23 +37,13 @@ bool PluginManager::findStringIC(const std::string& strHaystack, const std::stri
     return (it != strHaystack.end());
 }
 
-PluginManager::PluginManager()
-{
-    GetModuleFileName(reinterpret_cast<HINSTANCE>(&__ImageBase), m_DllPath, _countof(m_DllPath));
-    PathRemoveFileSpec(m_DllPath);
-}
-
-
-PluginManager::~PluginManager()
-{
-}
-
-void PluginManager::refresh()
+void PluginManager::load()
 {
     auto& logger = Logger::get(LOG_REGION());
-    std::lock_guard<std::mutex> lock(m_pluginPaths_m);
 
-    m_pluginPaths.clear();
+    std::vector<std::string> exports = { "Present", "Reset", "EndScene", "ResizeTarget" };
+
+    ScopedLock<FastMutex> lock(mPlugins);
 
     File root(m_DllPath);
     std::vector<File> files;
@@ -54,110 +54,103 @@ void PluginManager::refresh()
         if ((*it).isFile() && findStringIC((*it).path(), ".Plugin.dll"))
         {
             logger.information("Found plugin %s", it->path());
-            m_pluginPaths.push_back(it->path());
-        }
-    }
-}
 
-void PluginManager::load()
-{
-    auto& logger = Logger::get(LOG_REGION());
-    this->refresh();
+            auto plugin = new SharedLibrary(it->path(), SharedLibrary::SHLIB_GLOBAL);
 
-    std::lock_guard<std::mutex> pLock(m_pluginPaths_m), mLock(m_pluginMods_m);
-
-    for (const auto& path : m_pluginPaths)
-    {
-        auto hMod = LoadLibrary(path.c_str());
-
-        if (hMod == nullptr)
-        {
-            logger.error("Couldn't load Indicium plugin from file %s (%lu)", path, GetLastError());
-            continue;
-        }
-
-        m_pluginMods.push_back(hMod);
-
-        {
-            std::lock_guard<std::mutex> lock(m_presentFuncs_m);
-            auto present = static_cast<LPVOID>(GetProcAddress(hMod, "Present"));
-            if (present != nullptr)
+            for (const auto& symbol : exports)
             {
-                m_presentFuncs.push_back(present);
+                if (!plugin->hasSymbol(symbol))
+                {
+                    logger.error("Missing export %s from plugin %s", symbol, plugin->getPath());
+                    plugin->unload();
+                    break;
+                }
             }
-        }
 
-        {
-            std::lock_guard<std::mutex> lock(m_resetFuncs_m);
-            auto reset = static_cast<LPVOID>(GetProcAddress(hMod, "Reset"));
-            if (reset != nullptr)
+            if (!plugin->isLoaded())
             {
-                m_resetFuncs.push_back(reset);
+                delete plugin;
+                continue;
             }
-        }
 
-        {
-            std::lock_guard<std::mutex> lock(m_endSceneFuncs_m);
-            auto endScene = static_cast<LPVOID>(GetProcAddress(hMod, "EndScene"));
-            if (endScene != nullptr)
-            {
-                m_endSceneFuncs.push_back(endScene);
-            }
-        }
-
-        {
-            std::lock_guard<std::mutex> lock(m_resizeTargetFuncs_m);
-            auto resize = static_cast<LPVOID>(GetProcAddress(hMod, "ResizeTarget"));
-            if (resize != nullptr)
-            {
-                m_resizeTargetFuncs.push_back(resize);
-            }
+            plugins.push_back(plugin);
         }
     }
 }
 
 void PluginManager::unload()
 {
-    // TODO: implement!
+    ScopedLock<FastMutex> lock(mPlugins);
+
+    for (auto it = plugins.begin(); it != plugins.end();)
+    {
+        (*it)->unload();
+        delete *it;
+        it = plugins.erase(it);
+    }
 }
 
 void PluginManager::present(IID guid, LPVOID unknown)
 {
-    std::lock_guard<std::mutex> lock(m_presentFuncs_m);
-
-    for (const auto& func : m_presentFuncs)
+    try
     {
-        static_cast<VOID(__cdecl*)(IID, LPVOID)>(func)(guid, unknown);
+        mPlugins.tryLock(50);
+
+        for (auto& plugin : plugins)
+        {
+            static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("Present"))(guid, unknown);
+        }
     }
+    catch (Poco::TimeoutException) {}
+
+    mPlugins.unlock();
 }
 
 void PluginManager::reset(IID guid, LPVOID unknown)
 {
-    std::lock_guard<std::mutex> lock(m_resetFuncs_m);
-
-    for (const auto& func : m_resetFuncs)
+    try
     {
-        static_cast<VOID(__cdecl*)(IID, LPVOID)>(func)(guid, unknown);
+        mPlugins.tryLock(50);
+
+        for (auto& plugin : plugins)
+        {
+            static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("Reset"))(guid, unknown);
+        }
     }
+    catch (Poco::TimeoutException) {}
+
+    mPlugins.unlock();
 }
 
 void PluginManager::endScene(IID guid, LPVOID unknown)
 {
-    std::lock_guard<std::mutex> lock(m_endSceneFuncs_m);
-
-    for (const auto& func : m_endSceneFuncs)
+    try
     {
-        static_cast<VOID(__cdecl*)(IID, LPVOID)>(func)(guid, unknown);
+        mPlugins.tryLock(50);
+
+        for (auto& plugin : plugins)
+        {
+            static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("EndScene"))(guid, unknown);
+        }
     }
+    catch (Poco::TimeoutException) {}
+
+    mPlugins.unlock();
 }
 
 void PluginManager::resizeTarget(IID guid, LPVOID unknown)
 {
-    std::lock_guard<std::mutex> lock(m_resizeTargetFuncs_m);
-
-    for (const auto& func : m_resizeTargetFuncs)
+    try
     {
-        static_cast<VOID(__cdecl*)(IID, LPVOID)>(func)(guid, unknown);
+        mPlugins.tryLock(50);
+
+        for (auto& plugin : plugins)
+        {
+            static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("ResizeTarget"))(guid, unknown);
+        }
     }
+    catch (Poco::TimeoutException) {}
+
+    mPlugins.unlock();
 }
 

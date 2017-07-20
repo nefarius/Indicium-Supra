@@ -55,3 +55,9 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
     //pFontWrapper->Release();
     //pFW1Factory->Release();
 }
+
+INDICIUM_EXPORT Reset(IID guid, LPVOID unknown) {}
+
+INDICIUM_EXPORT EndScene(IID guid, LPVOID unknown) {}
+
+INDICIUM_EXPORT ResizeTarget(IID guid, LPVOID unknown) {}

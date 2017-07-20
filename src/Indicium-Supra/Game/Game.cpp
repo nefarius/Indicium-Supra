@@ -19,6 +19,7 @@
 #include <Utils/PluginManager.h>
 
 #include <Poco/Logger.h>
+#include <mutex>
 
 using Poco::Logger;
 
