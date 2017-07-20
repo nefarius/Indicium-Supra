@@ -4,7 +4,6 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <Windows.h>
-#include <tchar.h>
 #include <vector>
 
 #define POCO_NO_UNWINDOWS

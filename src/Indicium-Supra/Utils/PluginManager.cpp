@@ -49,6 +49,8 @@ void PluginManager::load()
     std::vector<File> files;
     root.list(files);
 
+    logger.information("Enumerating plugins...");
+
     for (auto it = files.begin(); it != files.end(); ++it)
     {
         if ((*it).isFile() && findStringIC((*it).path(), ".Plugin.dll"))
@@ -87,10 +89,16 @@ void PluginManager::load()
             plugins.push_back(plugin);
         }
     }
+
+    logger.information("Finished enumerating plugins");
 }
 
 void PluginManager::unload()
 {
+    auto& logger = Logger::get(LOG_REGION());
+
+    logger.information("Unloading plugins...");
+
     ScopedLock<FastMutex> lock(mPlugins);
 
     for (auto it = plugins.begin(); it != plugins.end();)
@@ -100,69 +108,59 @@ void PluginManager::unload()
         delete *it;
         it = plugins.erase(it);
     }
+
+    logger.information("Finished unloading plugins");
 }
 
 void PluginManager::present(IID guid, LPVOID unknown)
 {
-    try
+    if (mPlugins.tryLock())
     {
-        mPlugins.tryLock(50);
-
         for (auto& plugin : plugins)
         {
             static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("Present"))(guid, unknown);
         }
-    }
-    catch (Poco::TimeoutException) {}
 
-    mPlugins.unlock();
+        mPlugins.unlock();
+    }
 }
 
 void PluginManager::reset(IID guid, LPVOID unknown)
 {
-    try
+    if (mPlugins.tryLock())
     {
-        mPlugins.tryLock(50);
-
         for (auto& plugin : plugins)
         {
             static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("Reset"))(guid, unknown);
         }
-    }
-    catch (Poco::TimeoutException) {}
 
-    mPlugins.unlock();
+        mPlugins.unlock();
+    }
 }
 
 void PluginManager::endScene(IID guid, LPVOID unknown)
 {
-    try
+    if (mPlugins.tryLock())
     {
-        mPlugins.tryLock(50);
-
         for (auto& plugin : plugins)
         {
             static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("EndScene"))(guid, unknown);
         }
-    }
-    catch (Poco::TimeoutException) {}
 
-    mPlugins.unlock();
+        mPlugins.unlock();
+    }
 }
 
 void PluginManager::resizeTarget(IID guid, LPVOID unknown)
 {
-    try
+    if (mPlugins.tryLock())
     {
-        mPlugins.tryLock(50);
-
         for (auto& plugin : plugins)
         {
             static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("ResizeTarget"))(guid, unknown);
         }
-    }
-    catch (Poco::TimeoutException) {}
 
-    mPlugins.unlock();
+        mPlugins.unlock();
+    }
 }
 
