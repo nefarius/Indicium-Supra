@@ -55,7 +55,18 @@ void PluginManager::load()
         {
             logger.information("Found plugin %s", it->path());
 
-            auto plugin = new SharedLibrary(it->path(), SharedLibrary::SHLIB_GLOBAL);
+            auto plugin = new SharedLibrary();
+
+            try
+            {
+                plugin->load(it->path());
+            }
+            catch (Poco::LibraryLoadException lle)
+            {
+                logger.error("Couldn't load plugin %s: %s", it->path(), lle.what());
+                delete plugin;
+                continue;
+            }
 
             for (const auto& symbol : exports)
             {
@@ -84,7 +95,8 @@ void PluginManager::unload()
 
     for (auto it = plugins.begin(); it != plugins.end();)
     {
-        (*it)->unload();
+        if ((*it)->isLoaded())
+            (*it)->unload();
         delete *it;
         it = plugins.erase(it);
     }
