@@ -15,6 +15,7 @@
 #include <Poco/AutoPtr.h>
 #include <Poco/PatternFormatter.h>
 #include <Poco/FormattingChannel.h>
+#include <Poco/Path.h>
 
 using Poco::Message;
 using Poco::Logger;
@@ -22,6 +23,7 @@ using Poco::FileChannel;
 using Poco::AutoPtr;
 using Poco::PatternFormatter;
 using Poco::FormattingChannel;
+using Poco::Path;
 
 HANDLE g_hDllHandle = nullptr;
 std::once_flag flag;
@@ -33,8 +35,10 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
     DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
 
+    std::string logfile("%TEMP%\\Indicium-Supra.log");
+
     AutoPtr<FileChannel> pFileChannel(new FileChannel);
-    pFileChannel->setProperty("path", "Indicium-Supra.log");
+    pFileChannel->setProperty("path", Path::expand(logfile));
     AutoPtr<PatternFormatter> pPF(new PatternFormatter);
     pPF->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i %s [%p]: %t");
     AutoPtr<FormattingChannel> pFC(new FormattingChannel(pPF, pFileChannel));
