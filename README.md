@@ -5,8 +5,8 @@ API-Hooking and rendering framework for DirectX-based games.
 ## Prerequisites
  * Visual Studio **2015** ([Community Edition](https://go.microsoft.com/fwlink/p/?LinkId=534599) is just fine)
  * [Microsoft DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812)
- * [POCO C++ libraries](https://pocoproject.org/)
- * [MinHook](https://github.com/TsudaKageyu/minhook)
+ * [POCO C++ libraries](https://pocoproject.org/) (referenced by NuGet)
+ * [MinHook](https://github.com/TsudaKageyu/minhook) (referenced by NuGet)
  
 ## Supported DirectX versions
  * DirectX 9.0
