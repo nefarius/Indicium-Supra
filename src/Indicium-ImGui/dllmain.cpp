@@ -26,8 +26,16 @@ using Poco::FormattingChannel;
 #include <imgui_impl_dx10.h>
 #include <imgui_impl_dx11.h>
 
-HWND g_hWnd = nullptr;
 tDefWindowProc OriginalDefWindowProc = nullptr;
+
+static ID3D11Device*            g_pd3dDevice = nullptr;
+static ID3D11DeviceContext*     g_pd3dDeviceContext = nullptr;
+static IDXGISwapChain*          g_pSwapChain = nullptr;
+static ID3D11RenderTargetView*  g_mainRenderTargetView = nullptr;
+
+static std::once_flag d3d9Init;
+static std::once_flag d3d9exInit;
+static std::once_flag d3d11Init;
 
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 {
@@ -83,92 +91,83 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
 
     if (guid == IID_IDirect3DDevice9)
     {
-        if (!bIsImGuiInitialized)
+        std::call_once(d3d9Init, [&](LPVOID pUnknown)
         {
-            if (g_hWnd)
+            auto pd3dDevice = static_cast<IDirect3DDevice9*>(unknown);
+
+            D3DDEVICE_CREATION_PARAMETERS params;
+
+            auto hr = pd3dDevice->GetCreationParameters(&params);
+            if (FAILED(hr))
             {
-                ImGui_ImplDX9_Init(g_hWnd, static_cast<IDirect3DDevice9*>(unknown));
-
-                logger.information("ImGui (DX9) initialized");
-
-                bIsImGuiInitialized = true;
+                logger.error("Couldn't get device from swapchain");
+                return;
             }
-        }
-        else
-        {
-            ImGui_ImplDX9_NewFrame();
-            RenderScene();
-        }
+
+            ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
+
+            logger.information("ImGui (DX9) initialized");
+
+        }, unknown);
+
+        ImGui_ImplDX9_NewFrame();
+        RenderScene();
     }
     else if (guid == IID_IDirect3DDevice9Ex)
     {
-        if (!bIsImGuiInitialized)
+        std::call_once(d3d9Init, [&](LPVOID pUnknown)
         {
-            if (g_hWnd)
+            auto pd3dDevice = static_cast<IDirect3DDevice9Ex*>(unknown);
+
+            D3DDEVICE_CREATION_PARAMETERS params;
+
+            auto hr = pd3dDevice->GetCreationParameters(&params);
+            if (FAILED(hr))
             {
-                ImGui_ImplDX9_Init(g_hWnd, static_cast<IDirect3DDevice9Ex*>(unknown));
-
-                logger.information("ImGui (DX9Ex) initialized");
-
-                bIsImGuiInitialized = true;
+                logger.error("Couldn't get device from swapchain");
+                return;
             }
-        }
-        else
-        {
-            ImGui_ImplDX9_NewFrame();
-            RenderScene();
-        }
+
+            ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
+
+            logger.information("ImGui (DX9Ex) initialized");
+
+        }, unknown);
+
+        ImGui_ImplDX9_NewFrame();
+        RenderScene();
     }
     else if (guid == IID_IDXGISwapChain)
     {
-        auto chain = static_cast<IDXGISwapChain*>(unknown);
-
-        static ID3D11DeviceContext* ctx = nullptr;
-        static ID3D11RenderTargetView* view = nullptr;
-        static ID3D11Device* dev = nullptr;
-
-        if (!bIsImGuiInitialized)
+        std::call_once(d3d11Init, [&](LPVOID pChain)
         {
-            // window handle available, initialize
-            if (g_hWnd)
+            logger.information("Grabbing device and context pointers");
+
+            g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
+
+            // get device
+            auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3dDevice), reinterpret_cast<void**>(&g_pd3dDevice));
+            if (FAILED(hr))
             {
-                // get device
-                chain->GetDevice(__uuidof(dev), reinterpret_cast<void**>(&dev));
-
-                // get device context
-                dev->GetImmediateContext(&ctx);
-
-                // initialize ImGui
-                ImGui_ImplDX11_Init(g_hWnd, dev, ctx);
-
-                logger.information("ImGui (DX11) initialized");
-
-                bIsImGuiInitialized = true;
+                logger.error("Couldn't get device from swapchain");
+                return;
             }
-        }
-        else
-        {
+
+            // get device context
+            g_pd3dDevice->GetImmediateContext(&g_pd3dDeviceContext);
+
             DXGI_SWAP_CHAIN_DESC sd;
-            chain->GetDesc(&sd);
+            g_pSwapChain->GetDesc(&sd);
 
-            if (view)
-                view->Release();
+            logger.information("Initializing ImGui");
 
-            // Create the render target
-            ID3D11Texture2D* pBackBuffer;
-            D3D11_RENDER_TARGET_VIEW_DESC render_target_view_desc;
-            ZeroMemory(&render_target_view_desc, sizeof(render_target_view_desc));
-            render_target_view_desc.Format = sd.BufferDesc.Format;
-            render_target_view_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-            chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBuffer));
-            dev->CreateRenderTargetView(pBackBuffer, &render_target_view_desc, &view);
-            ctx->OMSetRenderTargets(1, &view, nullptr);
-            pBackBuffer->Release();
+            ImGui_ImplDX11_Init(sd.OutputWindow, g_pd3dDevice, g_pd3dDeviceContext);
 
-            ImGui_ImplDX11_NewFrame();
+        }, unknown);
 
-            RenderScene();
-        }
+        ImGui_ImplDX11_NewFrame();
+
+        RenderScene();
     }
 }
 
@@ -208,11 +207,6 @@ LRESULT WINAPI DetourDefWindowProc(
 {
     static std::once_flag flag;
     std::call_once(flag, []() {Logger::get("DetourDefWindowProc").information("++ USER32!DefWindowProc called"); });
-
-    if (!g_hWnd)
-    {
-        g_hWnd = hWnd;
-    }
 
     ImGui_ImplDX9_WndProcHandler(hWnd, Msg, wParam, lParam);
     ImGui_ImplDX10_WndProcHandler(hWnd, Msg, wParam, lParam);
