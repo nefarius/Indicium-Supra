@@ -42,3 +42,9 @@ Castlevania: Lords of Shadow, 32-Bit
 ![](https://lh3.googleusercontent.com/-lzrH1cvY-io/WYtiMBHjoOI/AAAAAAAAAKU/sghbja-iE4ML7hCJPJ_7NomW5UxlDvREwCHMYCw/s0/CastlevaniaLoSUE_2017-08-09_21-27-44.jpg)
 
 ### DirectX 10
+To be done.
+
+### DirectX 11
+Ryse: Son of Rome, 64-Bit
+
+![](https://lh3.googleusercontent.com/-A1Yj4RE07C4/WYtnLFgGg3I/AAAAAAAAAKk/ZMEfZNAQ670XR4vtRtO0Yy3vN2EXwXKygCHMYCw/s0/Ryse_2017-08-09_21-48-57.png)
