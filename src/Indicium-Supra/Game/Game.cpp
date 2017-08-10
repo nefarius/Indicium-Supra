@@ -6,8 +6,6 @@
 #include "Game.h"
 
 #include <Psapi.h>
-#pragma comment(lib, "psapi.lib")
-
 
 #include <Game/Hook/Direct3D9.h>
 #include <Game/Hook/Direct3D9Ex.h>
