@@ -16,6 +16,8 @@ The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit
 
 ## Prerequisites
  * Visual Studio **2015** ([Community Edition](https://go.microsoft.com/fwlink/p/?LinkId=534599) is just fine)
+   * If asked, install Windows XP support for C++
+   ![](https://lh3.googleusercontent.com/-jPbvojP6oeA/WYySR-CS9XI/AAAAAAAAALE/4dpA1-48OdA9EXHrWK7kCbEW_0vOY13VQCHMYCw/s0/devenv_2017-08-10_19-05-09.png)
  * [Microsoft DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812)
  * [POCO C++ libraries](https://pocoproject.org/) (referenced by NuGet)
  * [MinHook](https://github.com/TsudaKageyu/minhook) (referenced by NuGet)
