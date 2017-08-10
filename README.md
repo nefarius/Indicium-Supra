@@ -12,7 +12,7 @@ API-Hooking and rendering framework for DirectX-based games.
  * `IDXGISwapChain::Present`
  * `IDXGISwapChain::ResizeTarget`
 
-The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit) and does all of the heavy lifting automatically.
+The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit) and does all of the heavy lifting automatically. On loading it tries to detect the used DirectX/Direct3D version, acquire the virtual function pointer table and hook into all common functions used for rendering. Every time the host process renders content, the function calls get intercepted and forwarded to one or more plugins which also get loaded on library boot. The plugin can then do what theay want with the provided device/swapchain pointers (like render additional content or blank out certain parts of the resulting image).
 
 ## Prerequisites
  * Visual Studio **2015** ([Community Edition](https://go.microsoft.com/fwlink/p/?LinkId=534599) is just fine)
@@ -34,6 +34,12 @@ Building should be pretty straight-forward since the POCO libraries get fetched 
 If Visual Studio can't load one or more projects the first time you launch ist, you might need to restore the NuGet packages. Open the Pachage Manager Console and hit Restore:
 
 ![](https://lh3.googleusercontent.com/-K6g4v1RNMQo/WYyUwkquvZI/AAAAAAAAALQ/G_njXRtZQmwZUmo210vcLN_3pJphOuNigCHMYCw/s0/devenv_2017-08-10_19-15-45.png)
+
+## How to use
+
+
+## Diagnostics
+The core library logs its progress and potential errors to the file `%TEMP%\\Indicium-Supra.log`.
 
 ## Demos
 The following screenshots show [imgui](https://github.com/ocornut/imgui) getting rendered in foreign processes using different versions of DirectX.
