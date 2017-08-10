@@ -1,4 +1,5 @@
 #include "dllmain.h"
+#include "../../include/IndiciumPlugin.h"
 
 #include <d3d9.h>
 #include <dxgi.h>
@@ -78,12 +79,6 @@ int init()
 
     return 0;
 }
-
-INDICIUM_EXPORT Reset(IID guid, LPVOID unknown) {}
-
-INDICIUM_EXPORT EndScene(IID guid, LPVOID unknown) {}
-
-INDICIUM_EXPORT ResizeTarget(IID guid, LPVOID unknown) {}
 
 INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
 {

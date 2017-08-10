@@ -2,8 +2,8 @@
 //
 
 #include "stdafx.h"
-#include "Indicium-FW1FontWrapper.h"
 #include "FW1FontWrapper.h"
+#include "../../include/IndiciumPlugin.h"
 
 #ifdef _M_IX86
 #pragma comment(lib, "x86\\FW1FontWrapper.lib")
@@ -55,9 +55,3 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
     //pFontWrapper->Release();
     //pFW1Factory->Release();
 }
-
-INDICIUM_EXPORT Reset(IID guid, LPVOID unknown) {}
-
-INDICIUM_EXPORT EndScene(IID guid, LPVOID unknown) {}
-
-INDICIUM_EXPORT ResizeTarget(IID guid, LPVOID unknown) {}

@@ -21,10 +21,10 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Indicium-FW1FontWrapper.h">
+    <ClInclude Include="FW1FontWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FW1FontWrapper.h">
+    <ClInclude Include="..\..\include\IndiciumPlugin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,8 +5,6 @@
 #include <MinHook.h>
 #include "imgui.h"
 
-#define INDICIUM_EXPORT extern "C" __declspec(dllexport) VOID __cdecl
-
 template <typename T>
 inline MH_STATUS MH_CreateHookApiEx(
 	LPCWSTR pszModule, LPCSTR pszProcName, LPVOID pDetour, T** ppOriginal)

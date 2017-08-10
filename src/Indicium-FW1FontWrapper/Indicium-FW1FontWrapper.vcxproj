@@ -154,8 +154,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\IndiciumPlugin.h" />
     <ClInclude Include="FW1FontWrapper.h" />
-    <ClInclude Include="Indicium-FW1FontWrapper.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
