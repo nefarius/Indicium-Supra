@@ -80,7 +80,7 @@ int init()
     return 0;
 }
 
-INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
+INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 {
     static auto& logger = Logger::get("Present");
     static auto bIsImGuiInitialized = false;
@@ -135,64 +135,65 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown)
     }
     else if (guid == IID_IDXGISwapChain)
     {
-        //
-        // TODO: add version detection
-        // 
-
-        std::call_once(d3d10Init, [&](LPVOID pChain)
+        if (version & Direct3DVersion::Direct3D10)
         {
-            logger.information("Grabbing device and context pointers");
 
-            g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
-
-            // get device
-            auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d10Device), reinterpret_cast<void**>(&g_pd3d10Device));
-            if (FAILED(hr))
+            std::call_once(d3d10Init, [&](LPVOID pChain)
             {
-                logger.error("Couldn't get device from swapchain");
-                return;
-            }
+                logger.information("Grabbing device and context pointers");
 
-            DXGI_SWAP_CHAIN_DESC sd;
-            g_pSwapChain->GetDesc(&sd);
+                g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
 
-            logger.information("Initializing ImGui");
+                // get device
+                auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d10Device), reinterpret_cast<void**>(&g_pd3d10Device));
+                if (FAILED(hr))
+                {
+                    logger.error("Couldn't get device from swapchain");
+                    return;
+                }
 
-            ImGui_ImplDX10_Init(sd.OutputWindow, g_pd3d10Device);
+                DXGI_SWAP_CHAIN_DESC sd;
+                g_pSwapChain->GetDesc(&sd);
 
-        }, unknown);
+                logger.information("Initializing ImGui");
 
-        ImGui_ImplDX10_NewFrame();
+                ImGui_ImplDX10_Init(sd.OutputWindow, g_pd3d10Device);
 
-        /*
-        std::call_once(d3d11Init, [&](LPVOID pChain)
+            }, unknown);
+
+            ImGui_ImplDX10_NewFrame();
+        }
+
+        if (version & Direct3DVersion::Direct3D11)
         {
-            logger.information("Grabbing device and context pointers");
-
-            g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
-
-            // get device
-            auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d11Device), reinterpret_cast<void**>(&g_pd3d11Device));
-            if (FAILED(hr))
+            std::call_once(d3d11Init, [&](LPVOID pChain)
             {
-                logger.error("Couldn't get device from swapchain");
-                return;
-            }
+                logger.information("Grabbing device and context pointers");
 
-            // get device context
-            g_pd3d11Device->GetImmediateContext(&g_pd3dDeviceContext);
+                g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
 
-            DXGI_SWAP_CHAIN_DESC sd;
-            g_pSwapChain->GetDesc(&sd);
+                // get device
+                auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d11Device), reinterpret_cast<void**>(&g_pd3d11Device));
+                if (FAILED(hr))
+                {
+                    logger.error("Couldn't get device from swapchain");
+                    return;
+                }
 
-            logger.information("Initializing ImGui");
+                // get device context
+                g_pd3d11Device->GetImmediateContext(&g_pd3dDeviceContext);
 
-            ImGui_ImplDX11_Init(sd.OutputWindow, g_pd3d11Device, g_pd3dDeviceContext);
+                DXGI_SWAP_CHAIN_DESC sd;
+                g_pSwapChain->GetDesc(&sd);
 
-        }, unknown);
+                logger.information("Initializing ImGui");
 
-        ImGui_ImplDX11_NewFrame();
-        */
+                ImGui_ImplDX11_Init(sd.OutputWindow, g_pd3d11Device, g_pd3dDeviceContext);
+
+            }, unknown);
+
+            ImGui_ImplDX11_NewFrame();
+        }
 
         RenderScene();
     }

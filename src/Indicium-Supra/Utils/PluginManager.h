@@ -6,6 +6,8 @@
 #include <Windows.h>
 #include <vector>
 
+#include "IndiciumPlugin.h"
+
 #define POCO_NO_UNWINDOWS
 #include <Poco/SharedLibrary.h>
 #include <Poco/Mutex.h>
@@ -28,9 +30,9 @@ public:
 
 	void load();
 	void unload();
-	void present(IID guid, LPVOID unknown);
-	void reset(IID guid, LPVOID unknown);
-    void endScene(IID guid, LPVOID unknown);
-    void resizeTarget(IID guid, LPVOID unknown);
+	void present(IID guid, LPVOID unknown, Direct3DVersion version);
+	void reset(IID guid, LPVOID unknown, Direct3DVersion version);
+    void endScene(IID guid, LPVOID unknown, Direct3DVersion version);
+    void resizeTarget(IID guid, LPVOID unknown, Direct3DVersion version);
 };
 

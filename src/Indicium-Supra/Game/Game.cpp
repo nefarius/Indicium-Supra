@@ -202,7 +202,7 @@ void HookDX9(UINTX* vtable9)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Present called"); });
 
-        g_plugins.present(IID_IDirect3DDevice9, dev);
+        g_plugins.present(IID_IDirect3DDevice9, dev, Direct3DVersion::Direct3D9);
 
         return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
     });
@@ -214,7 +214,7 @@ void HookDX9(UINTX* vtable9)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Reset called"); });
 
-        g_plugins.reset(IID_IDirect3DDevice9, dev);
+        g_plugins.reset(IID_IDirect3DDevice9, dev, Direct3DVersion::Direct3D9);
 
         return g_reset9Hook.callOrig(dev, pp);
     });
@@ -226,7 +226,7 @@ void HookDX9(UINTX* vtable9)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::EndScene called"); });
 
-        g_plugins.endScene(IID_IDirect3DDevice9, dev);
+        g_plugins.endScene(IID_IDirect3DDevice9, dev, Direct3DVersion::Direct3D9);
 
         return g_endScene9Hook.callOrig(dev);
     });
@@ -242,7 +242,7 @@ void HookDX9Ex(UINTX* vtable9Ex)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::PresentEx called"); });
 
-        g_plugins.present(IID_IDirect3DDevice9Ex, dev);
+        g_plugins.present(IID_IDirect3DDevice9Ex, dev, Direct3DVersion::Direct3D9Ex);
 
         return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
     });
@@ -254,7 +254,7 @@ void HookDX9Ex(UINTX* vtable9Ex)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::ResetEx called"); });
 
-        g_plugins.reset(IID_IDirect3DDevice9Ex, dev);
+        g_plugins.reset(IID_IDirect3DDevice9Ex, dev, Direct3DVersion::Direct3D9Ex);
 
         return g_reset9ExHook.callOrig(dev, pp, ppp);
     });
@@ -270,7 +270,7 @@ void HookDX10(UINTX* vtable10SwapChain)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::Present called"); });
 
-        g_plugins.present(IID_IDXGISwapChain, chain);
+        g_plugins.present(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D10);
 
         return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
     });
@@ -282,7 +282,7 @@ void HookDX10(UINTX* vtable10SwapChain)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-        g_plugins.resizeTarget(IID_IDXGISwapChain, chain);
+        g_plugins.resizeTarget(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D10);
 
         return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
     });
@@ -298,7 +298,7 @@ void HookDX11(UINTX* vtable11SwapChain)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::Present called"); });
 
-        g_plugins.present(IID_IDXGISwapChain, chain);
+        g_plugins.present(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D11);
 
         return g_swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
     });
@@ -310,7 +310,7 @@ void HookDX11(UINTX* vtable11SwapChain)
         static std::once_flag flag;
         std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-        g_plugins.resizeTarget(IID_IDXGISwapChain, chain);
+        g_plugins.resizeTarget(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D11);
 
         return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
     });

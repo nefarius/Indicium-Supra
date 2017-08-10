@@ -112,52 +112,52 @@ void PluginManager::unload()
     logger.information("Finished unloading plugins");
 }
 
-void PluginManager::present(IID guid, LPVOID unknown)
+void PluginManager::present(IID guid, LPVOID unknown, Direct3DVersion version)
 {
     if (mPlugins.tryLock())
     {
         for (auto& plugin : plugins)
         {
-            static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("Present"))(guid, unknown);
+            static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(plugin->getSymbol("Present"))(guid, unknown, version);
         }
 
         mPlugins.unlock();
     }
 }
 
-void PluginManager::reset(IID guid, LPVOID unknown)
+void PluginManager::reset(IID guid, LPVOID unknown, Direct3DVersion version)
 {
     if (mPlugins.tryLock())
     {
         for (auto& plugin : plugins)
         {
-            static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("Reset"))(guid, unknown);
+            static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(plugin->getSymbol("Reset"))(guid, unknown, version);
         }
 
         mPlugins.unlock();
     }
 }
 
-void PluginManager::endScene(IID guid, LPVOID unknown)
+void PluginManager::endScene(IID guid, LPVOID unknown, Direct3DVersion version)
 {
     if (mPlugins.tryLock())
     {
         for (auto& plugin : plugins)
         {
-            static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("EndScene"))(guid, unknown);
+            static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(plugin->getSymbol("EndScene"))(guid, unknown, version);
         }
 
         mPlugins.unlock();
     }
 }
 
-void PluginManager::resizeTarget(IID guid, LPVOID unknown)
+void PluginManager::resizeTarget(IID guid, LPVOID unknown, Direct3DVersion version)
 {
     if (mPlugins.tryLock())
     {
         for (auto& plugin : plugins)
         {
-            static_cast<VOID(__cdecl*)(IID, LPVOID)>(plugin->getSymbol("ResizeTarget"))(guid, unknown);
+            static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(plugin->getSymbol("ResizeTarget"))(guid, unknown, version);
         }
 
         mPlugins.unlock();
