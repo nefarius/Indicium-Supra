@@ -72,12 +72,12 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)..\include;$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)..\include;$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)\Lib\x64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
@@ -222,14 +222,14 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\minhook.1.3.3\build\native\minhook.targets" />
-    <Import Project="..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets" Condition="Exists('..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets')" />
+    <Import Project="..\..\packages\minhook.1.3.3\build\native\minhook.targets" />
+    <Import Project="..\..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets" Condition="Exists('..\..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\minhook.1.3.3\build\native\minhook.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\minhook.1.3.3\build\native\minhook.targets'))" />
-    <Error Condition="!Exists('..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets'))" />
+    <Error Condition="!Exists('..\..\packages\minhook.1.3.3\build\native\minhook.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\minhook.1.3.3\build\native\minhook.targets'))" />
+    <Error Condition="!Exists('..\..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets'))" />
   </Target>
 </Project>
