@@ -110,6 +110,9 @@
     <ClInclude Include="Utils\PluginManager.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\IndiciumPlugin.h">
+      <Filter>Shared</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />
