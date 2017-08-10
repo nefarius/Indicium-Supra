@@ -36,7 +36,7 @@ If Visual Studio can't load one or more projects the first time you launch ist, 
 ![](https://lh3.googleusercontent.com/-K6g4v1RNMQo/WYyUwkquvZI/AAAAAAAAALQ/G_njXRtZQmwZUmo210vcLN_3pJphOuNigCHMYCw/s0/devenv_2017-08-10_19-15-45.png)
 
 ## How to use
-
+Inject the resulting `Indicium-Supra.dll` into the target process using a DLL injection utility of your choice (you can ofc. [use mine as well](https://github.com/nefarius/Injector)). To do anything usefull you also need one or more plugins in the same directory as well. The plugin DLLs names have to end with `.Plugin.dll` to get auto-detected and loaded.
 
 ## Diagnostics
 The core library logs its progress and potential errors to the file `%TEMP%\\Indicium-Supra.log`.
