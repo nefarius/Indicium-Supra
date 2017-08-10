@@ -85,11 +85,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
-    <IncludePath>$(SolutionDir)..\include;$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)..\include;$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(DXSDK_DIR)\Include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)\Lib\x64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\..\bin\$(Platform)\</OutDir>
