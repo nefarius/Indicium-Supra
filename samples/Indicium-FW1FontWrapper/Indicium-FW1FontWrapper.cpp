@@ -15,9 +15,8 @@
 
 INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 {
-    if (guid != IID_IDXGISwapChain) return;
-    if (version & Direct3DVersion::Direct3D11 == 0) return;
-
+    if (!IS_DIRECT3D11(version)) return;
+    
     // get swapchain
     auto chain = static_cast<IDXGISwapChain*>(unknown);
 

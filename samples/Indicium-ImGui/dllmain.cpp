@@ -35,7 +35,6 @@ static ID3D11DeviceContext*     g_pd3dDeviceContext = nullptr;
 static IDXGISwapChain*          g_pSwapChain = nullptr;
 
 static std::once_flag d3d9Init;
-static std::once_flag d3d9exInit;
 static std::once_flag d3d10Init;
 static std::once_flag d3d11Init;
 
@@ -85,8 +84,11 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
     static auto& logger = Logger::get("Present");
     static auto bIsImGuiInitialized = false;
 
-    if (guid == IID_IDirect3DDevice9)
+    switch (version)
     {
+    case Direct3DVersion::Direct3D9:
+    case Direct3DVersion::Direct3D9Ex:
+
         std::call_once(d3d9Init, [&](LPVOID pUnknown)
         {
             auto pd3dDevice = static_cast<IDirect3DDevice9*>(unknown);
@@ -96,7 +98,7 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
             auto hr = pd3dDevice->GetCreationParameters(&params);
             if (FAILED(hr))
             {
-                logger.error("Couldn't get device from swapchain");
+                logger.error("Couldn't get creation parameters from device");
                 return;
             }
 
@@ -108,94 +110,72 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 
         ImGui_ImplDX9_NewFrame();
         RenderScene();
-    }
-    else if (guid == IID_IDirect3DDevice9Ex)
-    {
-        std::call_once(d3d9Init, [&](LPVOID pUnknown)
+
+        break;
+    case Direct3DVersion::Direct3D10:
+
+        std::call_once(d3d10Init, [&](LPVOID pChain)
         {
-            auto pd3dDevice = static_cast<IDirect3DDevice9Ex*>(unknown);
+            logger.information("Grabbing device and context pointers");
 
-            D3DDEVICE_CREATION_PARAMETERS params;
+            g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
 
-            auto hr = pd3dDevice->GetCreationParameters(&params);
+            // get device
+            auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d10Device), reinterpret_cast<void**>(&g_pd3d10Device));
             if (FAILED(hr))
             {
                 logger.error("Couldn't get device from swapchain");
                 return;
             }
 
-            ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
+            DXGI_SWAP_CHAIN_DESC sd;
+            g_pSwapChain->GetDesc(&sd);
 
-            logger.information("ImGui (DX9Ex) initialized");
+            logger.information("Initializing ImGui");
+
+            ImGui_ImplDX10_Init(sd.OutputWindow, g_pd3d10Device);
 
         }, unknown);
 
-        ImGui_ImplDX9_NewFrame();
+        ImGui_ImplDX10_NewFrame();
         RenderScene();
-    }
-    else if (guid == IID_IDXGISwapChain)
-    {
-        if (version & Direct3DVersion::Direct3D10)
+
+        break;
+    case Direct3DVersion::Direct3D11:
+
+        std::call_once(d3d11Init, [&](LPVOID pChain)
         {
+            logger.information("Grabbing device and context pointers");
 
-            std::call_once(d3d10Init, [&](LPVOID pChain)
+            g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
+
+            // get device
+            auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d11Device), reinterpret_cast<void**>(&g_pd3d11Device));
+            if (FAILED(hr))
             {
-                logger.information("Grabbing device and context pointers");
+                logger.error("Couldn't get device from swapchain");
+                return;
+            }
 
-                g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
+            // get device context
+            g_pd3d11Device->GetImmediateContext(&g_pd3dDeviceContext);
 
-                // get device
-                auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d10Device), reinterpret_cast<void**>(&g_pd3d10Device));
-                if (FAILED(hr))
-                {
-                    logger.error("Couldn't get device from swapchain");
-                    return;
-                }
+            DXGI_SWAP_CHAIN_DESC sd;
+            g_pSwapChain->GetDesc(&sd);
 
-                DXGI_SWAP_CHAIN_DESC sd;
-                g_pSwapChain->GetDesc(&sd);
+            logger.information("Initializing ImGui");
 
-                logger.information("Initializing ImGui");
+            ImGui_ImplDX11_Init(sd.OutputWindow, g_pd3d11Device, g_pd3dDeviceContext);
 
-                ImGui_ImplDX10_Init(sd.OutputWindow, g_pd3d10Device);
+        }, unknown);
 
-            }, unknown);
-
-            ImGui_ImplDX10_NewFrame();
-        }
-
-        if (version & Direct3DVersion::Direct3D11)
-        {
-            std::call_once(d3d11Init, [&](LPVOID pChain)
-            {
-                logger.information("Grabbing device and context pointers");
-
-                g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
-
-                // get device
-                auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d11Device), reinterpret_cast<void**>(&g_pd3d11Device));
-                if (FAILED(hr))
-                {
-                    logger.error("Couldn't get device from swapchain");
-                    return;
-                }
-
-                // get device context
-                g_pd3d11Device->GetImmediateContext(&g_pd3dDeviceContext);
-
-                DXGI_SWAP_CHAIN_DESC sd;
-                g_pSwapChain->GetDesc(&sd);
-
-                logger.information("Initializing ImGui");
-
-                ImGui_ImplDX11_Init(sd.OutputWindow, g_pd3d11Device, g_pd3dDeviceContext);
-
-            }, unknown);
-
-            ImGui_ImplDX11_NewFrame();
-        }
-
+        ImGui_ImplDX11_NewFrame();
         RenderScene();
+
+        break;
+
+    default:
+        break;
     }
 }
 

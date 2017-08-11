@@ -12,6 +12,11 @@ typedef enum _Direct3DVersion : char
 
 } Direct3DVersion;
 
+#define IS_DIRECT3D9(_v_)       ((_v_ & Direct3DVersion::Direct3D9) != 0)
+#define IS_DIRECT3D9EX(_v_)     ((_v_ & Direct3DVersion::Direct3D9Ex) != 0)
+#define IS_DIRECT3D10(_v_)      ((_v_ & Direct3DVersion::Direct3D10) != 0)
+#define IS_DIRECT3D11(_v_)      ((_v_ & Direct3DVersion::Direct3D11) != 0)
+
 #ifndef IS_INDICIUM_SUPRA
 
 #define INDICIUM_EXPORT extern "C" __declspec(dllexport) VOID __cdecl
