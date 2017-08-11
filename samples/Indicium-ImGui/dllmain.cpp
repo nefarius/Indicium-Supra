@@ -35,6 +35,7 @@ static ID3D11DeviceContext*     g_pd3dDeviceContext = nullptr;
 static IDXGISwapChain*          g_pSwapChain = nullptr;
 
 static std::once_flag d3d9Init;
+static std::once_flag d3d9exInit;
 static std::once_flag d3d10Init;
 static std::once_flag d3d11Init;
 
@@ -87,7 +88,6 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
     switch (version)
     {
     case Direct3DVersion::Direct3D9:
-    case Direct3DVersion::Direct3D9Ex:
 
         std::call_once(d3d9Init, [&](LPVOID pUnknown)
         {
@@ -105,6 +105,31 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
             ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
 
             logger.information("ImGui (DX9) initialized");
+
+        }, unknown);
+
+        ImGui_ImplDX9_NewFrame();
+        RenderScene();
+
+        break;
+    case Direct3DVersion::Direct3D9Ex:
+
+        std::call_once(d3d9exInit, [&](LPVOID pUnknown)
+        {
+            auto pd3dDevice = static_cast<IDirect3DDevice9Ex*>(unknown);
+
+            D3DDEVICE_CREATION_PARAMETERS params;
+
+            auto hr = pd3dDevice->GetCreationParameters(&params);
+            if (FAILED(hr))
+            {
+                logger.error("Couldn't get creation parameters from device");
+                return;
+            }
+
+            ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
+
+            logger.information("ImGui (DX9Ex) initialized");
 
         }, unknown);
 
