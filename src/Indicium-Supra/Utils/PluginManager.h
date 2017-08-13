@@ -1,16 +1,14 @@
 #pragma once
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <Windows.h>
 #include <vector>
+#include <map>
 
 #include "IndiciumPlugin.h"
 
 #define POCO_NO_UNWINDOWS
 #include <Poco/SharedLibrary.h>
 #include <Poco/Mutex.h>
+
 using Poco::SharedLibrary;
 using Poco::FastMutex;
 using Poco::ScopedLock;
@@ -22,7 +20,10 @@ class PluginManager
 	TCHAR m_DllPath[MAX_PATH];
     std::vector<SharedLibrary*> plugins;
     FastMutex mPlugins;
-    
+
+    std::map<std::string, std::vector<LPVOID>> _fpMap;
+    std::vector<std::string> exports = { "Present", "Reset", "EndScene", "ResizeTarget" };
+
     bool findStringIC(const std::string& strHaystack, const std::string& strNeedle) const;
 public:
 	PluginManager();

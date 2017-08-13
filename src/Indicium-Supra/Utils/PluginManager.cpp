@@ -41,8 +41,6 @@ void PluginManager::load()
 {
     auto& logger = Logger::get(LOG_REGION());
 
-    std::vector<std::string> exports = { "Present", "Reset", "EndScene", "ResizeTarget" };
-
     ScopedLock<FastMutex> lock(mPlugins);
 
     File root(m_DllPath);
@@ -72,12 +70,12 @@ void PluginManager::load()
 
             for (const auto& symbol : exports)
             {
-                if (!plugin->hasSymbol(symbol))
+                if (plugin->hasSymbol(symbol))
                 {
-                    logger.error("Missing export %s from plugin %s", symbol, plugin->getPath());
-                    plugin->unload();
-                    break;
+                    _fpMap[symbol].push_back(plugin->getSymbol(symbol));
                 }
+
+                logger.warning("Missing export %s from plugin %s", symbol, plugin->getPath());
             }
 
             if (!plugin->isLoaded())
@@ -101,6 +99,13 @@ void PluginManager::unload()
 
     ScopedLock<FastMutex> lock(mPlugins);
 
+    // discard function pointers
+    for (const auto& symbol : exports)
+    {
+        _fpMap[symbol].clear();
+    }
+
+    // unload libraries
     for (auto it = plugins.begin(); it != plugins.end();)
     {
         if ((*it)->isLoaded())
@@ -114,53 +119,41 @@ void PluginManager::unload()
 
 void PluginManager::present(IID guid, LPVOID unknown, Direct3DVersion version)
 {
-    if (mPlugins.tryLock())
-    {
-        for (auto& plugin : plugins)
-        {
-            static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(plugin->getSymbol("Present"))(guid, unknown, version);
-        }
+    static std::string key = "Present";
 
-        mPlugins.unlock();
+    for (auto& fp : _fpMap[key])
+    {
+        static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(fp)(guid, unknown, version);
     }
 }
 
 void PluginManager::reset(IID guid, LPVOID unknown, Direct3DVersion version)
 {
-    if (mPlugins.tryLock())
-    {
-        for (auto& plugin : plugins)
-        {
-            static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(plugin->getSymbol("Reset"))(guid, unknown, version);
-        }
+    static std::string key = "Reset";
 
-        mPlugins.unlock();
+    for (auto& fp : _fpMap[key])
+    {
+        static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(fp)(guid, unknown, version);
     }
 }
 
 void PluginManager::endScene(IID guid, LPVOID unknown, Direct3DVersion version)
 {
-    if (mPlugins.tryLock())
-    {
-        for (auto& plugin : plugins)
-        {
-            static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(plugin->getSymbol("EndScene"))(guid, unknown, version);
-        }
+    static std::string key = "EndScene";
 
-        mPlugins.unlock();
+    for (auto& fp : _fpMap[key])
+    {
+        static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(fp)(guid, unknown, version);
     }
 }
 
 void PluginManager::resizeTarget(IID guid, LPVOID unknown, Direct3DVersion version)
 {
-    if (mPlugins.tryLock())
-    {
-        for (auto& plugin : plugins)
-        {
-            static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(plugin->getSymbol("ResizeTarget"))(guid, unknown, version);
-        }
+    static std::string key = "ResizeTarget";
 
-        mPlugins.unlock();
+    for (auto& fp : _fpMap[key])
+    {
+        static_cast<VOID(__cdecl*)(IID, LPVOID, Direct3DVersion)>(fp)(guid, unknown, version);
     }
 }
 
