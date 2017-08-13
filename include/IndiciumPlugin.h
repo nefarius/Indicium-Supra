@@ -23,10 +23,10 @@ typedef enum _Direct3DVersion : char
 
 INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version);
 
-INDICIUM_EXPORT Reset(IID guid, LPVOID unknown, Direct3DVersion version) {}
+INDICIUM_EXPORT Reset(IID guid, LPVOID unknown, Direct3DVersion version);
 
-INDICIUM_EXPORT EndScene(IID guid, LPVOID unknown, Direct3DVersion version) {}
+INDICIUM_EXPORT EndScene(IID guid, LPVOID unknown, Direct3DVersion version);
 
-INDICIUM_EXPORT ResizeTarget(IID guid, LPVOID unknown, Direct3DVersion version) {}
+INDICIUM_EXPORT ResizeTarget(IID guid, LPVOID unknown, Direct3DVersion version);
 
 #endif
