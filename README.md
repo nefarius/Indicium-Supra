@@ -31,7 +31,7 @@ The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit
 ## How to build
 Building should be pretty straight-forward since the POCO libraries get fetched [pre-compiled via NuGet](https://www.nuget.org/packages/poco-basic-windows-v140/) on first build automatically. The only manual additional step is to install the DirectX SDK.
 
-If Visual Studio can't load one or more projects the first time you launch ist, you might need to restore the NuGet packages. Open the Pachage Manager Console and hit Restore:
+If Visual Studio can't load one or more projects the first time you launch ist, you might need to restore the NuGet packages. Open the Package Manager Console and hit Restore:
 
 ![](https://lh3.googleusercontent.com/-K6g4v1RNMQo/WYyUwkquvZI/AAAAAAAAALQ/G_njXRtZQmwZUmo210vcLN_3pJphOuNigCHMYCw/s0/devenv_2017-08-10_19-15-45.png)
 
