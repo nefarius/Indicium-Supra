@@ -1,9 +1,13 @@
 #include "dllmain.h"
 #include "../../include/IndiciumPlugin.h"
 
+// DX
 #include <d3d9.h>
 #include <dxgi.h>
 #include <d3d11.h>
+
+// STL
+#include <mutex>
 
 // POCO
 #include <Poco/Message.h>
@@ -12,7 +16,7 @@
 #include <Poco/AutoPtr.h>
 #include <Poco/PatternFormatter.h>
 #include <Poco/FormattingChannel.h>
-#include <mutex>
+#include <Poco/Path.h>
 
 using Poco::Message;
 using Poco::Logger;
@@ -20,6 +24,7 @@ using Poco::FileChannel;
 using Poco::AutoPtr;
 using Poco::PatternFormatter;
 using Poco::FormattingChannel;
+using Poco::Path;
 
 // ImGui includes
 #include <imgui.h>
@@ -46,8 +51,10 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     if (dwReason != DLL_PROCESS_ATTACH)
         return TRUE;
 
+    std::string logfile("%TEMP%\\Indicium-ImGui.Plugin.log");
+
     AutoPtr<FileChannel> pFileChannel(new FileChannel);
-    pFileChannel->setProperty("path", "Indicium-ImGui.Plugin.log");
+    pFileChannel->setProperty("path", Poco::Path::expand(logfile));
     AutoPtr<PatternFormatter> pPF(new PatternFormatter);
     pPF->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i %s [%p]: %t");
     AutoPtr<FormattingChannel> pFC(new FormattingChannel(pPF, pFileChannel));
