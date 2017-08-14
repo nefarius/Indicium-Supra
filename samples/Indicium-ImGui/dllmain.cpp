@@ -11,6 +11,7 @@
 
 // STL
 #include <mutex>
+#include <map>
 
 // POCO
 #include <Poco/Message.h>
@@ -46,6 +47,8 @@ static std::once_flag d3d9Init;
 static std::once_flag d3d9exInit;
 static std::once_flag d3d10Init;
 static std::once_flag d3d11Init;
+
+static std::map<Direct3DVersion, bool> g_Initialized;
 
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 {
@@ -116,10 +119,15 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 
             HookWindowProc(params.hFocusWindow);
 
+            g_Initialized[Direct3DVersion::Direct3D9] = true;
+
         }, unknown);
 
-        ImGui_ImplDX9_NewFrame();
-        RenderScene();
+        if (g_Initialized[Direct3DVersion::Direct3D9])
+        {
+            ImGui_ImplDX9_NewFrame();
+            RenderScene();
+        }
 
         break;
     case Direct3DVersion::Direct3D9Ex:
@@ -143,10 +151,15 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 
             HookWindowProc(params.hFocusWindow);
 
+            g_Initialized[Direct3DVersion::Direct3D9Ex] = true;
+
         }, unknown);
 
-        ImGui_ImplDX9_NewFrame();
-        RenderScene();
+        if (g_Initialized[Direct3DVersion::Direct3D9Ex])
+        {
+            ImGui_ImplDX9_NewFrame();
+            RenderScene();
+        }
 
         break;
     case Direct3DVersion::Direct3D10:
@@ -176,10 +189,15 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 
             HookWindowProc(sd.OutputWindow);
 
+            g_Initialized[Direct3DVersion::Direct3D10] = true;
+
         }, unknown);
 
-        ImGui_ImplDX10_NewFrame();
-        RenderScene();
+        if (g_Initialized[Direct3DVersion::Direct3D10])
+        {
+            ImGui_ImplDX10_NewFrame();
+            RenderScene();
+        }
 
         break;
     case Direct3DVersion::Direct3D11:
@@ -212,10 +230,15 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 
             HookWindowProc(sd.OutputWindow);
 
+            g_Initialized[Direct3DVersion::Direct3D11] = true;
+
         }, unknown);
 
-        ImGui_ImplDX11_NewFrame();
-        RenderScene();
+        if (g_Initialized[Direct3DVersion::Direct3D11])
+        {
+            ImGui_ImplDX11_NewFrame();
+            RenderScene();
+        }
 
         break;
 
