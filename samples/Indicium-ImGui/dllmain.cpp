@@ -32,7 +32,7 @@ using Poco::Path;
 #include <imgui_impl_dx10.h>
 #include <imgui_impl_dx11.h>
 
-tDefWindowProc OriginalDefWindowProc = nullptr;
+t_WindowProc OriginalWindowProc = nullptr;
 
 static ID3D10Device*            g_pd3d10Device = nullptr;
 static ID3D11Device*            g_pd3d11Device = nullptr;
@@ -82,14 +82,12 @@ int init()
 
     logger.information("Hook engine initialized");
 
-    HookDefWindowProc();
-
     return 0;
 }
 
 INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 {
-    static auto& logger = Logger::get("Present");
+    static auto& logger = Logger::get(__func__);
     static auto bIsImGuiInitialized = false;
 
     switch (version)
@@ -112,6 +110,8 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
             ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
 
             logger.information("ImGui (DX9) initialized");
+
+            HookWindowProc(params.hFocusWindow);
 
         }, unknown);
 
@@ -137,6 +137,8 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
             ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
 
             logger.information("ImGui (DX9Ex) initialized");
+
+            HookWindowProc(params.hFocusWindow);
 
         }, unknown);
 
@@ -166,6 +168,10 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
             logger.information("Initializing ImGui");
 
             ImGui_ImplDX10_Init(sd.OutputWindow, g_pd3d10Device);
+
+            logger.information("ImGui (DX10) initialized");
+
+            HookWindowProc(sd.OutputWindow);
 
         }, unknown);
 
@@ -199,6 +205,10 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 
             ImGui_ImplDX11_Init(sd.OutputWindow, g_pd3d11Device, g_pd3dDeviceContext);
 
+            logger.information("ImGui (DX11) initialized");
+
+            HookWindowProc(sd.OutputWindow);
+
         }, unknown);
 
         ImGui_ImplDX11_NewFrame();
@@ -211,22 +221,16 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
     }
 }
 
-void HookDefWindowProc()
+void HookWindowProc(HWND hWnd)
 {
-    auto& logger = Logger::get("HookDefWindowProc");
+    auto& logger = Logger::get(__func__);
 
-    logger.information("Hooking USER32!DefWindowProcA (ANSI)");
+    auto lptrWndProc = reinterpret_cast<t_WindowProc>(GetWindowLongPtr(hWnd, GWLP_WNDPROC));
 
-    if (MH_CreateHookApiEx(L"user32", "DefWindowProcA", &DetourDefWindowProc, &OriginalDefWindowProc) != MH_OK)
+    if (MH_CreateHook(lptrWndProc, &DetourWindowProc, reinterpret_cast<LPVOID*>(&OriginalWindowProc)) != MH_OK)
     {
-        logger.error("Couldn't hook USER32!DefWindowProcA (ANSI)");
-    }
-
-    logger.information("Hooking USER32!DefWindowProcW (Unicode)");
-
-    if (MH_CreateHookApiEx(L"user32", "DefWindowProcW", &DetourDefWindowProc, &OriginalDefWindowProc) != MH_OK)
-    {
-        logger.error("Couldn't hook USER32!DefWindowProcW (Unicode)");
+        logger.error("Coudln't create hook for WNDPROC");
+        return;
     }
 
     if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
@@ -235,10 +239,10 @@ void HookDefWindowProc()
         return;
     }
 
-    logger.information("DefWindowProc hooked");
+    logger.information("WindowProc hooked");
 }
 
-LRESULT WINAPI DetourDefWindowProc(
+LRESULT WINAPI DetourWindowProc(
     _In_ HWND hWnd,
     _In_ UINT Msg,
     _In_ WPARAM wParam,
@@ -246,13 +250,13 @@ LRESULT WINAPI DetourDefWindowProc(
 )
 {
     static std::once_flag flag;
-    std::call_once(flag, []() {Logger::get("DetourDefWindowProc").information("++ USER32!DefWindowProc called"); });
+    std::call_once(flag, []() {Logger::get("DetourWindowProc").information("++ DetourWindowProc called"); });
 
     ImGui_ImplDX9_WndProcHandler(hWnd, Msg, wParam, lParam);
     ImGui_ImplDX10_WndProcHandler(hWnd, Msg, wParam, lParam);
     ImGui_ImplDX11_WndProcHandler(hWnd, Msg, wParam, lParam);
 
-    return OriginalDefWindowProc(hWnd, Msg, wParam, lParam);
+    return OriginalWindowProc(hWnd, Msg, wParam, lParam);
 }
 
 void RenderScene()

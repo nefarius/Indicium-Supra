@@ -13,24 +13,24 @@ inline MH_STATUS MH_CreateHookApiEx(
 		pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
 }
 
-typedef LRESULT(WINAPI *tDefWindowProc)(
+typedef LRESULT(WINAPI *t_WindowProc)(
 	_In_ HWND hWnd,
 	_In_ UINT Msg,
 	_In_ WPARAM wParam,
 	_In_ LPARAM lParam
 	);
 
-LRESULT WINAPI DetourDefWindowProc(
+LRESULT WINAPI DetourWindowProc(
 	_In_ HWND hWnd,
 	_In_ UINT Msg,
 	_In_ WPARAM wParam,
 	_In_ LPARAM lParam
 	);
 
-void HookDefWindowProc();
+void HookWindowProc(HWND hWnd);
 int init();
 void RenderScene();
 
-IMGUI_API LRESULT   ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-IMGUI_API LRESULT   ImGui_ImplDX10_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-IMGUI_API LRESULT   ImGui_ImplDX11_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_API LRESULT   ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_API LRESULT   ImGui_ImplDX10_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_API LRESULT   ImGui_ImplDX11_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
