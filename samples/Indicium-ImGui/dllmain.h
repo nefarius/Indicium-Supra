@@ -2,16 +2,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <string>
-#include <MinHook.h>
 #include "imgui.h"
-
-template <typename T>
-inline MH_STATUS MH_CreateHookApiEx(
-	LPCWSTR pszModule, LPCSTR pszProcName, LPVOID pDetour, T** ppOriginal)
-{
-	return MH_CreateHookApi(
-		pszModule, pszProcName, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
-}
 
 typedef LRESULT(WINAPI *t_WindowProc)(
 	_In_ HWND hWnd,

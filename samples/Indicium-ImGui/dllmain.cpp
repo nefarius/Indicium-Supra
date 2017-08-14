@@ -6,6 +6,9 @@
 #include <dxgi.h>
 #include <d3d11.h>
 
+// MinHook
+#include <MinHook.h>
+
 // STL
 #include <mutex>
 
