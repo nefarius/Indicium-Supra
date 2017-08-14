@@ -74,8 +74,10 @@ void PluginManager::load()
                 {
                     _fpMap[symbol].push_back(plugin->getSymbol(symbol));
                 }
-
-                logger.warning("Missing export %s from plugin %s", symbol, plugin->getPath());
+                else
+                {
+                    logger.warning("Missing export %s from plugin %s", symbol, plugin->getPath());
+                }
             }
 
             if (!plugin->isLoaded())
