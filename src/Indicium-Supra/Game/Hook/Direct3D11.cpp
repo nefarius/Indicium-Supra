@@ -45,7 +45,8 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nu
 
 	UINT createDeviceFlags = 0;
 	D3D_FEATURE_LEVEL featureLevel;
-	const D3D_FEATURE_LEVEL featureLevelArray[1] = {D3D_FEATURE_LEVEL_11_0,};
+    // Note: requesting lower feature level in case of missing hardware support
+	const D3D_FEATURE_LEVEL featureLevelArray[3] = { D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0 };
 
 	auto hD3D11CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(hModD3D11, "D3D11CreateDeviceAndSwapChain"));
 	if (hD3D11CreateDeviceAndSwapChain == nullptr)
