@@ -94,7 +94,6 @@ int init()
 INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 {
     static auto& logger = Logger::get(__func__);
-    static auto bIsImGuiInitialized = false;
 
     switch (version)
     {
@@ -259,7 +258,7 @@ void HookWindowProc(HWND hWnd)
         return;
     }
 
-    if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
+    if (MH_EnableHook(lptrWndProc) != MH_OK)
     {
         logger.error("Couldn't enable DefWindowProc hooks");
         return;

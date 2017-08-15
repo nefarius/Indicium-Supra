@@ -1,5 +1,6 @@
 #pragma once
 #include "Direct3DBase.h"
+#include <dxgi.h>
 #include <d3d11.h>
 
 namespace Direct3D11Hooking
