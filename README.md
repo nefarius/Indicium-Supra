@@ -22,9 +22,10 @@ The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit
  
 ## Supported DirectX versions
  * DirectX 9.0
- * DirectX 9.0 Extended
+ * DirectX 9.0 Extended (Vista+)
  * DirectX 10
  * DirectX 11
+ * DirectX 12
 
 ## How to build
 Building should be pretty straight-forward since the POCO libraries get fetched [pre-compiled via NuGet](https://www.nuget.org/packages/poco-basic-windows-v140/) on first build automatically. The only manual additional step is to install the DirectX SDK.
