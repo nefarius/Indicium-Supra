@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Indicium-Supra", "src\Indicium-Supra\Indicium-Supra.vcxproj", "{DB383579-DA7F-48C0-AB1F-7C4C93544E2C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Indicium-FW1FontWrapper", "samples\Indicium-FW1FontWrapper\Indicium-FW1FontWrapper.vcxproj", "{32E54E8E-9BD1-4E71-AEF6-B1E3090711AA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Indicium-ImGui", "samples\Indicium-ImGui\Indicium-ImGui.vcxproj", "{FC86B49A-3A73-4D82-81BA-D72B54C9132D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Indicium-Agrippa", "src\Indicium-Agrippa\Indicium-Agrippa.vcxproj", "{7F81F5D7-4508-41F8-B9A4-FB623DCF4EBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,14 @@ Global
 		{FC86B49A-3A73-4D82-81BA-D72B54C9132D}.Release|Win32.Build.0 = Release|Win32
 		{FC86B49A-3A73-4D82-81BA-D72B54C9132D}.Release|x64.ActiveCfg = Release|x64
 		{FC86B49A-3A73-4D82-81BA-D72B54C9132D}.Release|x64.Build.0 = Release|x64
+		{7F81F5D7-4508-41F8-B9A4-FB623DCF4EBD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7F81F5D7-4508-41F8-B9A4-FB623DCF4EBD}.Debug|Win32.Build.0 = Debug|Win32
+		{7F81F5D7-4508-41F8-B9A4-FB623DCF4EBD}.Debug|x64.ActiveCfg = Debug|x64
+		{7F81F5D7-4508-41F8-B9A4-FB623DCF4EBD}.Debug|x64.Build.0 = Debug|x64
+		{7F81F5D7-4508-41F8-B9A4-FB623DCF4EBD}.Release|Win32.ActiveCfg = Release|Win32
+		{7F81F5D7-4508-41F8-B9A4-FB623DCF4EBD}.Release|Win32.Build.0 = Release|Win32
+		{7F81F5D7-4508-41F8-B9A4-FB623DCF4EBD}.Release|x64.ActiveCfg = Release|x64
+		{7F81F5D7-4508-41F8-B9A4-FB623DCF4EBD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
