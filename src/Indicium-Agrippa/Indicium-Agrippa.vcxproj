@@ -164,9 +164,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="IPCServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agrippa.h" />
+    <ClInclude Include="IPCServer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
