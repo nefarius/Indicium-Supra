@@ -75,3 +75,4 @@ Road Redemption, 64-Bit
  * [CREATING A RENDER TARGET IN DIRECTX11](http://www.hlsl.co.uk/blog/2014/11/19/creating-a-render-target-in-directx11)
  * [ion RE Library](https://github.com/scen/ionlib)
  * [C# – SCREEN CAPTURE AND OVERLAYS FOR DIRECT3D 9, 10 AND 11 USING API HOOKS](http://spazzarama.com/2011/03/14/c-screen-capture-and-overlays-for-direct3d-9-10-and-11-using-api-hooks/)
+ * [HelloD3D12](https://github.com/GPUOpen-LibrariesAndSDKs/HelloD3D12)
