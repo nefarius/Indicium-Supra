@@ -8,7 +8,8 @@ typedef enum _Direct3DVersion : char
     Direct3D9 = 0,
     Direct3D9Ex = 1 << 0,
     Direct3D10 = 1 << 1,
-    Direct3D11 = 1 << 2
+    Direct3D11 = 1 << 2,
+    Direct3D12 = 1 << 3
 
 } Direct3DVersion;
 
@@ -16,6 +17,7 @@ typedef enum _Direct3DVersion : char
 #define IS_DIRECT3D9EX(_v_)     ((_v_ & Direct3DVersion::Direct3D9Ex) != 0)
 #define IS_DIRECT3D10(_v_)      ((_v_ & Direct3DVersion::Direct3D10) != 0)
 #define IS_DIRECT3D11(_v_)      ((_v_ & Direct3DVersion::Direct3D11) != 0)
+#define IS_DIRECT3D12(_v_)      ((_v_ & Direct3DVersion::Direct3D12) != 0)
 
 #ifndef IS_INDICIUM_SUPRA
 

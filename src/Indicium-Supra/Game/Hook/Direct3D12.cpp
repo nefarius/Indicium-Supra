@@ -1,14 +1,16 @@
 #include "Direct3D12.h"
-#include "DXGI.h"
+#include <dxgi.h>
+#include <dxgi1_4.h>
 #include "Utils/Misc.h"
 #include <d3d12.h>
+#include "DXGI.h"
 
 
-Direct3D12Hooking::Direct3D12::Direct3D12(): vtableSwapChain(nullptr)
+Direct3D12Hooking::Direct3D12::Direct3D12() : vtableSwapChain(nullptr), pd3dDevice(nullptr), pQueue(nullptr), pSwapChain(nullptr)
 {
     auto& logger = Logger::get(LOG_REGION());
 
-    logger.information("Acquiring VTable for ID3D11Device and IDXGISwapChain...");
+    logger.information("Acquiring VTable for ID3D12Device and IDXGISwapChain...");
 
     auto hModDXGI = GetModuleHandle("DXGI.dll");
     auto hModD3D12 = GetModuleHandle("D3D12.dll");
@@ -33,78 +35,80 @@ Direct3D12Hooking::Direct3D12::Direct3D12(): vtableSwapChain(nullptr)
         return;
     }
 
-    //auto hr12 = static_cast<HRESULT(WINAPI *)(
-    //    IUNkown)>
-
-    /*
-
-    // Setup swap chain
-    DXGI_SWAP_CHAIN_DESC sd;
+    auto hCreateDXGIFactory1 = static_cast<LPVOID>(GetProcAddress(hModDXGI, "CreateDXGIFactory1"));
+    if (hCreateDXGIFactory1 == nullptr)
     {
-        ZeroMemory(&sd, sizeof(sd));
-        sd.BufferCount = 2;
-        sd.BufferDesc.Width = 0;
-        sd.BufferDesc.Height = 0;
-        sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        sd.BufferDesc.RefreshRate.Numerator = 60;
-        sd.BufferDesc.RefreshRate.Denominator = 1;
-        sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-        sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.OutputWindow = temp_window.GetWindowHandle();
-        sd.SampleDesc.Count = 1;
-        sd.SampleDesc.Quality = 0;
-        sd.Windowed = TRUE;
-        sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    }
-
-    UINT createDeviceFlags = 0;
-    D3D_FEATURE_LEVEL featureLevel;
-    // Note: requesting lower feature level in case of missing hardware support
-    const D3D_FEATURE_LEVEL featureLevelArray[3] = { D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0 };
-
-    auto hD3D11CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(hModD3D11, "D3D11CreateDeviceAndSwapChain"));
-    if (hD3D11CreateDeviceAndSwapChain == nullptr)
-    {
-        logger.error("Couldn't get handle to D3D11CreateDeviceAndSwapChain");
+        logger.error("Couldn't get handle to CreateDXGIFactory1");
         return;
     }
 
-    auto hr11 = static_cast<HRESULT(WINAPI *)(
-        IDXGIAdapter*,
-        D3D_DRIVER_TYPE,
-        HMODULE,
-        UINT,
-        const D3D_FEATURE_LEVEL*,
-        UINT,
-        UINT,
-        const DXGI_SWAP_CHAIN_DESC*,
-        IDXGISwapChain**,
-        ID3D11Device**,
-        D3D_FEATURE_LEVEL*,
-        ID3D11DeviceContext**)>(hD3D11CreateDeviceAndSwapChain)(
-            nullptr,
-            D3D_DRIVER_TYPE_HARDWARE,
-            nullptr,
-            createDeviceFlags,
-            featureLevelArray,
-            1,
-            D3D11_SDK_VERSION,
-            &sd,
-            &pSwapChain,
-            &pd3dDevice,
-            &featureLevel,
-            &pd3dDeviceContext);
+    IDXGIFactory4* pFactory;
+    auto hr = static_cast<HRESULT(WINAPI *)(
+        REFIID,
+        void**)>(hCreateDXGIFactory1)(IID_PPV_ARGS(&pFactory));
 
-    if (FAILED(hr11))
+    if (FAILED(hr))
     {
-        logger.error("Couldn't create D3D11 device");
+        logger.error("Couldn't create DXGI factory");
+        return;
+    }
+
+    auto hr12 = static_cast<HRESULT(WINAPI *)(
+        IUnknown*,
+        D3D_FEATURE_LEVEL,
+        REFIID,
+        void**)>(hD3D12CreateDevice)(
+            nullptr,
+            D3D_FEATURE_LEVEL_11_0,
+            IID_PPV_ARGS(&pd3dDevice));
+
+    if (FAILED(hr12))
+    {
+        logger.error("Couldn't create D3D12 device");
+        return;
+    }
+
+    D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+    queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+
+    hr = pd3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&pQueue));
+
+    if (FAILED(hr))
+    {
+        logger.error("Command queue creation failed");
+        return;
+    }
+
+    DXGI_SWAP_CHAIN_DESC scDesc;
+    ZeroMemory(&scDesc, sizeof(scDesc));
+    scDesc.BufferCount = 2;
+    scDesc.BufferDesc.Width = 0;
+    scDesc.BufferDesc.Height = 0;
+    scDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    scDesc.BufferDesc.RefreshRate.Numerator = 60;
+    scDesc.BufferDesc.RefreshRate.Denominator = 1;
+    scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    scDesc.OutputWindow = temp_window.GetWindowHandle();
+    scDesc.SampleDesc.Count = 1;
+    scDesc.SampleDesc.Quality = 0;
+    scDesc.Windowed = TRUE;
+    scDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+
+    hr = pFactory->CreateSwapChain(
+        pQueue,
+        &scDesc,
+        &pSwapChain
+    );
+
+    if (FAILED(hr))
+    {
+        logger.error("Swap chain creation failed");
         return;
     }
 
     vtable = *reinterpret_cast<UINTX **>(pd3dDevice);
     vtableSwapChain = *reinterpret_cast<UINTX **>(pSwapChain);
-
-    */
 
     logger.information("VTable acquired");
 }
@@ -112,9 +116,27 @@ Direct3D12Hooking::Direct3D12::Direct3D12(): vtableSwapChain(nullptr)
 
 Direct3D12Hooking::Direct3D12::~Direct3D12()
 {
+    auto& logger = Logger::get(LOG_REGION());
+
+    logger.information("Releasing temporary objects");
+
+    if (pSwapChain)
+        pSwapChain->Release();
+
+    if (pd3dDevice)
+        pd3dDevice->Release();
+
+    if (pQueue)
+        pQueue->Release();
 }
 
-bool Direct3D12Hooking::Direct3D12::GetSwapChainVTable(UINT32* pVTable) const
+bool Direct3D12Hooking::Direct3D12::GetDeviceVTable(UINTX* pVTable) const
+{
+    // TODO: get vtable ordinals and implement
+    return false;
+}
+
+bool Direct3D12Hooking::Direct3D12::GetSwapChainVTable(UINTX* pVTable) const
 {
     if (vtableSwapChain)
     {

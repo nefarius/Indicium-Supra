@@ -12,12 +12,14 @@
 #include <Game/Hook/DXGI.h>
 #include <Game/Hook/Direct3D10.h>
 #include <Game/Hook/Direct3D11.h>
+#include <Game/Hook/Direct3D12.h>
 #include <Game/Hook/DirectInput8.h>
 
 #include <Utils/PluginManager.h>
 
-#include <Poco/Logger.h>
 #include <mutex>
+
+#include <Poco/Logger.h>
 
 using Poco::Logger;
 
@@ -39,6 +41,11 @@ Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*>
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent11Hook;
 Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget11Hook;
 
+// D3D12
+Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent12Hook;
+Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget12Hook;
+
+
 // DInput8
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8> g_acquire8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD> g_getDeviceData8Hook;
@@ -54,7 +61,7 @@ void initGame()
 {
     auto& logger = Logger::get(__func__);
 
-    bool d3d9_available, d3d9ex_available, d3d10_available, d3d11_available, dinput8_available;
+    bool d3d9_available, d3d9ex_available, d3d10_available, d3d11_available, d3d12_available, dinput8_available;
 
     auto sz_ProcName = static_cast<LPSTR>(malloc(MAX_PATH + 1));
     GetProcessImageFileName(GetCurrentProcess(), sz_ProcName, MAX_PATH);
@@ -69,6 +76,7 @@ void initGame()
     UINTX vtable9Ex[Direct3D9Hooking::Direct3D9Ex::VTableElements] = { 0 };
     UINTX vtable10SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
     UINTX vtable11SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
+    UINTX vtable12SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
     UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
 
     // get VTable for Direct3DCreate9
@@ -110,6 +118,17 @@ void initGame()
         d3d11_available = d3d11.GetSwapChainVTable(vtable11SwapChain);
 
         if (!d3d11_available)
+        {
+            logger.warning("Couldn't get VTable for IDXGISwapChain");
+        }
+    }
+
+    // get VTable for IDXGISwapChain (v12)
+    {
+        Direct3D12Hooking::Direct3D12 d3d12;
+        d3d12_available = d3d12.GetSwapChainVTable(vtable12SwapChain);
+
+        if (!d3d12_available)
         {
             logger.warning("Couldn't get VTable for IDXGISwapChain");
         }
@@ -158,6 +177,12 @@ void initGame()
     {
         logger.information("Game uses Direct3D11");
         HookDX11(vtable11SwapChain);
+    }
+
+    if (d3d12_available)
+    {
+        logger.information("Game uses Direct3D12");
+        HookDX12(vtable12SwapChain);
     }
 
     if (dinput8_available)
@@ -313,6 +338,34 @@ void HookDX11(UINTX* vtable11SwapChain)
         g_plugins.resizeTarget(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D11);
 
         return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
+    });
+}
+
+void HookDX12(UINTX* vtable11SwapChain)
+{
+    auto& logger = Logger::get(__func__);
+    logger.information("Hooking IDXGISwapChain::Present");
+
+    g_swapChainPresent12Hook.apply(vtable11SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+    {
+        static std::once_flag flag;
+        std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::Present called"); });
+
+        g_plugins.present(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D12);
+
+        return g_swapChainPresent12Hook.callOrig(chain, SyncInterval, Flags);
+    });
+
+    logger.information("Hooking IDXGISwapChain::ResizeTarget");
+
+    g_swapChainResizeTarget12Hook.apply(vtable11SwapChain[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+    {
+        static std::once_flag flag;
+        std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::ResizeTarget called"); });
+
+        g_plugins.resizeTarget(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D12);
+
+        return g_swapChainResizeTarget12Hook.callOrig(chain, pNewTargetParameters);
     });
 }
 

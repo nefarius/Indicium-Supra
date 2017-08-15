@@ -29,6 +29,9 @@
     <ClCompile Include="Utils\PluginManager.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Hook\Direct3D12.cpp">
+      <Filter>Game\Hook\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">
@@ -54,6 +57,9 @@
     </Filter>
     <Filter Include="Game\Hook\D3D11">
       <UniqueIdentifier>{170e4a2e-f495-444e-b4f2-491ad22e6b24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Hook\D3D12">
+      <UniqueIdentifier>{c6f9a2b6-b779-4663-b03b-05a92612abbf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\IndiciumPlugin.h">
       <Filter>Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\Direct3D12.h">
+      <Filter>Game\Hook\D3D12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
