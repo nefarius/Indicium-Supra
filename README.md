@@ -15,10 +15,10 @@ API-Hooking and rendering framework for DirectX-based games.
 The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit) and does all of the heavy lifting automatically. On loading it tries to detect the used DirectX/Direct3D version, acquire the virtual function pointer table and hook into all common functions used for rendering. Every time the host process renders content, the function calls get intercepted and forwarded to one or more plugins which also get loaded on library boot. The plugins can then do what they want with the provided device/swapchain pointers (like render additional content or blank out certain parts of the resulting image).
 
 ## Prerequisites
- * Visual Studio **2015** ([Community Edition](https://go.microsoft.com/fwlink/p/?LinkId=534599) is just fine)
+ * Visual Studio **2017** ([Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15) is just fine)
    * If asked, install Windows XP support for C++
    ![](https://lh3.googleusercontent.com/-jPbvojP6oeA/WYySR-CS9XI/AAAAAAAAALE/4dpA1-48OdA9EXHrWK7kCbEW_0vOY13VQCHMYCw/s0/devenv_2017-08-10_19-05-09.png)
- * [Microsoft DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812)
+ * [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
  * [POCO C++ libraries](https://pocoproject.org/) (referenced by NuGet)
  * [MinHook](https://github.com/TsudaKageyu/minhook) (referenced by NuGet)
  
