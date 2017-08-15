@@ -85,7 +85,7 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nu
 	scDesc.BufferCount = 1;
 	scDesc.Flags = 0;
 	scDesc.Windowed = true;
-	scDesc.OutputWindow = temp_window->GetWindowHandle();
+	scDesc.OutputWindow = temp_window.GetWindowHandle();
 	scDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	scDesc.SampleDesc = sampleDesc;

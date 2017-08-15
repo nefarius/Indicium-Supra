@@ -23,9 +23,6 @@
     <ClCompile Include="Game\Hook\DirectInput8.cpp">
       <Filter>Game\Hook\DInput8</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Hook\Direct3DBase.cpp">
-      <Filter>Game\Hook</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Hook\Direct3D11.cpp">
       <Filter>Game\Hook\D3D11</Filter>
     </ClCompile>

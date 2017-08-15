@@ -8,16 +8,16 @@ using Poco::Logger;
 
 namespace Direct3DHooking
 {
-	class Direct3DBase
-	{
-	protected:
-		UINTX* vtable;
-		Window* temp_window;
-	public:
-		Direct3DBase();
-		virtual ~Direct3DBase();
+    class Direct3DBase
+    {
+    protected:
+        UINTX* vtable;
+        Window temp_window;
+    public:
+        Direct3DBase() : vtable(nullptr) {}
+        virtual ~Direct3DBase() {}
 
-		virtual bool GetDeviceVTable(UINTX* pVTable) const = 0;
-	};
+        virtual bool GetDeviceVTable(UINTX* pVTable) const = 0;
+    };
 }
 

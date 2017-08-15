@@ -43,7 +43,7 @@ Direct3D9Hooking::Direct3D9::Direct3D9() : Direct3DBase(), d3d9(nullptr), d3d9_d
 	present_parameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
 	present_parameters.BackBufferFormat = display_mode.Format;
 
-	auto error_code = d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window->GetWindowHandle(),
+	auto error_code = d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, temp_window.GetWindowHandle(),
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_DISABLE_DRIVER_MANAGEMENT, &present_parameters, &d3d9_device);
 	if (FAILED(error_code))
 	{

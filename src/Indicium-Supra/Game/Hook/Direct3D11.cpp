@@ -36,7 +36,7 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nu
 		sd.BufferDesc.RefreshRate.Denominator = 1;
 		sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		sd.OutputWindow = temp_window->GetWindowHandle();
+		sd.OutputWindow = temp_window.GetWindowHandle();
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
 		sd.Windowed = TRUE;
