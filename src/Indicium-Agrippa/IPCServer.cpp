@@ -2,15 +2,27 @@
 #define ZMQ_STATIC
 #include "zmq.h"
 #include <cassert>
+#include <Poco/Logger.h>
+
+using Poco::Logger;
 
 
 IPCServer::IPCServer(NotificationQueue& queue) : _context(nullptr), _responder(nullptr), _queue(queue)
 {
-    _context = zmq_ctx_new();
-    _responder = zmq_socket(_context, ZMQ_PAIR);
+    std::string bindAddr = "tcp://127.0.0.1:5556";
+    auto& logger = Logger::get(__func__);
 
-    auto rc = zmq_bind(_responder, "tcp://127.0.0.1:19622");
-    assert(rc == 0);
+    _context = zmq_ctx_new();
+    _responder = zmq_socket(_context, ZMQ_REP);
+
+    logger.information("Binding IPCServer to %s", bindAddr);
+
+    auto rc = zmq_bind(_responder, bindAddr.c_str());
+    
+    if (rc != 0)
+    {
+        logger.fatal("Failed to bind IPCServer to %s: %s", bindAddr, std::to_string(GetLastError()));
+    }
 }
 
 
@@ -22,23 +34,34 @@ IPCServer::~IPCServer()
 
 void IPCServer::run()
 {
-    int64_t more;
-    size_t more_size = sizeof more;
+    auto& logger = Logger::get(__func__);
 
     while (true)
     {
-        do {
-            /* Create an empty ØMQ message to hold the message part */
-            zmq_msg_t part;
-            int rc = zmq_msg_init(&part);
-            assert(rc == 0);
-            /* Block until a message is available to be received from socket */
-            rc = zmq_recvmsg(_responder, &part, 0);
-            assert(rc == 0);
-            /* Determine if more message parts are to follow */
-            rc = zmq_getsockopt(_responder, ZMQ_RCVMORE, &more, &more_size);
-            assert(rc == 0);
-            zmq_msg_close(&part);
-        } while (more);
+        /* Create an empty ØMQ message to hold the message part */
+        zmq_msg_t input;
+        auto rc = zmq_msg_init(&input);
+
+        if (rc != 0)
+        {
+            logger.error("zmq_msg_init failed: %s", std::to_string(rc));
+        }
+
+        /* Block until a message is available to be received from socket */
+        rc = zmq_recvmsg(_responder, &input, 0);
+
+        if (rc == -1)
+        {
+            logger.error("zmq_recvmsg failed: %s", std::to_string(rc));
+        }
+
+        logger.information("Received incoming message");
+
+        zmq_msg_close(&input);
+
+        zmq_msg_t output;
+        zmq_msg_init_data(&output, "OK", 2, nullptr, nullptr);
+        zmq_sendmsg(_responder, &output, 0);
+        zmq_msg_close(&output);
     }
 }
