@@ -32,6 +32,8 @@ void IPCServer::run()
         _socket.recv(&height);
         _socket.recv(&buffer);
 
+        logger.information("Buffer size: %s", std::to_string(buffer.size()));
+
         _queue.enqueueNotification(new PixelBufferNotification(
             static_cast<RGBQUAD*>(buffer.data()),
             std::stoi(static_cast<char*>(width.data())),

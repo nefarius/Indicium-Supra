@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using NetMQ;
 using NetMQ.Sockets;
@@ -15,12 +16,12 @@ namespace IATester
 
             using (var client = new RequestSocket("tcp://localhost:36129"))
             {
-                using (var image = Image.FromFile(@"D:\Downloads\# Bilder\blood_moon_by_pridark-d72916c.png"))
+                using (var image = Image.FromFile(@"D:\Downloads\# Bilder\Austria-Flag-4.jpg"))
                 {
-                    using (var bitmap = new Bitmap(image))
+                    using (var bitmap = new Bitmap(image).Clone(new Rectangle(0, 0, image.Width, image.Height), PixelFormat.Format32bppArgb))
                     {
                         var data = bitmap.LockBits(new Rectangle(0, 0, image.Width, image.Height),
-                            ImageLockMode.ReadOnly, image.PixelFormat);
+                            ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
                         try
                         {
@@ -32,8 +33,8 @@ namespace IATester
                             Marshal.Copy(data.Scan0, buffer, 0, length);
 
                             var m = new NetMQMessage(5);
-                            m.Append(10.ToString());
-                            m.Append(10.ToString());
+                            m.Append(600.ToString());
+                            m.Append(350.ToString());
                             m.Append(image.Width.ToString());
                             m.Append(image.Height.ToString());
                             m.Append(buffer);
