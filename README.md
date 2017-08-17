@@ -15,18 +15,17 @@ API-Hooking and rendering framework for DirectX-based games.
 The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit) and does all of the heavy lifting automatically. On loading it tries to detect the used DirectX/Direct3D version, acquire the virtual function pointer table and hook into all common functions used for rendering. Every time the host process renders content, the function calls get intercepted and forwarded to one or more plugins which also get loaded on library boot. The plugins can then do what they want with the provided device/swapchain pointers (like render additional content or blank out certain parts of the resulting image).
 
 ## Prerequisites
- * Visual Studio **2015** ([Community Edition](https://go.microsoft.com/fwlink/p/?LinkId=534599) is just fine)
-   * If asked, install Windows XP support for C++
-   ![](https://lh3.googleusercontent.com/-jPbvojP6oeA/WYySR-CS9XI/AAAAAAAAALE/4dpA1-48OdA9EXHrWK7kCbEW_0vOY13VQCHMYCw/s0/devenv_2017-08-10_19-05-09.png)
- * [Microsoft DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812)
+ * Visual Studio **2017** ([Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15) is just fine)
+ * [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
  * [POCO C++ libraries](https://pocoproject.org/) (referenced by NuGet)
  * [MinHook](https://github.com/TsudaKageyu/minhook) (referenced by NuGet)
  
 ## Supported DirectX versions
  * DirectX 9.0
- * DirectX 9.0 Extended
+ * DirectX 9.0 Extended (Vista+)
  * DirectX 10
  * DirectX 11
+ * DirectX 12
 
 ## How to build
 Building should be pretty straight-forward since the POCO libraries get fetched [pre-compiled via NuGet](https://www.nuget.org/packages/poco-basic-windows-v140/) on first build automatically. The only manual additional step is to install the DirectX SDK.
@@ -75,3 +74,4 @@ Road Redemption, 64-Bit
  * [CREATING A RENDER TARGET IN DIRECTX11](http://www.hlsl.co.uk/blog/2014/11/19/creating-a-render-target-in-directx11)
  * [ion RE Library](https://github.com/scen/ionlib)
  * [C# – SCREEN CAPTURE AND OVERLAYS FOR DIRECT3D 9, 10 AND 11 USING API HOOKS](http://spazzarama.com/2011/03/14/c-screen-capture-and-overlays-for-direct3d-9-10-and-11-using-api-hooks/)
+ * [HelloD3D12](https://github.com/GPUOpen-LibrariesAndSDKs/HelloD3D12)
