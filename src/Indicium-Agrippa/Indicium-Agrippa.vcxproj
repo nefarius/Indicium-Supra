@@ -165,10 +165,12 @@
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="IPCServer.cpp" />
+    <ClCompile Include="PixelBufferNotification.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agrippa.h" />
     <ClInclude Include="IPCServer.h" />
+    <ClInclude Include="PixelBufferNotification.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

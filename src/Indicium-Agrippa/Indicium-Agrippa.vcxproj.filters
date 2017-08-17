@@ -21,12 +21,18 @@
     <ClCompile Include="IPCServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PixelBufferNotification.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agrippa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IPCServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelBufferNotification.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

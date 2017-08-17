@@ -2,19 +2,22 @@
 
 #include <Poco/Runnable.h>
 #include <Poco/NotificationQueue.h>
+#define ZMQ_STATIC
+#include <zmq.hpp>
 
 using Poco::NotificationQueue;
+
 
 class IPCServer :
     public Poco::Runnable
 {
-    void* _context;
-    void* _responder;
     NotificationQueue& _queue;
+    zmq::context_t _context;
+    zmq::socket_t _socket;
 
 public:
     explicit IPCServer(NotificationQueue& queue);
-    ~IPCServer();
+    ~IPCServer() {}
 
     void run() override;
 };

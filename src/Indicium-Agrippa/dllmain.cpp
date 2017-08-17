@@ -13,6 +13,7 @@
 #include <Poco/PatternFormatter.h>
 #include <Poco/Path.h>
 #include <Poco/FileChannel.h>
+#include "PixelBufferNotification.h"
 
 using Poco::AutoPtr;
 using Poco::SharedPtr;
@@ -56,6 +57,8 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
 {
+    static auto& logger = Logger::get(__func__);
+
     std::call_once(initFlag, []()
     {
         auto& logger = Logger::get("Present");
@@ -77,4 +80,14 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
             delete g_ipcServer;
         }
     });
+
+    AutoPtr<Notification> pPBN(g_ipcQueue.dequeueNotification());
+
+    if (!pPBN.isNull())
+    {
+        logger.information("Message received");
+        auto pBuffer = dynamic_cast<PixelBufferNotification*>(pPBN.get());
+
+        logger.information("%s x %s", std::to_string(pBuffer->getWidth()), std::to_string(pBuffer->getHeight()));
+    }
 }
