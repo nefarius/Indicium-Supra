@@ -22,7 +22,7 @@
     <ProjectGuid>{32E54E8E-9BD1-4E71-AEF6-B1E3090711AA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>IndiciumFW1FontWrapper</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
