@@ -194,7 +194,7 @@ void initGame()
     logger.information("Library initialized successfully");
 
     /*
-     * TODO: implement ptoper shutdown and clean-up
+     * TODO: implement proper shutdown and clean-up
     logger.information("Shutting down hooks...");
 
     if (MH_DisableHook(MH_ALL_HOOKS) != MH_OK)
