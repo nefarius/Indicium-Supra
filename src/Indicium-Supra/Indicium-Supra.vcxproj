@@ -109,7 +109,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -128,7 +128,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -152,7 +152,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -176,7 +176,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -223,14 +223,14 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets" Condition="Exists('..\..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets')" />
     <Import Project="..\..\packages\Nefarius.minhook.1.3.3.1\build\native\Nefarius.minhook.targets" Condition="Exists('..\..\packages\Nefarius.minhook.1.3.3.1\build\native\Nefarius.minhook.targets')" />
+    <Import Project="..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets" Condition="Exists('..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\poco-basic-windows-v140.1.7.8\build\native\poco-basic-windows-v140.targets'))" />
     <Error Condition="!Exists('..\..\packages\Nefarius.minhook.1.3.3.1\build\native\Nefarius.minhook.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Nefarius.minhook.1.3.3.1\build\native\Nefarius.minhook.targets'))" />
+    <Error Condition="!Exists('..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets'))" />
   </Target>
 </Project>
