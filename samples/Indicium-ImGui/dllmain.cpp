@@ -42,6 +42,7 @@ static ID3D10Device*            g_pd3d10Device = nullptr;
 static ID3D11Device*            g_pd3d11Device = nullptr;
 static ID3D11DeviceContext*     g_pd3dDeviceContext = nullptr;
 static IDXGISwapChain*          g_pSwapChain = nullptr;
+static ID3D11RenderTargetView*  g_mainRenderTargetView = nullptr;
 
 static std::once_flag d3d9Init;
 static std::once_flag d3d9exInit;
@@ -218,6 +219,11 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
             // get device context
             g_pd3d11Device->GetImmediateContext(&g_pd3dDeviceContext);
 
+            ID3D11Texture2D* pBackBuffer;
+            g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+            g_pd3d11Device->CreateRenderTargetView(pBackBuffer, NULL, &g_mainRenderTargetView);
+            pBackBuffer->Release();
+
             DXGI_SWAP_CHAIN_DESC sd;
             g_pSwapChain->GetDesc(&sd);
 
@@ -236,6 +242,7 @@ INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
         if (g_Initialized[Direct3DVersion::Direct3D11])
         {
             ImGui_ImplDX11_NewFrame();
+            g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
             RenderScene();
         }
 

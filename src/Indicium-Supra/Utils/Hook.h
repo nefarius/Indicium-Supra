@@ -2,11 +2,10 @@
 
 #include "Windows.h"
 #include <MinHook.h>
+#include <Poco/Exception.h>
 
 #include <type_traits>
 
-#include <Poco/Logger.h>
-using Poco::Logger;
 
 enum class CallConvention
 {
@@ -46,7 +45,6 @@ class Hook
 
 	bool _isApplied;
 
-    Logger& logger = Logger::get(typeid(this).name());
 public:
 	Hook() : _orig(0), _trampoline(0), _detour(0), _isApplied(false)
 	{
@@ -70,17 +68,13 @@ public:
 
 		if (MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_trampoline) != MH_OK)
 		{
-			logger.fatal("Couldn't create hook");
-			return;
+            throw Poco::ApplicationException("Couldn't create hook");
 		}
 
 		if (MH_EnableHook((PBYTE)pFunc) != MH_OK)
 		{
-			logger.fatal("Couldn't enable hook");
-			return;
+			throw Poco::ApplicationException("Couldn't enable hook");
 		}
-
-		logger.information("Hook created and enabled");
 
 		_isApplied = true;
 	}
