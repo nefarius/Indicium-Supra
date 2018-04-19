@@ -25,17 +25,17 @@ The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit
  * DirectX 9.0 Extended (Vista+)
  * DirectX 10
  * DirectX 11
- * DirectX 12
+ * DirectX 12 (experimental)
 
 ## How to build
-Building should be pretty straight-forward since the POCO libraries get fetched [pre-compiled via NuGet](https://www.nuget.org/packages/poco-basic-windows-v140/) on first build automatically. The only manual additional step is to install the DirectX SDK.
+Building should be pretty straight-forward since the POCO libraries get fetched pre-compiled via NuGet on first build automatically.
 
-If Visual Studio can't load one or more projects the first time you launch ist, you might need to restore the NuGet packages. Open the Package Manager Console and hit Restore:
+If Visual Studio can't load one or more projects the first time you launch it, you might need to restore the NuGet packages. Open the Package Manager Console and hit Restore:
 
 ![](https://lh3.googleusercontent.com/-K6g4v1RNMQo/WYyUwkquvZI/AAAAAAAAALQ/G_njXRtZQmwZUmo210vcLN_3pJphOuNigCHMYCw/s0/devenv_2017-08-10_19-15-45.png)
 
 ## How to use
-Inject the resulting `Indicium-Supra.dll` into the target process using a DLL injection utility of your choice (you can ofc. [use mine as well](https://github.com/nefarius/Injector)). To do anything usefull you also need one or more plugins in the same directory as well. The plugin DLLs names have to end with `.Plugin.dll` to get auto-detected and loaded. Example:
+Inject the resulting `Indicium-Supra.dll` into the target process using a DLL injection utility of your choice (you can ofc. [use mine as well](https://github.com/nefarius/Injector)). To do anything useful you also need one or more plugins in the same directory as well. The plugin DLLs names have to end with `.Plugin.dll` to get auto-detected and loaded. Example:
 
 ```Bash
 Injector --inject --module-name Indicium-Supra.dll --process-name hl2.exe
@@ -71,6 +71,7 @@ Road Redemption, 64-Bit
 ![](https://lh3.googleusercontent.com/-v2Ao0kCoTvg/WZGSQeniK8I/AAAAAAAAAN0/TXpCVv8pLFoGsuKlwnBRufFuG_ZXaZmRACHMYCw/s0/RoadRedemptionEarlyAccess_2017-08-14_14-06-21.png)
 
 ## Sources
+ * [DX9-Overlay-API](https://github.com/agrippa1994/DX9-Overlay-API)
  * [CREATING A RENDER TARGET IN DIRECTX11](http://www.hlsl.co.uk/blog/2014/11/19/creating-a-render-target-in-directx11)
  * [ion RE Library](https://github.com/scen/ionlib)
  * [C# – SCREEN CAPTURE AND OVERLAYS FOR DIRECT3D 9, 10 AND 11 USING API HOOKS](http://spazzarama.com/2011/03/14/c-screen-capture-and-overlays-for-direct3d-9-10-and-11-using-api-hooks/)
