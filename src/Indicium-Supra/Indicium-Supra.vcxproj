@@ -195,6 +195,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IndiciumPlugin.h" />
+    <ClInclude Include="..\..\include\Indicium\Plugin\Common.h" />
+    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D10.h" />
+    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D11.h" />
+    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D12.h" />
+    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D9.h" />
+    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D9Ex.h" />
     <ClInclude Include="Game\Hook\Direct3D12.h" />
     <ClInclude Include="Game\Hook\DXGI.h" />
     <ClInclude Include="Game\Hook\Direct3D11.h" />
