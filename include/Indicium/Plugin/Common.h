@@ -26,9 +26,9 @@ inline Direct3DVersion operator&(Direct3DVersion lhs, Direct3DVersion rhs)
 
 #ifndef IS_INDICIUM_SUPRA
 
-#define INDICIUM_EXPORT extern "C" __declspec(dllexport) VOID __cdecl
+#define INDICIUM_EXPORT extern "C" __declspec(dllexport) __cdecl
 
-INDICIUM_EXPORT indicium_plugin_init(Direct3DVersion version);
+INDICIUM_EXPORT BOOLEAN indicium_plugin_init(Direct3DVersion version);
 
 #endif
 
