@@ -1,7 +1,7 @@
 #ifndef Direct3D9Ex_h__
 #define Direct3D9Ex_h__
 
-//#ifndef IS_INDICIUM_SUPRA
+#ifndef IS_INDICIUM_SUPRA
 
 #include <Windows.h>
 #include <d3d9.h>
@@ -23,6 +23,6 @@ INDICIUM_EXPORT indicium_plugin_d3d9_resetex(
     D3DDISPLAYMODEEX        *pFullscreenDisplayMode
 );
 
-//#endif
+#endif
 
 #endif // Direct3D9Ex_h__
