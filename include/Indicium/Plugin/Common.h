@@ -1,6 +1,8 @@
 #ifndef Common_h__
 #define Common_h__
 
+#include <Windows.h>
+
 enum Direct3DVersion
 {
     Direct3D9 = 0,
@@ -22,14 +24,8 @@ inline Direct3DVersion operator&(Direct3DVersion lhs, Direct3DVersion rhs)
     return static_cast<Direct3DVersion>(static_cast<int>(lhs) & static_cast<int>(rhs));
 }
 
-#endif
-
-#ifndef IS_INDICIUM_SUPRA
-
-#define INDICIUM_EXPORT extern "C" __declspec(dllexport) __cdecl
+#define INDICIUM_EXPORT extern "C" __declspec(dllexport)
 
 INDICIUM_EXPORT BOOLEAN indicium_plugin_init(Direct3DVersion version);
-
-#endif
 
 #endif // Common_h__
