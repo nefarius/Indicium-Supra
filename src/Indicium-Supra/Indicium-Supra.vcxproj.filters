@@ -79,9 +79,6 @@
     <ClInclude Include="Utils\Windows.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\SafeBlock.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="Game\Hook\Window.h">
       <Filter>Game\Hook</Filter>

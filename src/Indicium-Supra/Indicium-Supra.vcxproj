@@ -217,7 +217,6 @@
     <ClInclude Include="Utils\algorithm.h" />
     <ClInclude Include="Utils\Hook.h" />
     <ClInclude Include="Utils\Misc.h" />
-    <ClInclude Include="Utils\SafeBlock.h" />
     <ClInclude Include="Utils\Windows.h" />
     <ClInclude Include="Game\Hook\Window.h" />
   </ItemGroup>
