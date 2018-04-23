@@ -366,13 +366,13 @@ void HookDX11(UINTX* vtable11SwapChain)
     }
 }
 
-void HookDX12(UINTX* vtable11SwapChain)
+void HookDX12(UINTX* vtable12SwapChain)
 {
     auto& logger = Logger::get(__func__);
     logger.information("Hooking IDXGISwapChain::Present");
 
     try {
-        g_swapChainPresent12Hook.apply(vtable11SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+        g_swapChainPresent12Hook.apply(vtable12SwapChain[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
         {
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::Present called"); });
@@ -384,7 +384,7 @@ void HookDX12(UINTX* vtable11SwapChain)
 
         logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
-        g_swapChainResizeTarget12Hook.apply(vtable11SwapChain[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+        g_swapChainResizeTarget12Hook.apply(vtable12SwapChain[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
         {
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::ResizeTarget called"); });
