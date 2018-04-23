@@ -1,45 +1,39 @@
 #include "Direct3D12.h"
 #include <dxgi.h>
 #include <dxgi1_4.h>
-#include "Utils/Misc.h"
 #include <d3d12.h>
 #include "DXGI.h"
+#include <Poco/Exception.h>
 
 
 Direct3D12Hooking::Direct3D12::Direct3D12() : vtableSwapChain(nullptr), pd3dDevice(nullptr), pQueue(nullptr), pSwapChain(nullptr)
 {
-    auto& logger = Logger::get(LOG_REGION());
-
-    logger.information("Acquiring VTable for ID3D12Device and IDXGISwapChain...");
+    temp_window = new Window("TempDirect3D12OverlayWindow");
 
     auto hModDXGI = GetModuleHandle("DXGI.dll");
     auto hModD3D12 = GetModuleHandle("D3D12.dll");
 
     if (hModDXGI == nullptr)
     {
-        logger.error("Couldn't get handle to DXGI.dll");
-        return;
+        throw Poco::RuntimeException("Couldn't get handle to DXGI.dll");
     }
 
     if (hModD3D12 == nullptr)
     {
-        logger.error("Couldn't get handle to D3D12.dll");
-        return;
+        throw Poco::RuntimeException("Couldn't get handle to D3D12.dll");
     }
 
     auto hD3D12CreateDevice = static_cast<LPVOID>(GetProcAddress(hModD3D12, "D3D12CreateDevice"));
 
     if (hD3D12CreateDevice == nullptr)
     {
-        logger.error("Couldn't get handle to D3D12CreateDevice");
-        return;
+        throw Poco::RuntimeException("Couldn't get handle to D3D12CreateDevice");
     }
 
     auto hCreateDXGIFactory1 = static_cast<LPVOID>(GetProcAddress(hModDXGI, "CreateDXGIFactory1"));
     if (hCreateDXGIFactory1 == nullptr)
     {
-        logger.error("Couldn't get handle to CreateDXGIFactory1");
-        return;
+        throw Poco::RuntimeException("Couldn't get handle to CreateDXGIFactory1");
     }
 
     IDXGIFactory4* pFactory;
@@ -49,8 +43,7 @@ Direct3D12Hooking::Direct3D12::Direct3D12() : vtableSwapChain(nullptr), pd3dDevi
 
     if (FAILED(hr))
     {
-        logger.error("Couldn't create DXGI factory");
-        return;
+        throw Poco::RuntimeException("Couldn't create DXGI factory");
     }
 
     auto hr12 = static_cast<HRESULT(WINAPI *)(
@@ -64,8 +57,7 @@ Direct3D12Hooking::Direct3D12::Direct3D12() : vtableSwapChain(nullptr), pd3dDevi
 
     if (FAILED(hr12))
     {
-        logger.error("Couldn't create D3D12 device");
-        return;
+        throw Poco::RuntimeException("Couldn't create D3D12 device");
     }
 
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
@@ -76,8 +68,7 @@ Direct3D12Hooking::Direct3D12::Direct3D12() : vtableSwapChain(nullptr), pd3dDevi
 
     if (FAILED(hr))
     {
-        logger.error("Command queue creation failed");
-        return;
+        throw Poco::RuntimeException("Command queue creation failed");
     }
 
     DXGI_SWAP_CHAIN_DESC scDesc;
@@ -89,7 +80,7 @@ Direct3D12Hooking::Direct3D12::Direct3D12() : vtableSwapChain(nullptr), pd3dDevi
     scDesc.BufferDesc.RefreshRate.Numerator = 60;
     scDesc.BufferDesc.RefreshRate.Denominator = 1;
     scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    scDesc.OutputWindow = temp_window.GetWindowHandle();
+    scDesc.OutputWindow = temp_window->windowHandle();
     scDesc.SampleDesc.Count = 1;
     scDesc.SampleDesc.Quality = 0;
     scDesc.Windowed = TRUE;
@@ -103,23 +94,16 @@ Direct3D12Hooking::Direct3D12::Direct3D12() : vtableSwapChain(nullptr), pd3dDevi
 
     if (FAILED(hr))
     {
-        logger.error("Swap chain creation failed");
-        return;
+        throw Poco::RuntimeException("Swap chain creation failed");
     }
 
     vtable = *reinterpret_cast<UINTX **>(pd3dDevice);
     vtableSwapChain = *reinterpret_cast<UINTX **>(pSwapChain);
-
-    logger.information("VTable acquired");
 }
 
 
 Direct3D12Hooking::Direct3D12::~Direct3D12()
 {
-    auto& logger = Logger::get(LOG_REGION());
-
-    logger.information("Releasing temporary objects");
-
     if (pSwapChain)
         pSwapChain->Release();
 

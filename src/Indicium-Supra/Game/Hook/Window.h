@@ -1,16 +1,18 @@
 #pragma once
-#include <Utils/Windows.h>
 
-#include <Poco/Logger.h>
-using Poco::Logger;
+#include <string>
+#include <Poco/RefCountedObject.h>
 
-class Window
+class Window : public Poco::RefCountedObject
 {
 	WNDCLASSEX window_class;
 	HWND temp_window;
+    std::string window_class_name;
 public:
-	Window();
-	~Window();
-	HWND GetWindowHandle() const;
+	Window(std::string windowClassName);
+	HWND windowHandle() const;
+
+protected:
+    ~Window();
 };
 

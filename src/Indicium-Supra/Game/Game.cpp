@@ -21,8 +21,10 @@
 
 #include <Poco/Exception.h>
 #include <Poco/Logger.h>
+#include <Poco/AutoPtr.h>
 
 using Poco::Logger;
+using Poco::AutoPtr;
 
 
 // D3D9
@@ -80,59 +82,83 @@ void initGame()
     UINTX vtable12SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
     UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
 
-    // get VTable for Direct3DCreate9
+    try
     {
-        Direct3D9Hooking::Direct3D9 d3d;
-        d3d9_available = d3d.GetDeviceVTable(vtable9);
+        // get VTable for Direct3DCreate9
+        AutoPtr<Direct3D9Hooking::Direct3D9> d3d(new Direct3D9Hooking::Direct3D9);
+        d3d9_available = d3d->GetDeviceVTable(vtable9);
 
         if (!d3d9_available)
         {
             logger.warning("Couldn't get VTable for Direct3DCreate9");
         }
     }
-
-    // get VTable for Direct3DCreate9Ex
+    catch (Poco::Exception& pex)
     {
-        Direct3D9Hooking::Direct3D9Ex d3dEx;
-        d3d9ex_available = d3dEx.GetDeviceVTable(vtable9Ex);
+        logger.error(pex.displayText());
+    }
+
+    try
+    {
+        // get VTable for Direct3DCreate9Ex
+        AutoPtr<Direct3D9Hooking::Direct3D9Ex> d3dEx(new Direct3D9Hooking::Direct3D9Ex);
+        d3d9ex_available = d3dEx->GetDeviceVTable(vtable9Ex);
 
         if (!d3d9ex_available)
         {
             logger.warning("Couldn't get VTable for Direct3DCreate9Ex");
         }
     }
-
-    // get VTable for IDXGISwapChain (v10)
+    catch (Poco::Exception& pex)
     {
-        Direct3D10Hooking::Direct3D10 d3d10;
-        d3d10_available = d3d10.GetSwapChainVTable(vtable10SwapChain);
+        logger.error(pex.displayText());
+    }
+
+    try
+    {
+        // get VTable for IDXGISwapChain (v10)
+        AutoPtr<Direct3D10Hooking::Direct3D10> d3d10(new Direct3D10Hooking::Direct3D10);
+        d3d10_available = d3d10->GetSwapChainVTable(vtable10SwapChain);
 
         if (!d3d10_available)
         {
             logger.warning("Couldn't get VTable for IDXGISwapChain");
         }
     }
-
-    // get VTable for IDXGISwapChain (v11)
+    catch (Poco::Exception& pex)
     {
-        Direct3D11Hooking::Direct3D11 d3d11;
-        d3d11_available = d3d11.GetSwapChainVTable(vtable11SwapChain);
+        logger.error(pex.displayText());
+    }
+
+    try
+    {
+        // get VTable for IDXGISwapChain (v11)
+        AutoPtr<Direct3D11Hooking::Direct3D11> d3d11(new Direct3D11Hooking::Direct3D11);
+        d3d11_available = d3d11->GetSwapChainVTable(vtable11SwapChain);
 
         if (!d3d11_available)
         {
             logger.warning("Couldn't get VTable for IDXGISwapChain");
         }
     }
-
-    // get VTable for IDXGISwapChain (v12)
+    catch (Poco::Exception& pex)
     {
-        Direct3D12Hooking::Direct3D12 d3d12;
-        d3d12_available = d3d12.GetSwapChainVTable(vtable12SwapChain);
+        logger.error(pex.displayText());
+    }
+
+    try {
+        // get VTable for IDXGISwapChain (v12)
+        AutoPtr<Direct3D12Hooking::Direct3D12> d3d12(new Direct3D12Hooking::Direct3D12);
+        d3d12_available = d3d12->GetSwapChainVTable(vtable12SwapChain);
 
         if (!d3d12_available)
         {
             logger.warning("Couldn't get VTable for IDXGISwapChain");
         }
+    }
+    catch (Poco::Exception& pex)
+    {
+        logger.error(pex.displayText());
     }
 
     // Dinput8

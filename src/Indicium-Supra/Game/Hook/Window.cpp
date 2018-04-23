@@ -1,52 +1,47 @@
 #include "Window.h"
-#include "Utils/Misc.h"
+
+#include <Poco/Exception.h>
+#include <utility>
 
 
-Window::Window() : temp_window(nullptr)
+Window::Window(std::string windowClassName) : temp_window(nullptr), window_class_name(std::move(windowClassName))
 {
-    auto& logger = Logger::get(LOG_REGION());
+    ZeroMemory(&window_class, sizeof(WNDCLASSEX));
 
-	ZeroMemory(&window_class, sizeof(WNDCLASSEX));
+    window_class.cbSize = sizeof(WNDCLASSEX);
+    window_class.style = CS_HREDRAW | CS_VREDRAW;
+    window_class.lpfnWndProc = DefWindowProc;
+    window_class.lpszClassName = window_class_name.c_str();
 
-	window_class.cbSize = sizeof(WNDCLASSEX);
-	window_class.style = CS_HREDRAW | CS_VREDRAW;
-	window_class.lpfnWndProc = DefWindowProc;
-	window_class.lpszClassName = "TempDirectXOverlayWindow";
+    window_class.hInstance = GetModuleHandle(nullptr);
+    if (window_class.hInstance == nullptr)
+    {
+        throw Poco::RuntimeException("Could not get the instance handle", GetLastError());
+    }
 
-	window_class.hInstance = GetModuleHandle(nullptr);
-	if (window_class.hInstance == nullptr)
-	{
-		logger.fatal("Could not get the instance handle");
-		return;
-	}
+    if (!RegisterClassEx(&window_class))
+    {
+        throw Poco::RuntimeException("Could not get register the window class", GetLastError());
+    }
 
-	if (!RegisterClassEx(&window_class))
-	{
-        logger.fatal("Could not get register the window class");
-		return;
-	}
-
-	temp_window = CreateWindow(window_class.lpszClassName, "Temporary DirectX Overlay Window",
-		WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, window_class.hInstance, NULL);
-	if (temp_window == nullptr)
-	{
-        logger.fatal("Could not get create the temporary window");
-		return;
-	}
+    temp_window = CreateWindow(window_class.lpszClassName, "Temporary DirectX Overlay Window",
+        WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, window_class.hInstance, NULL);
+    if (temp_window == nullptr)
+    {
+        throw Poco::RuntimeException("Could not get create the temporary window", GetLastError());
+    }
 }
 
 Window::~Window()
 {
-    auto& logger = Logger::get(LOG_REGION());
-
-	if (!DestroyWindow(temp_window))
-        logger.fatal("Could not release the temporary window");
-
-	if (!UnregisterClass(window_class.lpszClassName, window_class.hInstance))
-        logger.fatal("Could not release the window class");
+    if (temp_window)
+    {
+        DestroyWindow(temp_window);
+        UnregisterClass(window_class.lpszClassName, window_class.hInstance);
+    }
 }
 
-HWND Window::GetWindowHandle() const
+HWND Window::windowHandle() const
 {
-	return temp_window;
+    return temp_window;
 }

@@ -1,27 +1,23 @@
 #include "Direct3D11.h"
 #include "DXGI.h"
-#include "Utils/Misc.h"
+#include <Poco/Exception.h>
 
 
 Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nullptr), pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
 {
-    auto& logger = Logger::get(LOG_REGION());
-
-	logger.information("Acquiring VTable for ID3D11Device and IDXGISwapChain...");
+    temp_window = new Window("TempDirect3D11OverlayWindow");
 
 	auto hModDXGI = GetModuleHandle("DXGI.dll");
 	auto hModD3D11 = GetModuleHandle("D3D11.dll");
 
 	if (hModDXGI == nullptr)
 	{
-        logger.error("Couldn't get handle to DXGI.dll");
-		return;
+        throw Poco::RuntimeException("Couldn't get handle to DXGI.dll");
 	}
 
 	if (hModD3D11 == nullptr)
 	{
-        logger.error("Couldn't get handle to D3D11.dll");
-		return;
+        throw Poco::RuntimeException("Couldn't get handle to D3D11.dll");
 	}
 
 	// Setup swap chain
@@ -36,7 +32,7 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nu
 		sd.BufferDesc.RefreshRate.Denominator = 1;
 		sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 		sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		sd.OutputWindow = temp_window.GetWindowHandle();
+		sd.OutputWindow = temp_window->windowHandle();
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
 		sd.Windowed = TRUE;
@@ -51,8 +47,7 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nu
 	auto hD3D11CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(hModD3D11, "D3D11CreateDeviceAndSwapChain"));
 	if (hD3D11CreateDeviceAndSwapChain == nullptr)
 	{
-        logger.error("Couldn't get handle to D3D11CreateDeviceAndSwapChain");
-		return;
+        throw Poco::RuntimeException("Couldn't get handle to D3D11CreateDeviceAndSwapChain");
 	}
 
 	auto hr11 = static_cast<HRESULT(WINAPI *)(
@@ -83,23 +78,16 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nu
 
 	if (FAILED(hr11))
 	{
-        logger.error("Couldn't create D3D11 device");
-		return;
+        throw Poco::RuntimeException("Couldn't create D3D11 device");
 	}
 
 	vtable = *reinterpret_cast<UINTX **>(pd3dDevice);
 	vtableSwapChain = *reinterpret_cast<UINTX **>(pSwapChain);
-
-	logger.information("VTable acquired");
 }
 
 
 Direct3D11Hooking::Direct3D11::~Direct3D11()
 {
-    auto& logger = Logger::get(LOG_REGION());
-
-	logger.information("Releasing temporary objects");
-
 	if (pSwapChain)
 		pSwapChain->Release();
 

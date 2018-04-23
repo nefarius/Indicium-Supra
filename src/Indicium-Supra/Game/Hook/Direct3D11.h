@@ -64,10 +64,11 @@ namespace Direct3D11Hooking
 		IDXGISwapChain*          pSwapChain;
 	public:
 		Direct3D11();
-		~Direct3D11();
 		static const int VTableElements = 43;
 
 		bool GetDeviceVTable(UINTX* pVTable) const override;
 		bool GetSwapChainVTable(UINTX *pVTable) const;
+    protected:
+        ~Direct3D11();
 	};
 }
