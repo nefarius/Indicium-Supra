@@ -65,15 +65,16 @@ public:
 	{
 		_detour = detour;
 		_orig = static_cast<size_t>(pFunc);
+        MH_STATUS ret;
 
-		if (MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_trampoline) != MH_OK)
+		if ((ret = MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_trampoline)) != MH_OK)
 		{
-            throw Poco::ApplicationException("Couldn't create hook");
+            throw Poco::ApplicationException("Couldn't create hook", ret);
 		}
 
-		if (MH_EnableHook((PBYTE)pFunc) != MH_OK)
+		if ((ret = MH_EnableHook((PBYTE)pFunc)) != MH_OK)
 		{
-			throw Poco::ApplicationException("Couldn't enable hook");
+			throw Poco::ApplicationException("Couldn't enable hook", ret);
 		}
 
 		_isApplied = true;
