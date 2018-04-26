@@ -22,9 +22,11 @@
 #include <Poco/Exception.h>
 #include <Poco/Logger.h>
 #include <Poco/AutoPtr.h>
+#include <Poco/Buffer.h>
 
 using Poco::Logger;
 using Poco::AutoPtr;
+using Poco::Buffer;
 
 
 // D3D9
@@ -66,10 +68,9 @@ void initGame()
 
     bool dinput8_available;
 
-    auto sz_ProcName = static_cast<LPSTR>(malloc(MAX_PATH + 1));
-    GetProcessImageFileName(GetCurrentProcess(), sz_ProcName, MAX_PATH);
-    logger.information("Library loaded into %s", std::string(sz_ProcName));
-    free(sz_ProcName);
+    Buffer<char> procName(MAX_PATH + 1);
+    GetProcessImageFileName(GetCurrentProcess(), procName.begin(), procName.size());
+    logger.information("Library loaded into %s", std::string(procName.begin()));
 
     logger.information("Library enabled");
 
