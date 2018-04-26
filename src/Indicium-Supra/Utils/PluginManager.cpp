@@ -8,10 +8,12 @@
 #include <Poco/Logger.h>
 #include <Poco/Path.h>
 #include <Poco/File.h>
+#include <Poco/Glob.h>
 
 using Poco::Logger;
 using Poco::Path;
 using Poco::File;
+using Poco::Glob;
 
 
 PluginManager::PluginManager()
@@ -24,25 +26,26 @@ PluginManager::~PluginManager()
 {
 }
 
-bool PluginManager::findStringIC(const std::string& strHaystack, const std::string& strNeedle) const
-{
-    auto it = std::search(
-        strHaystack.begin(), strHaystack.end(),
-        strNeedle.begin(), strNeedle.end(),
-        [](char ch1, char ch2)
-    {
-        return ::toupper(ch1) == ::toupper(ch2);
-    }
-    );
-    return (it != strHaystack.end());
-}
-
 void PluginManager::load()
 {
     auto& logger = Logger::get(LOG_REGION());
 
     ScopedLock<FastMutex> lock(mPlugins);
 
+    //
+    // Fetch libraries with names ending in ".Plugin.dll"
+    // 
+    std::set<std::string> files;
+    const Path pluginDir(m_DllPath, "*.Plugin.dll");
+    Glob::glob(pluginDir, files);
+
+    std::set<std::string>::iterator it = files.begin();
+    for (; it != files.end(); ++it)
+    {
+        std::cout << *it << std::endl;
+    }
+
+    /*
     File root(m_DllPath);
     std::vector<File> files;
     root.list(files);
@@ -89,6 +92,7 @@ void PluginManager::load()
             plugins.push_back(plugin);
         }
     }
+    */
 
     logger.information("Finished enumerating plugins");
 }
@@ -159,3 +163,65 @@ void PluginManager::resizeTarget(IID guid, LPVOID unknown, Direct3DVersion versi
     }
 }
 
+void PluginManager::load(Direct3DVersion version)
+{
+    //
+    // Fetch libraries with names ending in ".Plugin.dll"
+    // 
+    std::set<std::string> files;
+    const Path pluginDir(m_DllPath, "*.Plugin.dll");
+    Glob::glob(pluginDir, files);
+
+    std::set<std::string>::iterator it = files.begin();
+    for (; it != files.end(); ++it)
+    {
+        std::cout << *it << std::endl;
+    }
+}
+
+void PluginManager::d3d9_present(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, const RECT* pDestRect,
+                                 HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
+{
+}
+
+void PluginManager::d3d9_reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters)
+{
+}
+
+void PluginManager::d3d9_endscene(LPDIRECT3DDEVICE9 pDevice)
+{
+}
+
+void PluginManager::d3d9_presentex(LPDIRECT3DDEVICE9EX pDevice, const RECT* pSourceRect, const RECT* pDestRect,
+                                   HWND hDestWindowOverride, const RGNDATA* pDirtyRegion, DWORD dwFlags)
+{
+}
+
+void PluginManager::d3d9_resetex(LPDIRECT3DDEVICE9EX pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters,
+                                 D3DDISPLAYMODEEX* pFullscreenDisplayMode)
+{
+}
+
+void PluginManager::d3d10_present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+{
+}
+
+void PluginManager::d3d10_resizetarget(IDXGISwapChain* pSwapChain, const DXGI_MODE_DESC* pNewTargetParameters)
+{
+}
+
+void PluginManager::d3d11_present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+{
+}
+
+void PluginManager::d3d11_resizetarget(IDXGISwapChain* pSwapChain, const DXGI_MODE_DESC* pNewTargetParameters)
+{
+}
+
+void PluginManager::d3d12_present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
+{
+}
+
+void PluginManager::d3d12_resizetarget(IDXGISwapChain* pSwapChain, const DXGI_MODE_DESC* pNewTargetParameters)
+{
+}

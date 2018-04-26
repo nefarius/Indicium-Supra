@@ -19,6 +19,8 @@
 
 #include <mutex>
 
+#include <Indicium/Plugin/Common.h>
+
 #include <Poco/Exception.h>
 #include <Poco/Logger.h>
 #include <Poco/AutoPtr.h>
@@ -102,7 +104,7 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Present called"); });
 
-            g_plugins.present(IID_IDirect3DDevice9, dev, Direct3DVersion::Direct3D9);
+            g_plugins.d3d9_present(dev, a1, a2, a3, a4);
 
             return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
         });
@@ -114,7 +116,7 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Reset called"); });
 
-            g_plugins.reset(IID_IDirect3DDevice9, dev, Direct3DVersion::Direct3D9);
+            g_plugins.d3d9_reset(dev, pp);
 
             return g_reset9Hook.callOrig(dev, pp);
         });
@@ -126,10 +128,12 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::EndScene called"); });
 
-            g_plugins.endScene(IID_IDirect3DDevice9, dev, Direct3DVersion::Direct3D9);
+            g_plugins.d3d9_endscene(dev);
 
             return g_endScene9Hook.callOrig(dev);
         });
+
+        g_plugins.load(Direct3DVersion::Direct3D9);
     }
     catch (Poco::Exception& pex)
     {
@@ -153,7 +157,7 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::PresentEx called"); });
 
-            g_plugins.present(IID_IDirect3DDevice9Ex, dev, Direct3DVersion::Direct3D9Ex);
+            g_plugins.d3d9_presentex(dev, a1, a2, a3, a4, a5);
 
             return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
         });
@@ -165,10 +169,12 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::ResetEx called"); });
 
-            g_plugins.reset(IID_IDirect3DDevice9Ex, dev, Direct3DVersion::Direct3D9Ex);
+            g_plugins.d3d9_resetex(dev, pp, ppp);
 
             return g_reset9ExHook.callOrig(dev, pp, ppp);
         });
+
+        g_plugins.load(Direct3DVersion::Direct3D9Ex);
     }
     catch (Poco::Exception& pex)
     {
@@ -192,7 +198,7 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::Present called"); });
 
-            g_plugins.present(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D10);
+            g_plugins.d3d10_present(chain, SyncInterval, Flags);
 
             return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
         });
@@ -204,10 +210,12 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-            g_plugins.resizeTarget(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D10);
+            g_plugins.d3d10_resizetarget(chain, pNewTargetParameters);
 
             return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
         });
+
+        g_plugins.load(Direct3DVersion::Direct3D10);
     }
     catch (Poco::Exception& pex)
     {
@@ -231,7 +239,7 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::Present called"); });
 
-            g_plugins.present(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D11);
+            g_plugins.d3d11_present(chain, SyncInterval, Flags);
 
             return g_swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
         });
@@ -243,10 +251,12 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-            g_plugins.resizeTarget(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D11);
+            g_plugins.d3d11_resizetarget(chain, pNewTargetParameters);
 
             return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
         });
+
+        g_plugins.load(Direct3DVersion::Direct3D11);
     }
     catch (Poco::Exception& pex)
     {
@@ -269,7 +279,7 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::Present called"); });
 
-            g_plugins.present(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D12);
+            g_plugins.d3d12_present(chain, SyncInterval, Flags);
 
             return g_swapChainPresent12Hook.callOrig(chain, SyncInterval, Flags);
         });
@@ -281,10 +291,12 @@ void initGame()
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-            g_plugins.resizeTarget(IID_IDXGISwapChain, chain, Direct3DVersion::Direct3D12);
+            g_plugins.d3d12_resizetarget(chain, pNewTargetParameters);
 
             return g_swapChainResizeTarget12Hook.callOrig(chain, pNewTargetParameters);
         });
+
+        g_plugins.load(Direct3DVersion::Direct3D12);
     }
     catch (Poco::Exception& pex)
     {
