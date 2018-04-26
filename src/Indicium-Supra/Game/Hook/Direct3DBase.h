@@ -17,7 +17,7 @@ namespace Direct3DHooking
     class Direct3DBase : public RefCountedObject
     {
     protected:
-        UINTX * vtable;
+        UINTX *vtable;
         AutoPtr<Window> temp_window;
         virtual ~Direct3DBase() {}
     public:
