@@ -76,8 +76,6 @@ void initGame()
 
     logger.information("Library enabled");
 
-    g_plugins.load();
-
     UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
 
     logger.information("Initializing hook engine...");

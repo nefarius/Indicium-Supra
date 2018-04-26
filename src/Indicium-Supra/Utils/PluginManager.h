@@ -41,8 +41,14 @@ class PluginManager
     typedef HRESULT(WINAPI* fp_dxgi_present)(IDXGISwapChain*, UINT, UINT);
     typedef HRESULT(WINAPI *fp_dxgi_resizetarget)(IDXGISwapChain*, const DXGI_MODE_DESC*);
 
+    //
+    // Plugin-specific
+    // 
     typedef BOOLEAN (__cdecl* fp_init)(Direct3DVersion);
 
+    //
+    // Plugin object
+    // 
     struct Plugin : RefCountedObject
     {
         Direct3DVersion version;
@@ -69,27 +75,16 @@ class PluginManager
         } function_ptrs;
     };
 
-    TCHAR m_DllPath[MAX_PATH];
-    std::vector<SharedLibrary*> plugins;
-    FastMutex mPlugins;
-
-    std::map<std::string, std::vector<LPVOID>> _fpMap;
-    std::vector<std::string> exports = { "Present", "Reset", "EndScene", "ResizeTarget" };
-
+    TCHAR _dll_path[MAX_PATH];
+    FastMutex _plugins_lock;
     std::vector<AutoPtr<Plugin>> _plugins;
 
 public:
     PluginManager();
     ~PluginManager();
-
-    void load();
-    void unload();
-    void present(IID guid, LPVOID unknown, Direct3DVersion version);
-    void reset(IID guid, LPVOID unknown, Direct3DVersion version);
-    void endScene(IID guid, LPVOID unknown, Direct3DVersion version);
-    void resizeTarget(IID guid, LPVOID unknown, Direct3DVersion version);
-
+        
     void load(Direct3DVersion version);
+    void unload();
 
     void d3d9_present(
         LPDIRECT3DDEVICE9   pDevice,
