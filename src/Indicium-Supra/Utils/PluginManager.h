@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+
 #include <Indicium/Plugin/Common.h>
 
 #include <d3d9.h>
@@ -11,23 +12,20 @@
 #include <Poco/SharedLibrary.h>
 #include <Poco/Mutex.h>
 #include <Poco/SharedPtr.h>
+#include <Poco/RefCountedObject.h>
+#include <Poco/AutoPtr.h>
 
 using Poco::SharedLibrary;
 using Poco::FastMutex;
 using Poco::ScopedLock;
 using Poco::SharedPtr;
+using Poco::RefCountedObject;
+using Poco::AutoPtr;
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 class PluginManager
 {
-    TCHAR m_DllPath[MAX_PATH];
-    std::vector<SharedLibrary*> plugins;
-    FastMutex mPlugins;
-
-    std::map<std::string, std::vector<LPVOID>> _fpMap;
-    std::vector<std::string> exports = { "Present", "Reset", "EndScene", "ResizeTarget" };
-
     //
     // D3D9(Ex)
     // 
@@ -40,33 +38,45 @@ class PluginManager
     //
     // DXGI
     // 
-    typedef HRESULT(WINAPI* fP_dxgi_present)(IDXGISwapChain*, UINT, UINT);
-    typedef HRESULT(WINAPI *fP_dxgi_resizetarget)(IDXGISwapChain*, const DXGI_MODE_DESC*);
+    typedef HRESULT(WINAPI* fp_dxgi_present)(IDXGISwapChain*, UINT, UINT);
+    typedef HRESULT(WINAPI *fp_dxgi_resizetarget)(IDXGISwapChain*, const DXGI_MODE_DESC*);
 
-    struct Plugin
+    typedef BOOLEAN (__cdecl* fp_init)(Direct3DVersion);
+
+    struct Plugin : RefCountedObject
     {
         Direct3DVersion version;
         SharedPtr<SharedLibrary> plugin_module;
-        union function_ptrs
+        fp_init init;
+        union
         {
-            struct d3d9
+            struct 
             {
                 fp_d3d9_present present;
                 fp_d3d9_reset reset;
                 fp_d3d9_endscene endscene;
-            };
-            struct d3d9ex
+            } d3d9;
+            struct
             {
                 fp_d3d9_presentex presentex;
                 fp_d3d9_resetex resetex;
-            };
-            struct dxgi
+            } d3d9ex;
+            struct
             {
-                fP_dxgi_present present;
-                fP_dxgi_resizetarget resizetarget;
-            };
-        };
+                fp_dxgi_present present;
+                fp_dxgi_resizetarget resizetarget;
+            } dxgi;
+        } function_ptrs;
     };
+
+    TCHAR m_DllPath[MAX_PATH];
+    std::vector<SharedLibrary*> plugins;
+    FastMutex mPlugins;
+
+    std::map<std::string, std::vector<LPVOID>> _fpMap;
+    std::vector<std::string> exports = { "Present", "Reset", "EndScene", "ResizeTarget" };
+
+    std::vector<AutoPtr<Plugin>> _plugins;
 
 public:
     PluginManager();

@@ -175,12 +175,75 @@ void PluginManager::load(Direct3DVersion version)
     std::set<std::string>::iterator it = files.begin();
     for (; it != files.end(); ++it)
     {
-        std::cout << *it << std::endl;
+        auto plugin = new Plugin;
+        plugin->plugin_module = new SharedLibrary;
+        plugin->plugin_module->load(*it);
+
+        plugin->init = static_cast<fp_init>(plugin->plugin_module->getSymbol("indicium_plugin_init"));
+
+        const auto compatible = plugin->init(version);
+
+        if (!compatible)
+        {
+            plugin->plugin_module->unload();
+            delete plugin->plugin_module;
+            delete plugin;
+            continue;
+        }
+
+        switch (version)
+        {
+        case Direct3D9:
+            plugin->function_ptrs.d3d9.present = static_cast<fp_d3d9_present>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d9_present"));
+            plugin->function_ptrs.d3d9.reset = static_cast<fp_d3d9_reset>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d9_reset"));
+            plugin->function_ptrs.d3d9.endscene = static_cast<fp_d3d9_endscene>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d9_endscene"));
+            break;
+        case Direct3D9Ex:
+            plugin->function_ptrs.d3d9ex.presentex = static_cast<fp_d3d9_presentex>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d9_presentex"));
+            plugin->function_ptrs.d3d9ex.resetex = static_cast<fp_d3d9_resetex>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d9_resetex"));
+            break;
+        case Direct3D10:
+            plugin->function_ptrs.dxgi.present = static_cast<fp_dxgi_present>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d10_present"));
+            plugin->function_ptrs.dxgi.resizetarget = static_cast<fp_dxgi_resizetarget>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d10_resizetarget"));
+            break;
+        case Direct3D11:
+            plugin->function_ptrs.dxgi.present = static_cast<fp_dxgi_present>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d11_present"));
+            plugin->function_ptrs.dxgi.resizetarget = static_cast<fp_dxgi_resizetarget>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d11_resizetarget"));
+            break;
+        case Direct3D12:
+            plugin->function_ptrs.dxgi.present = static_cast<fp_dxgi_present>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d12_present"));
+            plugin->function_ptrs.dxgi.resizetarget = static_cast<fp_dxgi_resizetarget>(plugin
+                ->plugin_module->getSymbol(
+                    "indicium_plugin_d3d12_resizetarget"));
+            break;
+        }
+
+        _plugins.emplace_back(plugin);
     }
 }
 
 void PluginManager::d3d9_present(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, const RECT* pDestRect,
-                                 HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
+    HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
 {
 }
 
@@ -193,12 +256,12 @@ void PluginManager::d3d9_endscene(LPDIRECT3DDEVICE9 pDevice)
 }
 
 void PluginManager::d3d9_presentex(LPDIRECT3DDEVICE9EX pDevice, const RECT* pSourceRect, const RECT* pDestRect,
-                                   HWND hDestWindowOverride, const RGNDATA* pDirtyRegion, DWORD dwFlags)
+    HWND hDestWindowOverride, const RGNDATA* pDirtyRegion, DWORD dwFlags)
 {
 }
 
 void PluginManager::d3d9_resetex(LPDIRECT3DDEVICE9EX pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters,
-                                 D3DDISPLAYMODEEX* pFullscreenDisplayMode)
+    D3DDISPLAYMODEEX* pFullscreenDisplayMode)
 {
 }
 
