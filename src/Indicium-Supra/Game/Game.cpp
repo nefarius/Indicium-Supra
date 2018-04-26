@@ -82,6 +82,16 @@ void initGame()
     UINTX vtable12SwapChain[DXGIHooking::DXGI::SwapChainVTableElements] = { 0 };
     UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
 
+    logger.information("Initializing hook engine...");
+
+    if (MH_Initialize() != MH_OK)
+    {
+        logger.fatal("Couldn't initialize hook engine");
+        return;
+    }
+
+    logger.information("Hook engine initialized");
+
     try
     {
         // get VTable for Direct3DCreate9
@@ -172,15 +182,7 @@ void initGame()
         }
     }
 
-    logger.information("Initializing hook engine...");
-
-    if (MH_Initialize() != MH_OK)
-    {
-        logger.fatal("Couldn't initialize hook engine");
-        return;
-    }
-
-    logger.information("Hook engine initialized");
+   
 
     if (d3d9_available)
     {
