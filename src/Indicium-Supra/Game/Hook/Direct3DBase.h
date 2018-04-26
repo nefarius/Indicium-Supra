@@ -17,13 +17,12 @@ namespace Direct3DHooking
     class Direct3DBase : public RefCountedObject
     {
     protected:
-        UINTX *vtable;
         AutoPtr<Window> temp_window;
         virtual ~Direct3DBase() {}
     public:
-        Direct3DBase() : vtable(nullptr) {}
+        Direct3DBase() {}
 
-        virtual bool GetDeviceVTable(UINTX* pVTable) const = 0;
+        virtual std::vector<UINTX> vtable() const = 0;
     };
 }
 

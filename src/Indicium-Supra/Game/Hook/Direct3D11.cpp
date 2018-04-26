@@ -3,7 +3,7 @@
 #include <Poco/Exception.h>
 
 
-Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nullptr), pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
+Direct3D11Hooking::Direct3D11::Direct3D11() : pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
 {
     temp_window = new Window("TempDirect3D11OverlayWindow");
 
@@ -80,11 +80,15 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : Direct3DBase(), vtableSwapChain(nu
 	{
         throw Poco::RuntimeException("Couldn't create D3D11 device");
 	}
-
-	vtable = *reinterpret_cast<UINTX **>(pd3dDevice);
-	vtableSwapChain = *reinterpret_cast<UINTX **>(pSwapChain);
 }
 
+
+std::vector<UINTX> Direct3D11Hooking::Direct3D11::vtable() const
+{
+    UINTX vtbl[DXGIHooking::DXGI::SwapChainVTableElements];
+    memcpy(vtbl, *reinterpret_cast<UINTX **>(pSwapChain), DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
+    return std::vector<UINTX>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
+}
 
 Direct3D11Hooking::Direct3D11::~Direct3D11()
 {
@@ -96,26 +100,4 @@ Direct3D11Hooking::Direct3D11::~Direct3D11()
 
 	if (pd3dDeviceContext)
 		pd3dDeviceContext->Release();
-}
-
-bool Direct3D11Hooking::Direct3D11::GetDeviceVTable(UINTX* pVTable) const
-{
-	if (vtable)
-	{
-		memcpy(pVTable, vtable, VTableElements * sizeof(UINTX));
-		return true;
-	}
-
-	return false;
-}
-
-bool Direct3D11Hooking::Direct3D11::GetSwapChainVTable(UINTX* pVTable) const
-{
-	if (vtableSwapChain)
-	{
-		memcpy(pVTable, vtableSwapChain, DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
-		return true;
-	}
-
-	return false;
 }

@@ -43,8 +43,13 @@ Direct3D9Hooking::Direct3D9Ex::Direct3D9Ex() : Direct3DBase(), d3d9_ex(nullptr),
 	{
         throw Poco::RuntimeException("Could not create the Direct3D 9 device");
 	}
+}
 
-	vtable = *reinterpret_cast<UINTX **>(d3d9_device_ex);
+std::vector<UINTX> Direct3D9Hooking::Direct3D9Ex::vtable() const
+{
+    UINTX vtbl[VTableElements];
+    memcpy(vtbl, *reinterpret_cast<UINTX **>(d3d9_device_ex), VTableElements * sizeof(UINTX));
+    return std::vector<UINTX>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
 }
 
 Direct3D9Hooking::Direct3D9Ex::~Direct3D9Ex()
@@ -55,15 +60,3 @@ Direct3D9Hooking::Direct3D9Ex::~Direct3D9Ex()
 	if (d3d9_ex)
 		d3d9_ex->Release();
 }
-
-bool Direct3D9Hooking::Direct3D9Ex::GetDeviceVTable(UINTX* pVTable) const
-{
-	if (vtable)
-	{
-		memcpy(pVTable, vtable, VTableElements * sizeof(UINTX));
-		return true;
-	}
-
-	return false;
-}
-

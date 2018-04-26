@@ -32,7 +32,7 @@ namespace Direct3D9Hooking
         Direct3D9Ex();
         static const int VTableElements = 134;
 
-        bool GetDeviceVTable(UINTX* pVTable) const override;
+        std::vector<UINTX> vtable() const override;
     protected:
         ~Direct3D9Ex();
     };

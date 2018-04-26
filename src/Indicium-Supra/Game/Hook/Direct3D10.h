@@ -114,7 +114,6 @@ namespace Direct3D10Hooking
 
     class Direct3D10 : public Direct3DHooking::Direct3DBase
     {
-        UINTX* vtableSwapChain;
         ID3D10Device* pDevice;
         IDXGISwapChain* pSwapChain;
 
@@ -122,8 +121,7 @@ namespace Direct3D10Hooking
         Direct3D10();
         static const int VTableElements = 98;
 
-        bool GetDeviceVTable(UINTX* pVTable) const override;
-        bool GetSwapChainVTable(UINTX* pVTable) const;
+        std::vector<UINTX> vtable() const override;
     protected:
         ~Direct3D10();
     };

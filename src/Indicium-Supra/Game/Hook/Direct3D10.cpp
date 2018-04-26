@@ -5,7 +5,7 @@
 #include "Utils/Misc.h"
 
 
-Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nullptr), pDevice(nullptr), pSwapChain(nullptr)
+Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), pSwapChain(nullptr)
 {
     temp_window = new Window("TempDirect3D10OverlayWindow");
 
@@ -106,11 +106,14 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), vtableSwapChain(nu
 	{
         throw Poco::RuntimeException("Couldn't create D3D10 device");
 	}
-
-	vtable = *reinterpret_cast<UINTX **>(pDevice);
-	vtableSwapChain = *reinterpret_cast<UINTX **>(pSwapChain);
 }
 
+std::vector<UINTX> Direct3D10Hooking::Direct3D10::vtable() const
+{
+    UINTX vtbl[DXGIHooking::DXGI::SwapChainVTableElements];
+    memcpy(vtbl, *reinterpret_cast<UINTX **>(pSwapChain), DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
+    return std::vector<UINTX>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
+}
 
 Direct3D10Hooking::Direct3D10::~Direct3D10()
 {
@@ -119,26 +122,4 @@ Direct3D10Hooking::Direct3D10::~Direct3D10()
 
 	if (pDevice)
 		pDevice->Release();
-}
-
-bool Direct3D10Hooking::Direct3D10::GetDeviceVTable(UINTX* pVTable) const
-{
-	if (vtable)
-	{
-		memcpy(pVTable, vtable, VTableElements * sizeof(UINTX));
-		return true;
-	}
-
-	return false;
-}
-
-bool Direct3D10Hooking::Direct3D10::GetSwapChainVTable(UINTX* pVTable) const
-{
-	if (vtableSwapChain)
-	{
-		memcpy(pVTable, vtableSwapChain, DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
-		return true;
-	}
-
-	return false;
 }

@@ -6,7 +6,7 @@
 #include <Poco/Exception.h>
 
 
-Direct3D12Hooking::Direct3D12::Direct3D12() : vtableSwapChain(nullptr), pd3dDevice(nullptr), pQueue(nullptr), pSwapChain(nullptr)
+Direct3D12Hooking::Direct3D12::Direct3D12() : pd3dDevice(nullptr), pQueue(nullptr), pSwapChain(nullptr)
 {
     temp_window = new Window("TempDirect3D12OverlayWindow");
 
@@ -96,9 +96,13 @@ Direct3D12Hooking::Direct3D12::Direct3D12() : vtableSwapChain(nullptr), pd3dDevi
     {
         throw Poco::RuntimeException("Swap chain creation failed");
     }
+}
 
-    vtable = *reinterpret_cast<UINTX **>(pd3dDevice);
-    vtableSwapChain = *reinterpret_cast<UINTX **>(pSwapChain);
+std::vector<UINTX> Direct3D12Hooking::Direct3D12::vtable() const
+{
+    UINTX vtbl[DXGIHooking::DXGI::SwapChainVTableElements];
+    memcpy(vtbl, *reinterpret_cast<UINTX **>(pSwapChain), DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
+    return std::vector<UINTX>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
 }
 
 
@@ -112,21 +116,4 @@ Direct3D12Hooking::Direct3D12::~Direct3D12()
 
     if (pQueue)
         pQueue->Release();
-}
-
-bool Direct3D12Hooking::Direct3D12::GetDeviceVTable(UINTX* pVTable) const
-{
-    // TODO: get vtable ordinals and implement
-    return false;
-}
-
-bool Direct3D12Hooking::Direct3D12::GetSwapChainVTable(UINTX* pVTable) const
-{
-    if (vtableSwapChain)
-    {
-        memcpy(pVTable, vtableSwapChain, DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
-        return true;
-    }
-
-    return false;
 }

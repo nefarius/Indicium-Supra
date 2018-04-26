@@ -58,7 +58,6 @@ namespace Direct3D11Hooking
 	class Direct3D11 :
 		public Direct3DHooking::Direct3DBase
 	{
-		UINTX					*vtableSwapChain;
 		ID3D11Device*            pd3dDevice;
 		ID3D11DeviceContext*     pd3dDeviceContext;
 		IDXGISwapChain*          pSwapChain;
@@ -66,8 +65,7 @@ namespace Direct3D11Hooking
 		Direct3D11();
 		static const int VTableElements = 43;
 
-		bool GetDeviceVTable(UINTX* pVTable) const override;
-		bool GetSwapChainVTable(UINTX *pVTable) const;
+		std::vector<UINTX> vtable() const override;
     protected:
         ~Direct3D11();
 	};
