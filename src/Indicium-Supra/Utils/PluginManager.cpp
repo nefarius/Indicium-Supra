@@ -34,6 +34,10 @@ void PluginManager::unload()
 
     ScopedLock<FastMutex> lock(_plugins_lock);
 
+    //
+    // TODO: implement!
+    // 
+
     /*
     // discard function pointers
     for (const auto& symbol : exports)
