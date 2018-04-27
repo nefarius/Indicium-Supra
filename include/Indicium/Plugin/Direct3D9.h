@@ -4,7 +4,7 @@
 #include "Common.h"
 #include <d3d9.h>
 
-INDICIUM_EXPORT VOID indicium_plugin_d3d9_present(
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_present(
     LPDIRECT3DDEVICE9   pDevice,
     const RECT          *pSourceRect,
     const RECT          *pDestRect,
@@ -12,12 +12,12 @@ INDICIUM_EXPORT VOID indicium_plugin_d3d9_present(
     const RGNDATA       *pDirtyRegion
 );
 
-INDICIUM_EXPORT VOID indicium_plugin_d3d9_reset(
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_reset(
     LPDIRECT3DDEVICE9       pDevice, 
     D3DPRESENT_PARAMETERS   *pPresentationParameters
 );
 
-INDICIUM_EXPORT VOID indicium_plugin_d3d9_endscene(
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_endscene(
     LPDIRECT3DDEVICE9 pDevice
 );
 

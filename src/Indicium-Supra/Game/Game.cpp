@@ -93,11 +93,10 @@ void initGame()
     try
     {
         AutoPtr<Direct3D9Hooking::Direct3D9> d3d(new Direct3D9Hooking::Direct3D9);
-        auto vtable = d3d->vtable();
 
         logger.information("Hooking IDirect3DDevice9::Present");
 
-        g_present9Hook.apply(vtable[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
+        g_present9Hook.apply(d3d->vtable()[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
         {
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Present called"); });
@@ -109,7 +108,7 @@ void initGame()
 
         logger.information("Hooking IDirect3DDevice9::Reset");
 
-        g_reset9Hook.apply(vtable[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
+        g_reset9Hook.apply(d3d->vtable()[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
         {
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Reset called"); });
@@ -121,7 +120,7 @@ void initGame()
 
         logger.information("Hooking IDirect3DDevice9::EndScene");
 
-        g_endScene9Hook.apply(vtable[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
+        g_endScene9Hook.apply(d3d->vtable()[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
         {
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::EndScene called"); });
@@ -131,26 +130,11 @@ void initGame()
             return g_endScene9Hook.callOrig(dev);
         });
 
-        g_plugins.load(Direct3DVersion::Direct3D9);
-    }
-    catch (Poco::Exception& pex)
-    {
-        logger.error(pex.displayText());
-    }
-
-#pragma endregion
-
-#pragma region D3D9Ex
-
-    try
-    {
-        // get VTable for Direct3DCreate9Ex
         AutoPtr<Direct3D9Hooking::Direct3D9Ex> d3dEx(new Direct3D9Hooking::Direct3D9Ex);
-        auto vtable = d3dEx->vtable();
 
         logger.information("Hooking IDirect3DDevice9Ex::PresentEx");
 
-        g_present9ExHook.apply(vtable[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
+        g_present9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
         {
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::PresentEx called"); });
@@ -162,7 +146,7 @@ void initGame()
 
         logger.information("Hooking IDirect3DDevice9Ex::ResetEx");
 
-        g_reset9ExHook.apply(vtable[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
+        g_reset9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
         {
             static std::once_flag flag;
             std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::ResetEx called"); });
@@ -172,7 +156,7 @@ void initGame()
             return g_reset9ExHook.callOrig(dev, pp, ppp);
         });
 
-        g_plugins.load(Direct3DVersion::Direct3D9Ex);
+        g_plugins.load(Direct3DVersion::Direct3D9);
     }
     catch (Poco::Exception& pex)
     {

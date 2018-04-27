@@ -1,19 +1,27 @@
 #include "dllmain.h"
-#include "../../include/IndiciumPlugin.h"
 
-// DX
-#include <d3d9.h>
-#include <dxgi.h>
-#include <d3d11.h>
+// 
+// Indicium Plugin
+// 
+#include <Indicium/Plugin/Direct3D9.h>
+#include <Indicium/Plugin/Direct3D9Ex.h>
+#include <Indicium/Plugin/Direct3D10.h>
+#include <Indicium/Plugin/Direct3D11.h>
 
+// 
 // MinHook
+// 
 #include <MinHook.h>
 
+// 
 // STL
+// 
 #include <mutex>
 #include <map>
 
+// 
 // POCO
+// 
 #include <Poco/Message.h>
 #include <Poco/Logger.h>
 #include <Poco/FileChannel.h>
@@ -30,7 +38,9 @@ using Poco::PatternFormatter;
 using Poco::FormattingChannel;
 using Poco::Path;
 
+// 
 // ImGui includes
+// 
 #include <imgui.h>
 #include <imgui_impl_dx9.h>
 #include <imgui_impl_dx10.h>
@@ -38,26 +48,16 @@ using Poco::Path;
 
 t_WindowProc OriginalWindowProc = nullptr;
 
-static ID3D10Device*            g_pd3d10Device = nullptr;
-static ID3D11Device*            g_pd3d11Device = nullptr;
-static ID3D11DeviceContext*     g_pd3dDeviceContext = nullptr;
-static IDXGISwapChain*          g_pSwapChain = nullptr;
-static ID3D11RenderTargetView*  g_mainRenderTargetView = nullptr;
-
-static std::once_flag d3d9Init;
-static std::once_flag d3d9exInit;
-static std::once_flag d3d10Init;
-static std::once_flag d3d11Init;
-
-static std::map<Direct3DVersion, bool> g_Initialized;
 
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 {
     DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
 
-    if (dwReason != DLL_PROCESS_ATTACH)
-        return TRUE;
+    return TRUE;
+}
 
+INDICIUM_EXPORT(BOOLEAN) indicium_plugin_init(Direct3DVersion version)
+{
     std::string logfile("%TEMP%\\Indicium-ImGui.Plugin.log");
 
     AutoPtr<FileChannel> pFileChannel(new FileChannel);
@@ -68,189 +68,240 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
     Logger::root().setChannel(pFC);
 
-    auto& logger = Logger::get("DLL_PROCESS_ATTACH");
+    auto& logger = Logger::get(__func__);
 
     logger.information("Loading ImGui plugin");
-
-    return CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(init), nullptr, 0, nullptr) > nullptr;
-}
-
-int init()
-{
-    auto& logger = Logger::get("init");
 
     logger.information("Initializing hook engine...");
 
     if (MH_Initialize() != MH_OK)
     {
         logger.fatal("Couldn't initialize hook engine");
-        return -1;
+        return FALSE;
     }
 
     logger.information("Hook engine initialized");
 
-    return 0;
+    //
+    // We support all version of Direct3D so we don't bother checking
+    // 
+    return TRUE;
 }
 
-INDICIUM_EXPORT Present(IID guid, LPVOID unknown, Direct3DVersion version)
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_present(
+    LPDIRECT3DDEVICE9   pDevice,
+    const RECT          *pSourceRect,
+    const RECT          *pDestRect,
+    HWND                hDestWindowOverride,
+    const RGNDATA       *pDirtyRegion
+)
 {
     static auto& logger = Logger::get(__func__);
+    static auto initialized = false;
+    static std::once_flag init;
 
-    switch (version)
+    std::call_once(init, [&](LPDIRECT3DDEVICE9 pd3dDevice)
     {
-    case Direct3DVersion::Direct3D9:
+        D3DDEVICE_CREATION_PARAMETERS params;
 
-        std::call_once(d3d9Init, [&](LPVOID pUnknown)
+        auto hr = pd3dDevice->GetCreationParameters(&params);
+        if (FAILED(hr))
         {
-            auto pd3dDevice = static_cast<IDirect3DDevice9*>(unknown);
-
-            D3DDEVICE_CREATION_PARAMETERS params;
-
-            auto hr = pd3dDevice->GetCreationParameters(&params);
-            if (FAILED(hr))
-            {
-                logger.error("Couldn't get creation parameters from device");
-                return;
-            }
-
-            ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
-
-            logger.information("ImGui (DX9) initialized");
-
-            HookWindowProc(params.hFocusWindow);
-
-            g_Initialized[Direct3DVersion::Direct3D9] = true;
-
-        }, unknown);
-
-        if (g_Initialized[Direct3DVersion::Direct3D9])
-        {
-            ImGui_ImplDX9_NewFrame();
-            RenderScene();
+            logger.error("Couldn't get creation parameters from device");
+            return;
         }
 
-        break;
-    case Direct3DVersion::Direct3D9Ex:
+        ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
 
-        std::call_once(d3d9exInit, [&](LPVOID pUnknown)
-        {
-            auto pd3dDevice = static_cast<IDirect3DDevice9Ex*>(unknown);
+        logger.information("ImGui (DX9) initialized");
 
-            D3DDEVICE_CREATION_PARAMETERS params;
+        HookWindowProc(params.hFocusWindow);
 
-            auto hr = pd3dDevice->GetCreationParameters(&params);
-            if (FAILED(hr))
-            {
-                logger.error("Couldn't get creation parameters from device");
-                return;
-            }
+        initialized = true;
 
-            ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
+    }, pDevice);
 
-            logger.information("ImGui (DX9Ex) initialized");
-
-            HookWindowProc(params.hFocusWindow);
-
-            g_Initialized[Direct3DVersion::Direct3D9Ex] = true;
-
-        }, unknown);
-
-        if (g_Initialized[Direct3DVersion::Direct3D9Ex])
-        {
-            ImGui_ImplDX9_NewFrame();
-            RenderScene();
-        }
-
-        break;
-    case Direct3DVersion::Direct3D10:
-
-        std::call_once(d3d10Init, [&](LPVOID pChain)
-        {
-            logger.information("Grabbing device and context pointers");
-
-            g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
-
-            // get device
-            auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d10Device), reinterpret_cast<void**>(&g_pd3d10Device));
-            if (FAILED(hr))
-            {
-                logger.error("Couldn't get device from swapchain");
-                return;
-            }
-
-            DXGI_SWAP_CHAIN_DESC sd;
-            g_pSwapChain->GetDesc(&sd);
-
-            logger.information("Initializing ImGui");
-
-            ImGui_ImplDX10_Init(sd.OutputWindow, g_pd3d10Device);
-
-            logger.information("ImGui (DX10) initialized");
-
-            HookWindowProc(sd.OutputWindow);
-
-            g_Initialized[Direct3DVersion::Direct3D10] = true;
-
-        }, unknown);
-
-        if (g_Initialized[Direct3DVersion::Direct3D10])
-        {
-            ImGui_ImplDX10_NewFrame();
-            RenderScene();
-        }
-
-        break;
-    case Direct3DVersion::Direct3D11:
-
-        std::call_once(d3d11Init, [&](LPVOID pChain)
-        {
-            logger.information("Grabbing device and context pointers");
-
-            g_pSwapChain = static_cast<IDXGISwapChain*>(pChain);
-
-            // get device
-            auto hr = g_pSwapChain->GetDevice(__uuidof(g_pd3d11Device), reinterpret_cast<void**>(&g_pd3d11Device));
-            if (FAILED(hr))
-            {
-                logger.error("Couldn't get device from swapchain");
-                return;
-            }
-
-            // get device context
-            g_pd3d11Device->GetImmediateContext(&g_pd3dDeviceContext);
-
-            ID3D11Texture2D* pBackBuffer;
-            g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-            g_pd3d11Device->CreateRenderTargetView(pBackBuffer, NULL, &g_mainRenderTargetView);
-            pBackBuffer->Release();
-
-            DXGI_SWAP_CHAIN_DESC sd;
-            g_pSwapChain->GetDesc(&sd);
-
-            logger.information("Initializing ImGui");
-
-            ImGui_ImplDX11_Init(sd.OutputWindow, g_pd3d11Device, g_pd3dDeviceContext);
-
-            logger.information("ImGui (DX11) initialized");
-
-            HookWindowProc(sd.OutputWindow);
-
-            g_Initialized[Direct3DVersion::Direct3D11] = true;
-
-        }, unknown);
-
-        if (g_Initialized[Direct3DVersion::Direct3D11])
-        {
-            ImGui_ImplDX11_NewFrame();
-            g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, NULL);
-            RenderScene();
-        }
-
-        break;
-
-    default:
-        break;
+    if (initialized)
+    {
+        ImGui_ImplDX9_NewFrame();
+        RenderScene();
     }
+}
+
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_reset(
+    LPDIRECT3DDEVICE9       pDevice,
+    D3DPRESENT_PARAMETERS   *pPresentationParameters
+)
+{
+
+}
+
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_endscene(
+    LPDIRECT3DDEVICE9 pDevice
+)
+{
+
+}
+
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_presentex(
+    LPDIRECT3DDEVICE9EX     pDevice,
+    const RECT              *pSourceRect,
+    const RECT              *pDestRect,
+    HWND                    hDestWindowOverride,
+    const RGNDATA           *pDirtyRegion,
+    DWORD                   dwFlags
+)
+{
+    static auto& logger = Logger::get(__func__);
+    static auto initialized = false;
+    static std::once_flag init;
+
+    std::call_once(init, [&](LPDIRECT3DDEVICE9EX pd3dDevice)
+    {
+        D3DDEVICE_CREATION_PARAMETERS params;
+
+        auto hr = pd3dDevice->GetCreationParameters(&params);
+        if (FAILED(hr))
+        {
+            logger.error("Couldn't get creation parameters from device");
+            return;
+        }
+
+        ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
+
+        logger.information("ImGui (DX9Ex) initialized");
+
+        HookWindowProc(params.hFocusWindow);
+
+        initialized = true;
+
+    }, pDevice);
+
+    if (initialized)
+    {
+        ImGui_ImplDX9_NewFrame();
+        RenderScene();
+    }
+}
+
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_resetex(
+    LPDIRECT3DDEVICE9EX     pDevice,
+    D3DPRESENT_PARAMETERS   *pPresentationParameters,
+    D3DDISPLAYMODEEX        *pFullscreenDisplayMode
+)
+{
+
+}
+
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_present(
+    IDXGISwapChain  *pSwapChain,
+    UINT            SyncInterval,
+    UINT            Flags
+)
+{
+    static auto& logger = Logger::get(__func__);
+    static auto initialized = false;
+    static std::once_flag init;
+
+    std::call_once(init, [&](IDXGISwapChain *pChain)
+    {
+        logger.information("Grabbing device and context pointers");
+
+        ID3D10Device *pDevice;
+        if (FAILED(D3D10_DEVICE_FROM_SWAPCHAIN(pChain, &pDevice)))
+        {
+            logger.error("Couldn't get device from swapchain");
+            return;
+        }
+
+        DXGI_SWAP_CHAIN_DESC sd;
+        pChain->GetDesc(&sd);
+
+        logger.information("Initializing ImGui");
+
+        ImGui_ImplDX10_Init(sd.OutputWindow, pDevice);
+
+        logger.information("ImGui (DX10) initialized");
+
+        HookWindowProc(sd.OutputWindow);
+
+        initialized = true;
+
+    }, pSwapChain);
+
+    if (initialized)
+    {
+        ImGui_ImplDX10_NewFrame();
+        RenderScene();
+    }
+}
+
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_resizetarget(
+    IDXGISwapChain          *pSwapChain,
+    const DXGI_MODE_DESC    *pNewTargetParameters
+)
+{
+
+}
+
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_present(
+    IDXGISwapChain  *pSwapChain,
+    UINT            SyncInterval,
+    UINT            Flags
+)
+{
+    static auto& logger = Logger::get(__func__);
+    static auto initialized = false;
+    static std::once_flag init;
+
+    static ID3D11DeviceContext *pContext;
+    static ID3D11RenderTargetView *mainRenderTargetView;
+
+    std::call_once(init, [&](IDXGISwapChain *pChain)
+    {
+        logger.information("Grabbing device and context pointers");
+
+        ID3D11Device *pDevice;
+        if (FAILED(D3D11_DEVICE_CONTEXT_FROM_SWAPCHAIN(pChain, &pDevice, &pContext)))
+        {
+            logger.error("Couldn't get device and context from swapchain");
+            return;
+        }
+
+        ID3D11Texture2D* pBackBuffer;
+        pChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+        pDevice->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView);
+        pBackBuffer->Release();
+
+        DXGI_SWAP_CHAIN_DESC sd;
+        pChain->GetDesc(&sd);
+
+        logger.information("Initializing ImGui");
+
+        ImGui_ImplDX11_Init(sd.OutputWindow, pDevice, pContext);
+
+        logger.information("ImGui (DX11) initialized");
+
+        HookWindowProc(sd.OutputWindow);
+
+        initialized = true;
+
+    }, pSwapChain);
+
+    if (initialized)
+    {
+        ImGui_ImplDX11_NewFrame();
+        pContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
+        RenderScene();
+    }
+}
+
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_resizetarget(
+    IDXGISwapChain          *pSwapChain,
+    const DXGI_MODE_DESC    *pNewTargetParameters
+)
+{
+
 }
 
 void HookWindowProc(HWND hWnd)
@@ -284,6 +335,9 @@ LRESULT WINAPI DetourWindowProc(
     static std::once_flag flag;
     std::call_once(flag, []() {Logger::get("DetourWindowProc").information("++ DetourWindowProc called"); });
 
+    //
+    // TODO: this is actually wrong and stupid, fix!
+    // 
     ImGui_ImplDX9_WndProcHandler(hWnd, Msg, wParam, lParam);
     ImGui_ImplDX10_WndProcHandler(hWnd, Msg, wParam, lParam);
     ImGui_ImplDX11_WndProcHandler(hWnd, Msg, wParam, lParam);
@@ -296,7 +350,7 @@ void RenderScene()
     static std::once_flag flag;
     std::call_once(flag, []() {Logger::get("RenderScene").information("++ RenderScene called"); });
 
-    static bool show_overlay = false;
+    static bool show_overlay = true;
     static bool show_test_window = true;
     static bool show_another_window = false;
     static ImVec4 clear_col = ImColor(114, 144, 154);

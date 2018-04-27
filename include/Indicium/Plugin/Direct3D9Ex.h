@@ -4,7 +4,7 @@
 #include "Common.h"
 #include <d3d9.h>
 
-INDICIUM_EXPORT VOID indicium_plugin_d3d9_presentex(
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_presentex(
     LPDIRECT3DDEVICE9EX     pDevice,
     const RECT              *pSourceRect,
     const RECT              *pDestRect,
@@ -13,7 +13,7 @@ INDICIUM_EXPORT VOID indicium_plugin_d3d9_presentex(
     DWORD                   dwFlags
 );
 
-INDICIUM_EXPORT VOID indicium_plugin_d3d9_resetex(
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_resetex(
     LPDIRECT3DDEVICE9EX     pDevice,
     D3DPRESENT_PARAMETERS   *pPresentationParameters,
     D3DDISPLAYMODEEX        *pFullscreenDisplayMode

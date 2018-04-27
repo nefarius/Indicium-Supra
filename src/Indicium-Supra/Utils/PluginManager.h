@@ -29,17 +29,17 @@ class PluginManager
     //
     // D3D9(Ex)
     // 
-    typedef HRESULT(WINAPI* fp_d3d9_present)(LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *);
-    typedef HRESULT(WINAPI* fp_d3d9_reset)(LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *);
-    typedef HRESULT(WINAPI* fp_d3d9_endscene)(LPDIRECT3DDEVICE9);
-    typedef HRESULT(WINAPI* fp_d3d9_presentex)(LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD);
-    typedef HRESULT(WINAPI* fp_d3d9_resetex)(LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *);
+    typedef HRESULT(__cdecl* fp_d3d9_present)(LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *);
+    typedef HRESULT(__cdecl* fp_d3d9_reset)(LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *);
+    typedef HRESULT(__cdecl* fp_d3d9_endscene)(LPDIRECT3DDEVICE9);
+    typedef HRESULT(__cdecl* fp_d3d9_presentex)(LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD);
+    typedef HRESULT(__cdecl* fp_d3d9_resetex)(LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *);
 
     //
     // DXGI
     // 
-    typedef HRESULT(WINAPI* fp_dxgi_present)(IDXGISwapChain*, UINT, UINT);
-    typedef HRESULT(WINAPI *fp_dxgi_resizetarget)(IDXGISwapChain*, const DXGI_MODE_DESC*);
+    typedef HRESULT(__cdecl* fp_dxgi_present)(IDXGISwapChain*, UINT, UINT);
+    typedef HRESULT(__cdecl *fp_dxgi_resizetarget)(IDXGISwapChain*, const DXGI_MODE_DESC*);
 
     //
     // Plugin-specific
@@ -61,12 +61,9 @@ class PluginManager
                 fp_d3d9_present present;
                 fp_d3d9_reset reset;
                 fp_d3d9_endscene endscene;
-            } d3d9;
-            struct
-            {
                 fp_d3d9_presentex presentex;
                 fp_d3d9_resetex resetex;
-            } d3d9ex;
+            } d3d9;
             struct
             {
                 fp_dxgi_present present;

@@ -82,7 +82,6 @@ void PluginManager::load(Direct3DVersion version)
         {
             plugin->plugin_module->unload();
             delete plugin->plugin_module;
-            delete plugin;
             continue;
         }
 
@@ -98,12 +97,10 @@ void PluginManager::load(Direct3DVersion version)
             plugin->function_ptrs.d3d9.endscene = static_cast<fp_d3d9_endscene>(plugin
                 ->plugin_module->getSymbol(
                     "indicium_plugin_d3d9_endscene"));
-            break;
-        case Direct3D9Ex:
-            plugin->function_ptrs.d3d9ex.presentex = static_cast<fp_d3d9_presentex>(plugin
+            plugin->function_ptrs.d3d9.presentex = static_cast<fp_d3d9_presentex>(plugin
                 ->plugin_module->getSymbol(
                     "indicium_plugin_d3d9_presentex"));
-            plugin->function_ptrs.d3d9ex.resetex = static_cast<fp_d3d9_resetex>(plugin
+            plugin->function_ptrs.d3d9.resetex = static_cast<fp_d3d9_resetex>(plugin
                 ->plugin_module->getSymbol(
                     "indicium_plugin_d3d9_resetex"));
             break;
@@ -167,7 +164,7 @@ void PluginManager::d3d9_presentex(LPDIRECT3DDEVICE9EX pDevice, const RECT* pSou
 {
     for (auto& plugin : _plugins)
     {
-        plugin->function_ptrs.d3d9ex.presentex(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
+        plugin->function_ptrs.d3d9.presentex(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
     }
 }
 
@@ -176,7 +173,7 @@ void PluginManager::d3d9_resetex(LPDIRECT3DDEVICE9EX pDevice, D3DPRESENT_PARAMET
 {
     for (auto& plugin : _plugins)
     {
-        plugin->function_ptrs.d3d9ex.resetex(pDevice, pPresentationParameters, pFullscreenDisplayMode);
+        plugin->function_ptrs.d3d9.resetex(pDevice, pPresentationParameters, pFullscreenDisplayMode);
     }
 }
 

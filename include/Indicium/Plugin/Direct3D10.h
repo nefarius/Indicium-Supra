@@ -3,15 +3,15 @@
 
 #include "Common.h"
 #include <dxgi.h>
-#include <d3d10.h>
+#include <d3d10_1.h>
 
-INDICIUM_EXPORT VOID indicium_plugin_d3d10_present(
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_present(
     IDXGISwapChain  *pSwapChain,
     UINT            SyncInterval,
     UINT            Flags
 );
 
-INDICIUM_EXPORT VOID indicium_plugin_d3d10_resizetarget(
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_resizetarget(
     IDXGISwapChain          *pSwapChain,
     const DXGI_MODE_DESC    *pNewTargetParameters
 );

@@ -5,13 +5,13 @@
 #include <dxgi.h>
 #include <d3d11.h>
 
-INDICIUM_EXPORT VOID indicium_plugin_d3d11_present(
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_present(
     IDXGISwapChain  *pSwapChain,
     UINT            SyncInterval,
     UINT            Flags
 );
 
-INDICIUM_EXPORT VOID indicium_plugin_d3d11_resizetarget(
+INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_resizetarget(
     IDXGISwapChain          *pSwapChain,
     const DXGI_MODE_DESC    *pNewTargetParameters
 );
