@@ -49,7 +49,7 @@ The following screenshots show [imgui](https://github.com/ocornut/imgui) getting
 ### DirectX 9
 Half-Life 2, 32-Bit
 
-![](https://lh3.googleusercontent.com/-Xxo-6C13lLQ/WYtg-8solMI/AAAAAAAAAKI/DpJAtgbemjUosoeGgVu4nTh4dMW52rweACHMYCw/s0/hl2_2017-08-09_21-22-31.png)
+![](https://thumbs.gfycat.com/AltruisticElectricIberianmole-size_restricted.gif)
 
 ### DirectX 9 Ex
 Castlevania: Lords of Shadow, 32-Bit
