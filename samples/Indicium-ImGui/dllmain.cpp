@@ -17,7 +17,6 @@
 // STL
 // 
 #include <mutex>
-#include <map>
 
 // 
 // POCO
@@ -82,11 +81,22 @@ INDICIUM_EXPORT(BOOLEAN) indicium_plugin_init(Direct3DVersion version)
 
     logger.information("Hook engine initialized");
 
+    // Setup Dear ImGui binding
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+
+    // Setup style
+    ImGui::StyleColorsDark();
+
     //
     // We support all version of Direct3D so we don't bother checking
     // 
     return TRUE;
 }
+
+#pragma region D3D9(Ex)
 
 INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_present(
     LPDIRECT3DDEVICE9   pDevice,
@@ -125,6 +135,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_present(
     {
         ImGui_ImplDX9_NewFrame();
         RenderScene();
+        ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
     }
 }
 
@@ -181,6 +192,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_presentex(
     {
         ImGui_ImplDX9_NewFrame();
         RenderScene();
+        ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
     }
 }
 
@@ -192,6 +204,10 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_resetex(
 {
 
 }
+
+#pragma endregion
+
+#pragma region D3D10
 
 INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_present(
     IDXGISwapChain  *pSwapChain,
@@ -233,6 +249,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_present(
     {
         ImGui_ImplDX10_NewFrame();
         RenderScene();
+        ImGui_ImplDX10_RenderDrawData(ImGui::GetDrawData());
     }
 }
 
@@ -243,6 +260,10 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_resizetarget(
 {
 
 }
+
+#pragma endregion
+
+#pragma region D3D11
 
 INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_present(
     IDXGISwapChain  *pSwapChain,
@@ -293,6 +314,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_present(
         ImGui_ImplDX11_NewFrame();
         pContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
         RenderScene();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     }
 }
 
@@ -304,6 +326,8 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_resizetarget(
 
 }
 
+#pragma endregion
+
 void HookWindowProc(HWND hWnd)
 {
     auto& logger = Logger::get(__func__);
@@ -312,7 +336,7 @@ void HookWindowProc(HWND hWnd)
 
     if (MH_CreateHook(lptrWndProc, &DetourWindowProc, reinterpret_cast<LPVOID*>(&OriginalWindowProc)) != MH_OK)
     {
-        logger.error("Coudln't create hook for WNDPROC");
+        logger.error("Couldn't create hook for WNDPROC");
         return;
     }
 
@@ -335,12 +359,7 @@ LRESULT WINAPI DetourWindowProc(
     static std::once_flag flag;
     std::call_once(flag, []() {Logger::get("DetourWindowProc").information("++ DetourWindowProc called"); });
 
-    //
-    // TODO: this is actually wrong and stupid, fix!
-    // 
-    ImGui_ImplDX9_WndProcHandler(hWnd, Msg, wParam, lParam);
-    ImGui_ImplDX10_WndProcHandler(hWnd, Msg, wParam, lParam);
-    ImGui_ImplDX11_WndProcHandler(hWnd, Msg, wParam, lParam);
+    ImGui_ImplWin32_WndProcHandler(hWnd, Msg, wParam, lParam);
 
     return OriginalWindowProc(hWnd, Msg, wParam, lParam);
 }
@@ -355,32 +374,36 @@ void RenderScene()
     static bool show_another_window = false;
     static ImVec4 clear_col = ImColor(114, 144, 154);
 
-    // 1. Show a simple window
-    // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+    if (show_overlay)
     {
-        static float f = 0.0f;
-        ImGui::Text("Hello, world!");
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-        ImGui::ColorEdit3("clear color", (float*)&clear_col);
-        if (ImGui::Button("Test Window")) show_test_window ^= 1;
-        if (ImGui::Button("Another Window")) show_another_window ^= 1;
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    }
 
-    // 2. Show another simple window, this time using an explicit Begin/End pair
-    if (show_another_window)
-    {
-        ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("Another Window", &show_another_window);
-        ImGui::Text("Hello");
-        ImGui::End();
-    }
+        // 1. Show a simple window
+        // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
+        {
+            static float f = 0.0f;
+            ImGui::Text("Hello, world!");
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+            ImGui::ColorEdit3("clear color", (float*)&clear_col);
+            if (ImGui::Button("Test Window")) show_test_window ^= 1;
+            if (ImGui::Button("Another Window")) show_another_window ^= 1;
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        }
 
-    // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
-    if (show_test_window)
-    {
-        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-        ImGui::ShowTestWindow(&show_test_window);
+        // 2. Show another simple window, this time using an explicit Begin/End pair
+        if (show_another_window)
+        {
+            ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
+            ImGui::Begin("Another Window", &show_another_window);
+            ImGui::Text("Hello");
+            ImGui::End();
+        }
+
+        // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
+        if (show_test_window)
+        {
+            ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+            ImGui::ShowTestWindow();
+        }
     }
 
     static auto pressedPast = false, pressedNow = false;
@@ -401,8 +424,119 @@ void RenderScene()
         pressedPast = true;
     }
 
-    if (show_overlay)
-    {
-        ImGui::Render();
-    }
+    ImGui::Render();
 }
+
+#pragma region ImGui
+
+bool ImGui_ImplWin32_UpdateMouseCursor()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange)
+        return false;
+
+    ImGuiMouseCursor imgui_cursor = io.MouseDrawCursor ? ImGuiMouseCursor_None : ImGui::GetMouseCursor();
+    if (imgui_cursor == ImGuiMouseCursor_None)
+    {
+        // Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
+        ::SetCursor(NULL);
+    }
+    else
+    {
+        // Hardware cursor type
+        LPTSTR win32_cursor = IDC_ARROW;
+        switch (imgui_cursor)
+        {
+        case ImGuiMouseCursor_Arrow:        win32_cursor = IDC_ARROW; break;
+        case ImGuiMouseCursor_TextInput:    win32_cursor = IDC_IBEAM; break;
+        case ImGuiMouseCursor_ResizeAll:    win32_cursor = IDC_SIZEALL; break;
+        case ImGuiMouseCursor_ResizeEW:     win32_cursor = IDC_SIZEWE; break;
+        case ImGuiMouseCursor_ResizeNS:     win32_cursor = IDC_SIZENS; break;
+        case ImGuiMouseCursor_ResizeNESW:   win32_cursor = IDC_SIZENESW; break;
+        case ImGuiMouseCursor_ResizeNWSE:   win32_cursor = IDC_SIZENWSE; break;
+        }
+        ::SetCursor(::LoadCursor(NULL, win32_cursor));
+    }
+    return true;
+}
+
+// Allow compilation with old Windows SDK. MinGW doesn't have default _WIN32_WINNT/WINVER versions.
+#ifndef WM_MOUSEHWHEEL
+#define WM_MOUSEHWHEEL 0x020E
+#endif
+
+// Process Win32 mouse/keyboard inputs. 
+// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
+// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
+// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+// PS: In this Win32 handler, we use the capture API (GetCapture/SetCapture/ReleaseCapture) to be able to read mouse coordinations when dragging mouse outside of our window bounds.
+// PS: We treat DBLCLK messages as regular mouse down messages, so this code will work on windows classes that have the CS_DBLCLKS flag set. Our own example app code doesn't set this flag.
+IMGUI_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (ImGui::GetCurrentContext() == NULL)
+        return 0;
+
+    ImGuiIO& io = ImGui::GetIO();
+    switch (msg)
+    {
+    case WM_LBUTTONDOWN: case WM_LBUTTONDBLCLK:
+    case WM_RBUTTONDOWN: case WM_RBUTTONDBLCLK:
+    case WM_MBUTTONDOWN: case WM_MBUTTONDBLCLK:
+    {
+        int button = 0;
+        if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK) button = 0;
+        if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK) button = 1;
+        if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) button = 2;
+        if (!ImGui::IsAnyMouseDown() && ::GetCapture() == NULL)
+            ::SetCapture(hwnd);
+        io.MouseDown[button] = true;
+        return 0;
+    }
+    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONUP:
+    {
+        int button = 0;
+        if (msg == WM_LBUTTONUP) button = 0;
+        if (msg == WM_RBUTTONUP) button = 1;
+        if (msg == WM_MBUTTONUP) button = 2;
+        io.MouseDown[button] = false;
+        if (!ImGui::IsAnyMouseDown() && ::GetCapture() == hwnd)
+            ::ReleaseCapture();
+        return 0;
+    }
+    case WM_MOUSEWHEEL:
+        io.MouseWheel += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? +1.0f : -1.0f;
+        return 0;
+    case WM_MOUSEHWHEEL:
+        io.MouseWheelH += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? +1.0f : -1.0f;
+        return 0;
+    case WM_MOUSEMOVE:
+        io.MousePos.x = (signed short)(lParam);
+        io.MousePos.y = (signed short)(lParam >> 16);
+        return 0;
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+        if (wParam < 256)
+            io.KeysDown[wParam] = 1;
+        return 0;
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+        if (wParam < 256)
+            io.KeysDown[wParam] = 0;
+        return 0;
+    case WM_CHAR:
+        // You can also use ToAscii()+GetKeyboardState() to retrieve characters.
+        if (wParam > 0 && wParam < 0x10000)
+            io.AddInputCharacter((unsigned short)wParam);
+        return 0;
+    case WM_SETCURSOR:
+        if (LOWORD(lParam) == HTCLIENT && ImGui_ImplWin32_UpdateMouseCursor())
+            return 1;
+        return 0;
+    }
+    return 0;
+}
+
+#pragma endregion
