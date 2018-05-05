@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = ".build", "build\.build.csproj", "{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}"
 EndProject
@@ -11,6 +11,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Indicium-FW1FontWrapper", "
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Indicium-ImGui", "samples\Indicium-ImGui\Indicium-ImGui.vcxproj", "{FC86B49A-3A73-4D82-81BA-D72B54C9132D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{FC1684BA-3749-41B4-B35E-4B576A299F72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{395DA647-2D87-485A-88DA-5AF160444A8A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,8 +23,14 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Debug|Win32.Build.0 = Debug|Any CPU
+		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Debug|x64.Build.0 = Debug|Any CPU
+		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Release|Win32.ActiveCfg = Release|Any CPU
+		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Release|Win32.Build.0 = Release|Any CPU
+		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Release|x64.ActiveCfg = Release|Any CPU
+		{5FC33CC1-FFAD-4736-A6CE-E22F521F335A}.Release|x64.Build.0 = Release|Any CPU
 		{DB383579-DA7F-48C0-AB1F-7C4C93544E2C}.Debug|Win32.ActiveCfg = Debug|Win32
 		{DB383579-DA7F-48C0-AB1F-7C4C93544E2C}.Debug|Win32.Build.0 = Debug|Win32
 		{DB383579-DA7F-48C0-AB1F-7C4C93544E2C}.Debug|x64.ActiveCfg = Debug|x64
@@ -48,5 +58,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DB383579-DA7F-48C0-AB1F-7C4C93544E2C} = {FC1684BA-3749-41B4-B35E-4B576A299F72}
+		{32E54E8E-9BD1-4E71-AEF6-B1E3090711AA} = {395DA647-2D87-485A-88DA-5AF160444A8A}
+		{FC86B49A-3A73-4D82-81BA-D72B54C9132D} = {395DA647-2D87-485A-88DA-5AF160444A8A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5ABF8FCE-1527-45A6-93D4-87D854EC7D5F}
 	EndGlobalSection
 EndGlobal
