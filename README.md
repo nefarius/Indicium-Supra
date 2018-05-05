@@ -28,11 +28,23 @@ The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit
  * DirectX 12 (experimental)
 
 ## How to build
-Building should be pretty straight-forward since the POCO libraries get fetched pre-compiled via NuGet on first build automatically.
+Building should be pretty straight-forward since the POCO libraries get fetched pre-compiled via NuGet on first build automatically. You have multiple choices for getting things done.
+
+### Vidual Studio
+Just open the solution file `Indicium-Supra.sln` and start the build from there.
 
 If Visual Studio can't load one or more projects the first time you launch it, you might need to restore the NuGet packages. Open the Package Manager Console and hit Restore:
 
 ![](https://lh3.googleusercontent.com/-K6g4v1RNMQo/WYyUwkquvZI/AAAAAAAAALQ/G_njXRtZQmwZUmo210vcLN_3pJphOuNigCHMYCw/s0/devenv_2017-08-10_19-15-45.png)
+
+### Command Line
+Navigate to the solution directory on the command line and invoke:
+```PowerShell
+powershell .\build.ps1 -configuration release
+```
+
+### The lazy way
+Now if you're really in a hurry you can [grab pre-built binaries from the buildbot](https://buildbot.vigem.org/builds/Indicium-Supra/master/). Boom, done.
 
 ## How to use
 Inject the resulting `Indicium-Supra.dll` into the target process using a DLL injection utility of your choice (you can ofc. [use mine as well](https://github.com/nefarius/Injector)). To do anything useful you also need one or more plugins in the same directory as well. The plugin DLLs names have to end with `.Plugin.dll` to get auto-detected and loaded. Example:
