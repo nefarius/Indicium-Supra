@@ -209,6 +209,7 @@
     <ClInclude Include="Game\Hook\Direct3D9Ex.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Global.h" />
     <ClInclude Include="intarch.h" />
     <ClInclude Include="Utils\PluginManager.h" />
     <ClInclude Include="resource.h" />

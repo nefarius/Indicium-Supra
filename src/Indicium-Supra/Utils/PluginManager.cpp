@@ -24,8 +24,8 @@ SOFTWARE.
 
 #include "PluginManager.h"
 #include "Misc.h"
+#include "Global.h"
 
-#include <Shlwapi.h>
 #include <algorithm>
 
 #define POCO_NO_UNWINDOWS
@@ -42,8 +42,6 @@ using Poco::Glob;
 
 PluginManager::PluginManager()
 {
-    GetModuleFileName(reinterpret_cast<HINSTANCE>(&__ImageBase), _dll_path, _countof(_dll_path));
-    PathRemoveFileSpec(_dll_path);
 }
 
 PluginManager::~PluginManager()
@@ -88,7 +86,7 @@ void PluginManager::load(Direct3DVersion version)
     // Fetch libraries with names ending in ".Plugin.dll"
     // 
     std::set<std::string> files;
-    const Path pluginDir(_dll_path, "*.Plugin.dll");
+    const Path pluginDir(GlobalState::instance().rootPath(), "*.Plugin.dll");
     Glob::glob(pluginDir, files);
 
     std::set<std::string>::iterator it = files.begin();
@@ -100,6 +98,9 @@ void PluginManager::load(Direct3DVersion version)
 
         plugin->init = static_cast<fp_init>(plugin->plugin_module->getSymbol("indicium_plugin_init"));
 
+        //
+        // Initialize plugin library with D3D version
+        // 
         const auto compatible = plugin->init(version);
 
         if (!compatible)
@@ -109,6 +110,9 @@ void PluginManager::load(Direct3DVersion version)
             continue;
         }
 
+        //
+        // Different versions require different function pointers
+        // 
         switch (version)
         {
         case Direct3D9:

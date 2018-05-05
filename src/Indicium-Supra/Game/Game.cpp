@@ -28,8 +28,7 @@ SOFTWARE.
 #include <MinHook.h>
 
 #include "Game.h"
-
-#include <Psapi.h>
+#include "Global.h"
 
 #include <Game/Hook/Direct3D9.h>
 #include <Game/Hook/Direct3D9Ex.h>
@@ -94,9 +93,7 @@ void initGame()
 
     bool dinput8_available;
 
-    Buffer<char> procName(MAX_PATH + 1);
-    GetProcessImageFileName(GetCurrentProcess(), procName.begin(), (DWORD)procName.size());
-    logger.information("Library loaded into %s", std::string(procName.begin()));
+    logger.information("Library loaded into %s", GlobalState::instance().processName());
 
     logger.information("Library enabled");
 

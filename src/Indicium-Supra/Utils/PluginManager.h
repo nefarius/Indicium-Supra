@@ -46,7 +46,6 @@ using Poco::SharedPtr;
 using Poco::RefCountedObject;
 using Poco::AutoPtr;
 
-EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 
 class PluginManager
 {
@@ -96,7 +95,6 @@ class PluginManager
         } function_ptrs;
     };
 
-    TCHAR _dll_path[MAX_PATH];
     FastMutex _plugins_lock;
     std::vector<AutoPtr<Plugin>> _plugins;
 
