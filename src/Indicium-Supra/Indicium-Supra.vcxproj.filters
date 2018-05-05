@@ -5,9 +5,6 @@
     <ClCompile Include="Game\Game.cpp">
       <Filter>Game</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\Misc.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Hook\Window.cpp">
       <Filter>Game\Hook</Filter>
     </ClCompile>

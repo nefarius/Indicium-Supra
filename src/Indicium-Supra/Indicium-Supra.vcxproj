@@ -190,7 +190,6 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Utils\PluginManager.cpp" />
-    <ClCompile Include="Utils\Misc.cpp" />
     <ClCompile Include="Game\Hook\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
