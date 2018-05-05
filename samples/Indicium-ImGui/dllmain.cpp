@@ -75,7 +75,7 @@ t_WindowProc OriginalWindowProc = nullptr;
  * \fn  BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
  *
  * \brief   Your typical DLL entry point function. We're not doing much here since a special
- *          initialization routine get's called upon getting loaded by Indicium-Supra.
+ *          initialization routine gets called upon getting loaded by Indicium-Supra.
  *
  * \author  Benjamin "Nefarius" Höglinger
  * \date    05.05.2018

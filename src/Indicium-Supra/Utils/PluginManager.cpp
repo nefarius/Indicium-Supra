@@ -93,9 +93,16 @@ void PluginManager::load(Direct3DVersion version)
     for (; it != files.end(); ++it)
     {
         auto plugin = new Plugin;
+
+        //
+        // Load library
+        // 
         plugin->plugin_module = new SharedLibrary;
         plugin->plugin_module->load(*it);
 
+        //
+        // Grab initialization function
+        // 
         plugin->init = static_cast<fp_init>(plugin->plugin_module->getSymbol("indicium_plugin_init"));
 
         //
