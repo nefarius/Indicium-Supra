@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "dllmain.h"
+#include "Global.h"
 
 #include <MinHook.h>
 #include <Utils/Windows.h>
@@ -40,6 +41,7 @@ SOFTWARE.
 #include <Poco/PatternFormatter.h>
 #include <Poco/FormattingChannel.h>
 #include <Poco/Path.h>
+#include <Poco/Util/IniFileConfiguration.h>
 
 using Poco::Message;
 using Poco::Logger;
@@ -48,9 +50,11 @@ using Poco::AutoPtr;
 using Poco::PatternFormatter;
 using Poco::FormattingChannel;
 using Poco::Path;
+using Poco::Util::IniFileConfiguration;
 
 HANDLE g_hDllHandle = nullptr;
 std::once_flag flag;
+extern AutoPtr<IniFileConfiguration> g_config;
 
 
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
@@ -59,10 +63,17 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
     DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
 
-    std::string logfile("%TEMP%\\Indicium-Supra.log");
-
+    //
+    // Fetch configuration
+    // 
+    Path cfgFile(GlobalState::instance().rootPath(), "Indicium-Supra.ini");
+    g_config = new IniFileConfiguration();
+    
+    //
+    // Set up logging
+    // 
     AutoPtr<FileChannel> pFileChannel(new FileChannel);
-    pFileChannel->setProperty("path", Path::expand(logfile));
+    pFileChannel->setProperty("path", Path::expand(g_config->getString("global.logFile", "%TEMP%\\Indicium-Supra.log")));
     AutoPtr<PatternFormatter> pPF(new PatternFormatter);
     pPF->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i %s [%p]: %t");
     AutoPtr<FormattingChannel> pFC(new FormattingChannel(pPF, pFileChannel));
