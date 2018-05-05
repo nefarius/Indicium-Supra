@@ -198,7 +198,6 @@ void initGame()
 
     try
     {
-        // get VTable for IDXGISwapChain (v10)
         AutoPtr<Direct3D10Hooking::Direct3D10> d3d10(new Direct3D10Hooking::Direct3D10);
         auto vtable = d3d10->vtable();
 
@@ -242,7 +241,6 @@ void initGame()
 
     try
     {
-        // get VTable for IDXGISwapChain (v11)
         AutoPtr<Direct3D11Hooking::Direct3D11> d3d11(new Direct3D11Hooking::Direct3D11);
         auto vtable = d3d11->vtable();
 
@@ -284,8 +282,8 @@ void initGame()
 
 #pragma region D3D12
 
-    try {
-        // get VTable for IDXGISwapChain (v12)
+    try 
+    {
         AutoPtr<Direct3D12Hooking::Direct3D12> d3d12(new Direct3D12Hooking::Direct3D12);
         auto vtable = d3d12->vtable();
 
