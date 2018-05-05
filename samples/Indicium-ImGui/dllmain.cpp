@@ -96,6 +96,19 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     return TRUE;
 }
 
+/**
+ * \fn  INDICIUM_EXPORT(BOOLEAN) indicium_plugin_init(Direct3DVersion version)
+ *
+ * \brief   This gets called by the core plugin manager once the used Direct3D version has been
+ *          established. Here we basically decide if our plugin supports the game's version and
+ *          tell the plugin manager if we can get loaded or not. Returning TRUE will result in
+ *          full library boot-up, while returning FALSE will cause the library to get unloaded.
+ *
+ * \author  Benjamin "Nefarius" Höglinger
+ * \date    05.05.2018
+ *
+ * \param   parameter1  The Direct3D version the core has detected.
+ */
 INDICIUM_EXPORT(BOOLEAN) indicium_plugin_init(Direct3DVersion version)
 {
     std::string logfile("%TEMP%\\Indicium-ImGui.Plugin.log");
@@ -185,14 +198,20 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_reset(
     D3DPRESENT_PARAMETERS   *pPresentationParameters
 )
 {
-
+    //
+    // TODO: more checks and testing!
+    // 
+    ImGui_ImplDX9_InvalidateDeviceObjects();
+    ImGui_ImplDX9_CreateDeviceObjects();
 }
 
 INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_endscene(
     LPDIRECT3DDEVICE9 pDevice
 )
 {
-
+    //
+    // Not used
+    // 
 }
 
 INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_presentex(
@@ -243,7 +262,11 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_resetex(
     D3DDISPLAYMODEEX        *pFullscreenDisplayMode
 )
 {
-
+    //
+    // TODO: more checks and testing!
+    // 
+    ImGui_ImplDX9_InvalidateDeviceObjects();
+    ImGui_ImplDX9_CreateDeviceObjects();
 }
 
 #pragma endregion
@@ -299,7 +322,11 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_resizetarget(
     const DXGI_MODE_DESC    *pNewTargetParameters
 )
 {
-
+    //
+    // TODO: more checks and testing!
+    // 
+    ImGui_ImplDX10_InvalidateDeviceObjects();
+    ImGui_ImplDX10_CreateDeviceObjects();
 }
 
 #pragma endregion
@@ -364,7 +391,11 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_resizetarget(
     const DXGI_MODE_DESC    *pNewTargetParameters
 )
 {
-
+    //
+    // TODO: more checks and testing!
+    // 
+    ImGui_ImplDX11_InvalidateDeviceObjects();
+    ImGui_ImplDX11_CreateDeviceObjects();
 }
 
 #pragma endregion
