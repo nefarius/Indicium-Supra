@@ -214,7 +214,6 @@
     <ClInclude Include="intarch.h" />
     <ClInclude Include="Utils\PluginManager.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Utils\algorithm.h" />
     <ClInclude Include="Utils\Hook.h" />
     <ClInclude Include="Utils\Misc.h" />
     <ClInclude Include="Utils\Windows.h" />
