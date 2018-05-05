@@ -99,7 +99,12 @@ void initGame()
         g_present9Hook.apply(d3d->vtable()[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
         {
             static std::once_flag flag;
-            std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Present called"); });
+            std::call_once(flag, []()
+            {
+                Logger::get("HookDX9").information("++ IDirect3DDevice9::Present called");
+
+                g_plugins.load(Direct3DVersion::Direct3D9);
+            });
 
             g_plugins.d3d9_present(dev, a1, a2, a3, a4);
 
@@ -137,7 +142,12 @@ void initGame()
         g_present9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
         {
             static std::once_flag flag;
-            std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::PresentEx called"); });
+            std::call_once(flag, []()
+            {
+                Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::PresentEx called");
+
+                g_plugins.load(Direct3DVersion::Direct3D9);
+            });
 
             g_plugins.d3d9_presentex(dev, a1, a2, a3, a4, a5);
 
@@ -155,8 +165,6 @@ void initGame()
 
             return g_reset9ExHook.callOrig(dev, pp, ppp);
         });
-
-        g_plugins.load(Direct3DVersion::Direct3D9);
     }
     catch (Poco::Exception& pex)
     {
@@ -178,7 +186,12 @@ void initGame()
         g_swapChainPresent10Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
         {
             static std::once_flag flag;
-            std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::Present called"); });
+            std::call_once(flag, []()
+            {
+                Logger::get("HookDX10").information("++ IDXGISwapChain::Present called");
+
+                g_plugins.load(Direct3DVersion::Direct3D10);
+            });
 
             g_plugins.d3d10_present(chain, SyncInterval, Flags);
 
@@ -196,8 +209,6 @@ void initGame()
 
             return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
         });
-
-        g_plugins.load(Direct3DVersion::Direct3D10);
     }
     catch (Poco::Exception& pex)
     {
@@ -219,7 +230,12 @@ void initGame()
         g_swapChainPresent11Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
         {
             static std::once_flag flag;
-            std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::Present called"); });
+            std::call_once(flag, []()
+            {
+                Logger::get("HookDX11").information("++ IDXGISwapChain::Present called");
+
+                g_plugins.load(Direct3DVersion::Direct3D11);
+            });
 
             g_plugins.d3d11_present(chain, SyncInterval, Flags);
 
@@ -237,8 +253,6 @@ void initGame()
 
             return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
         });
-
-        g_plugins.load(Direct3DVersion::Direct3D11);
     }
     catch (Poco::Exception& pex)
     {
