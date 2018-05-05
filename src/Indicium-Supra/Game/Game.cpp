@@ -95,7 +95,7 @@ void initGame()
     bool dinput8_available;
 
     Buffer<char> procName(MAX_PATH + 1);
-    GetProcessImageFileName(GetCurrentProcess(), procName.begin(), procName.size());
+    GetProcessImageFileName(GetCurrentProcess(), procName.begin(), (DWORD)procName.size());
     logger.information("Library loaded into %s", std::string(procName.begin()));
 
     logger.information("Library enabled");

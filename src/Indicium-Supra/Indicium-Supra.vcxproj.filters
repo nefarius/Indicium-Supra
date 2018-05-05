@@ -107,9 +107,6 @@
     <ClInclude Include="Utils\PluginManager.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\IndiciumPlugin.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Hook\Direct3D12.h">
       <Filter>Game\Hook\D3D12</Filter>
     </ClInclude>
