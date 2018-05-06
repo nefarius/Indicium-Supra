@@ -26,8 +26,6 @@ SOFTWARE.
 #include "Misc.h"
 #include "Global.h"
 
-#include <algorithm>
-
 #define POCO_NO_UNWINDOWS
 #include <Poco/Logger.h>
 #include <Poco/Path.h>
@@ -39,6 +37,16 @@ using Poco::Path;
 using Poco::File;
 using Poco::Glob;
 
+#define MAP_PLUGIN_SYMBOL(_plugin_, _symbol_, _type_, _target_)    \
+                            _plugin_->function_ptrs._target_ = \
+                            (_plugin_->plugin_module->hasSymbol(_symbol_) ? \
+                            static_cast<_type_>(_plugin_->plugin_module->getSymbol(_symbol_)) : \
+                            nullptr)
+
+#define CALL_PLUGIN_SYMBOL(_plugin_, _target_, ...)     \
+                            (_plugin_->function_ptrs._target_ ? \
+                            _plugin_->function_ptrs._target_(##__VA_ARGS__) : \
+                            (void)0)
 
 PluginManager::PluginManager()
 {
@@ -123,45 +131,23 @@ void PluginManager::load(Direct3DVersion version)
         switch (version)
         {
         case Direct3D9:
-            plugin->function_ptrs.d3d9.present = static_cast<fp_d3d9_present>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d9_present"));
-            plugin->function_ptrs.d3d9.reset = static_cast<fp_d3d9_reset>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d9_reset"));
-            plugin->function_ptrs.d3d9.endscene = static_cast<fp_d3d9_endscene>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d9_endscene"));
-            plugin->function_ptrs.d3d9.presentex = static_cast<fp_d3d9_presentex>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d9_presentex"));
-            plugin->function_ptrs.d3d9.resetex = static_cast<fp_d3d9_resetex>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d9_resetex"));
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d9_present", fp_d3d9_present, d3d9.present);
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d9_reset", fp_d3d9_reset, d3d9.reset);
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d9_endscene", fp_d3d9_endscene, d3d9.endscene);
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d9_presentex", fp_d3d9_presentex, d3d9.presentex);
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d9_resetex", fp_d3d9_resetex, d3d9.resetex);
             break;
         case Direct3D10:
-            plugin->function_ptrs.dxgi.present = static_cast<fp_dxgi_present>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d10_present"));
-            plugin->function_ptrs.dxgi.resizetarget = static_cast<fp_dxgi_resizetarget>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d10_resizetarget"));
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d10_present", fp_dxgi_present, dxgi.present);
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d10_resizetarget", fp_dxgi_resizetarget, dxgi.resizetarget);
             break;
         case Direct3D11:
-            plugin->function_ptrs.dxgi.present = static_cast<fp_dxgi_present>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d11_present"));
-            plugin->function_ptrs.dxgi.resizetarget = static_cast<fp_dxgi_resizetarget>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d11_resizetarget"));
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d11_present", fp_dxgi_present, dxgi.present);
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d11_resizetarget", fp_dxgi_resizetarget, dxgi.resizetarget);
             break;
         case Direct3D12:
-            plugin->function_ptrs.dxgi.present = static_cast<fp_dxgi_present>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d12_present"));
-            plugin->function_ptrs.dxgi.resizetarget = static_cast<fp_dxgi_resizetarget>(plugin
-                ->plugin_module->getSymbol(
-                    "indicium_plugin_d3d12_resizetarget"));
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d12_present", fp_dxgi_present, dxgi.present);
+            MAP_PLUGIN_SYMBOL(plugin, "indicium_plugin_d3d12_resizetarget", fp_dxgi_resizetarget, dxgi.resizetarget);
             break;
         }
 
@@ -172,90 +158,90 @@ void PluginManager::load(Direct3DVersion version)
 void PluginManager::d3d9_present(LPDIRECT3DDEVICE9 pDevice, const RECT* pSourceRect, const RECT* pDestRect,
     HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.d3d9.present(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+        CALL_PLUGIN_SYMBOL(plugin, d3d9.present, pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
     }
 }
 
 void PluginManager::d3d9_reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.d3d9.reset(pDevice, pPresentationParameters);
+        CALL_PLUGIN_SYMBOL(plugin, d3d9.reset, pDevice, pPresentationParameters);
     }
 }
 
 void PluginManager::d3d9_endscene(LPDIRECT3DDEVICE9 pDevice)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.d3d9.endscene(pDevice);
+        CALL_PLUGIN_SYMBOL(plugin, d3d9.endscene, pDevice);
     }
 }
 
 void PluginManager::d3d9_presentex(LPDIRECT3DDEVICE9EX pDevice, const RECT* pSourceRect, const RECT* pDestRect,
     HWND hDestWindowOverride, const RGNDATA* pDirtyRegion, DWORD dwFlags)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.d3d9.presentex(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
+        CALL_PLUGIN_SYMBOL(plugin, d3d9.presentex, pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion, dwFlags);
     }
 }
 
 void PluginManager::d3d9_resetex(LPDIRECT3DDEVICE9EX pDevice, D3DPRESENT_PARAMETERS* pPresentationParameters,
     D3DDISPLAYMODEEX* pFullscreenDisplayMode)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.d3d9.resetex(pDevice, pPresentationParameters, pFullscreenDisplayMode);
+        CALL_PLUGIN_SYMBOL(plugin, d3d9.resetex, pDevice, pPresentationParameters, pFullscreenDisplayMode);
     }
 }
 
 void PluginManager::d3d10_present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.dxgi.present(pSwapChain, SyncInterval, Flags);
+        CALL_PLUGIN_SYMBOL(plugin, dxgi.present, pSwapChain, SyncInterval, Flags);
     }
 }
 
 void PluginManager::d3d10_resizetarget(IDXGISwapChain* pSwapChain, const DXGI_MODE_DESC* pNewTargetParameters)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.dxgi.resizetarget(pSwapChain, pNewTargetParameters);
+        CALL_PLUGIN_SYMBOL(plugin, dxgi.resizetarget, pSwapChain, pNewTargetParameters);
     }
 }
 
 void PluginManager::d3d11_present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.dxgi.present(pSwapChain, SyncInterval, Flags);
+        CALL_PLUGIN_SYMBOL(plugin, dxgi.present, pSwapChain, SyncInterval, Flags);
     }
 }
 
 void PluginManager::d3d11_resizetarget(IDXGISwapChain* pSwapChain, const DXGI_MODE_DESC* pNewTargetParameters)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.dxgi.resizetarget(pSwapChain, pNewTargetParameters);
+        CALL_PLUGIN_SYMBOL(plugin, dxgi.resizetarget, pSwapChain, pNewTargetParameters);
     }
 }
 
 void PluginManager::d3d12_present(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.dxgi.present(pSwapChain, SyncInterval, Flags);
+        CALL_PLUGIN_SYMBOL(plugin, dxgi.present, pSwapChain, SyncInterval, Flags);
     }
 }
 
 void PluginManager::d3d12_resizetarget(IDXGISwapChain* pSwapChain, const DXGI_MODE_DESC* pNewTargetParameters)
 {
-    for (auto& plugin : _plugins)
+    for (auto const& plugin : _plugins)
     {
-        plugin->function_ptrs.dxgi.resizetarget(pSwapChain, pNewTargetParameters);
+        CALL_PLUGIN_SYMBOL(plugin, dxgi.resizetarget, pSwapChain, pNewTargetParameters);
     }
 }
