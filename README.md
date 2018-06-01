@@ -32,7 +32,7 @@ The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit
 ## How to build
 Building should be pretty straight-forward since the POCO libraries get fetched pre-compiled via NuGet on first build automatically. You have multiple choices for getting things done.
 
-### Vidual Studio
+### Visual Studio
 Just open the solution file `Indicium-Supra.sln` and start the build from there.
 
 If Visual Studio can't load one or more projects the first time you launch it, you might need to restore the NuGet packages. Open the Package Manager Console and hit Restore:
