@@ -2,6 +2,8 @@
 
 API-Hooking and rendering framework for DirectX-based games.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/rt4ybpwrhn22kegm?svg=true)](https://ci.appveyor.com/project/nefarius/indicium-supra)
+
 ## Summary
 `Indicium-Supra` exposes the following DirectX/Direct3D rendering COM functions to custom plugins:
  * `IDirect3DDevice9::Present`
@@ -30,7 +32,7 @@ The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit
 ## How to build
 Building should be pretty straight-forward since the POCO libraries get fetched pre-compiled via NuGet on first build automatically. You have multiple choices for getting things done.
 
-### Vidual Studio
+### Visual Studio
 Just open the solution file `Indicium-Supra.sln` and start the build from there.
 
 If Visual Studio can't load one or more projects the first time you launch it, you might need to restore the NuGet packages. Open the Package Manager Console and hit Restore:
