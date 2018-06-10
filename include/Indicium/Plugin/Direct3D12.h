@@ -28,6 +28,29 @@ SOFTWARE.
 #include "Common.h"
 #include <dxgi.h>
 
+typedef
+_Function_class_(EVT_INDICIUM_D3D12_PRESENT)
+VOID
+EVT_INDICIUM_D3D12_PRESENT(
+    IDXGISwapChain  *pSwapChain,
+    UINT            SyncInterval,
+    UINT            Flags
+);
+
+typedef EVT_INDICIUM_D3D12_PRESENT *PFN_INDICIUM_D3D12_PRESENT;
+
+typedef
+_Function_class_(EVT_INDICIUM_D3D12_RESIZE_TARGET)
+VOID
+EVT_INDICIUM_D3D12_RESIZE_TARGET(
+    IDXGISwapChain          *pSwapChain,
+    const DXGI_MODE_DESC    *pNewTargetParameters
+);
+
+typedef EVT_INDICIUM_D3D12_RESIZE_TARGET *PFN_INDICIUM_D3D12_RESIZE_TARGET;
+
+#pragma region DEPRECATED
+
 INDICIUM_EXPORT(VOID) indicium_plugin_d3d12_present(
     IDXGISwapChain  *pSwapChain,
     UINT            SyncInterval,
@@ -38,5 +61,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d12_resizetarget(
     IDXGISwapChain          *pSwapChain,
     const DXGI_MODE_DESC    *pNewTargetParameters
 );
+
+#pragma endregion
 
 #endif // Direct3D12_h__

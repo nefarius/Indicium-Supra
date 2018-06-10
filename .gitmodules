@@ -1,0 +1,3 @@
+[submodule "minhook"]
+	path = minhook
+	url = git@github.com:nefarius/minhook.git
