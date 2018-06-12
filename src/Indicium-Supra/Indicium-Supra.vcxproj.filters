@@ -142,6 +142,7 @@
     <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D12.h">
       <Filter>Shared\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Engine.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />

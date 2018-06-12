@@ -40,6 +40,13 @@ SOFTWARE.
 #include <Game/Hook/Direct3D12.h>
 #include <Game/Hook/DirectInput8.h>
 
+#include "Indicium/Engine/IndiciumCore.h"
+#include "Indicium/Engine/IndiciumDirect3D9.h"
+#include "Indicium/Engine/IndiciumDirect3D10.h"
+#include "Indicium/Engine/IndiciumDirect3D11.h"
+#include "Indicium/Engine/IndiciumDirect3D12.h"
+#include "Engine.h"
+
 #include <Utils/PluginManager.h>
 
 #include <mutex>
@@ -116,7 +123,7 @@ void IndiciumMainThread(LPVOID Params)
 
 #pragma region D3D9
 
-    if (g_config->getBool("D3D9.enabled", true))
+    if (engine->Configuration->getBool("D3D9.enabled", true))
     {
         try
         {
