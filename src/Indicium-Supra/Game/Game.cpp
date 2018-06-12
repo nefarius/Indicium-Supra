@@ -47,11 +47,7 @@ SOFTWARE.
 #include "Indicium/Engine/IndiciumDirect3D12.h"
 #include "Engine.h"
 
-#include <Utils/PluginManager.h>
-
 #include <mutex>
-
-#include <Indicium/Plugin/Common.h>
 
 #include "Indicium/Engine/IndiciumCore.h"
 
@@ -99,7 +95,6 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTINSTANCE, DWORD, DWORD> g_getObjectInfo8Hook;
 
 
-PluginManager g_plugins;
 PINDICIUM_ENGINE g_engine;
 
 void IndiciumMainThread(LPVOID Params)
@@ -141,9 +136,13 @@ void IndiciumMainThread(LPVOID Params)
                     INVOKE_INDICIUM_GAME_HOOKED(g_engine, IndiciumDirect3DVersion9);
                 });
 
-                g_plugins.d3d9_present(dev, a1, a2, a3, a4);
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PrePresent, dev, a1, a2, a3, a4);
 
-                return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
+                auto ret = g_present9Hook.callOrig(dev, a1, a2, a3, a4);
+
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PostPresent, dev, a1, a2, a3, a4);
+
+                return ret;
             });
 
             logger.information("Hooking IDirect3DDevice9::Reset");
@@ -153,9 +152,13 @@ void IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Reset called"); });
 
-                g_plugins.d3d9_reset(dev, pp);
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PreReset, dev, pp);
 
-                return g_reset9Hook.callOrig(dev, pp);
+                auto ret = g_reset9Hook.callOrig(dev, pp);
+
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PostReset, dev, pp);
+
+                return ret;
             });
 
             logger.information("Hooking IDirect3DDevice9::EndScene");
@@ -165,9 +168,13 @@ void IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::EndScene called"); });
 
-                g_plugins.d3d9_endscene(dev);
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PreEndScene, dev);
 
-                return g_endScene9Hook.callOrig(dev);
+                auto ret = g_endScene9Hook.callOrig(dev);
+
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PostEndScene, dev);
+
+                return ret;
             });
 
             AutoPtr<Direct3D9Hooking::Direct3D9Ex> d3dEx(new Direct3D9Hooking::Direct3D9Ex);
@@ -181,12 +188,16 @@ void IndiciumMainThread(LPVOID Params)
                 {
                     Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::PresentEx called");
 
-                    g_plugins.load(Direct3DVersion::Direct3D9);
+                    INVOKE_INDICIUM_GAME_HOOKED(g_engine, IndiciumDirect3DVersion9);
                 });
 
-                g_plugins.d3d9_presentex(dev, a1, a2, a3, a4, a5);
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PrePresentEx, dev, a1, a2, a3, a4, a5);
 
-                return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
+                auto ret = g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
+
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PostPresentEx, dev, a1, a2, a3, a4, a5);
+
+                return ret;
             });
 
             logger.information("Hooking IDirect3DDevice9Ex::ResetEx");
@@ -196,9 +207,13 @@ void IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::ResetEx called"); });
 
-                g_plugins.d3d9_resetex(dev, pp, ppp);
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PreResetEx, dev, pp, ppp);
 
-                return g_reset9ExHook.callOrig(dev, pp, ppp);
+                auto ret = g_reset9ExHook.callOrig(dev, pp, ppp);
+
+                INVOKE_D3D9_CALLBACK(g_engine, EvtIndiciumD3D9PostResetEx, dev, pp, ppp);
+
+                return ret;
             });
         }
         catch (Poco::Exception& pex)
@@ -230,9 +245,13 @@ void IndiciumMainThread(LPVOID Params)
                     INVOKE_INDICIUM_GAME_HOOKED(g_engine, IndiciumDirect3DVersion10);
                 });
 
-                g_plugins.d3d10_present(chain, SyncInterval, Flags);
+                INVOKE_D3D10_CALLBACK(g_engine, EvtIndiciumD3D10PrePresent, chain, SyncInterval, Flags);
 
-                return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
+                auto ret = g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
+
+                INVOKE_D3D10_CALLBACK(g_engine, EvtIndiciumD3D10PostPresent, chain, SyncInterval, Flags);
+
+                return ret;
             });
 
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
@@ -242,9 +261,13 @@ void IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-                g_plugins.d3d10_resizetarget(chain, pNewTargetParameters);
+                INVOKE_D3D10_CALLBACK(g_engine, EvtIndiciumD3D10PreResizeTarget, chain, pNewTargetParameters);
 
-                return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
+                auto ret = g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
+
+                INVOKE_D3D10_CALLBACK(g_engine, EvtIndiciumD3D10PostResizeTarget, chain, pNewTargetParameters);
+
+                return ret;
             });
         }
         catch (Poco::Exception& pex)
@@ -276,9 +299,13 @@ void IndiciumMainThread(LPVOID Params)
                     INVOKE_INDICIUM_GAME_HOOKED(g_engine, IndiciumDirect3DVersion11);
                 });
 
-                g_plugins.d3d11_present(chain, SyncInterval, Flags);
+                INVOKE_D3D11_CALLBACK(g_engine, EvtIndiciumD3D11PrePresent, chain, SyncInterval, Flags);
 
-                return g_swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
+                auto ret = g_swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
+
+                INVOKE_D3D11_CALLBACK(g_engine, EvtIndiciumD3D11PostPresent, chain, SyncInterval, Flags);
+
+                return ret;
             });
 
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
@@ -288,9 +315,13 @@ void IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-                g_plugins.d3d11_resizetarget(chain, pNewTargetParameters);
+                INVOKE_D3D11_CALLBACK(g_engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
 
-                return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
+                auto ret = g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
+
+                INVOKE_D3D11_CALLBACK(g_engine, EvtIndiciumD3D11PostResizeTarget, chain, pNewTargetParameters);
+
+                return ret;
             });
         }
         catch (Poco::Exception& pex)
@@ -315,16 +346,20 @@ void IndiciumMainThread(LPVOID Params)
             g_swapChainPresent12Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
             {
                 static std::once_flag flag;
-                std::call_once(flag, []() 
+                std::call_once(flag, []()
                 {
-                    Logger::get("HookDX12").information("++ IDXGISwapChain::Present called"); 
+                    Logger::get("HookDX12").information("++ IDXGISwapChain::Present called");
 
                     INVOKE_INDICIUM_GAME_HOOKED(g_engine, IndiciumDirect3DVersion12);
                 });
 
-                g_plugins.d3d12_present(chain, SyncInterval, Flags);
+                INVOKE_D3D12_CALLBACK(g_engine, EvtIndiciumD3D12PrePresent, chain, SyncInterval, Flags);
 
-                return g_swapChainPresent12Hook.callOrig(chain, SyncInterval, Flags);
+                auto ret = g_swapChainPresent12Hook.callOrig(chain, SyncInterval, Flags);
+
+                INVOKE_D3D12_CALLBACK(g_engine, EvtIndiciumD3D12PostPresent, chain, SyncInterval, Flags);
+
+                return ret;
             });
 
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
@@ -334,12 +369,14 @@ void IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-                g_plugins.d3d12_resizetarget(chain, pNewTargetParameters);
+                INVOKE_D3D12_CALLBACK(g_engine, EvtIndiciumD3D12PreResizeTarget, chain, pNewTargetParameters);
 
-                return g_swapChainResizeTarget12Hook.callOrig(chain, pNewTargetParameters);
+                auto ret = g_swapChainResizeTarget12Hook.callOrig(chain, pNewTargetParameters);
+
+                INVOKE_D3D12_CALLBACK(g_engine, EvtIndiciumD3D12PostResizeTarget, chain, pNewTargetParameters);
+
+                return ret;
             });
-
-            g_plugins.load(Direct3DVersion::Direct3D12);
         }
         catch (Poco::Exception& pex)
         {

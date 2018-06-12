@@ -189,7 +189,6 @@
     <ClCompile Include="Game\Hook\Direct3D9.cpp" />
     <ClCompile Include="Game\Hook\Direct3D9Ex.cpp" />
     <ClCompile Include="Game\Game.cpp" />
-    <ClCompile Include="Utils\PluginManager.cpp" />
     <ClCompile Include="Game\Hook\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -216,7 +215,6 @@
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="intarch.h" />
-    <ClInclude Include="Utils\PluginManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Utils\Hook.h" />
     <ClInclude Include="Utils\Misc.h" />

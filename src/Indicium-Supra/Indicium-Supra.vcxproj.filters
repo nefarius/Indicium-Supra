@@ -22,9 +22,6 @@
     <ClCompile Include="Game\Hook\Direct3D11.cpp">
       <Filter>Game\Hook\D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\PluginManager.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Hook\Direct3D12.cpp">
       <Filter>Game\Hook\D3D12</Filter>
     </ClCompile>
@@ -99,9 +96,6 @@
     </ClInclude>
     <ClInclude Include="Game\Hook\DXGI.h">
       <Filter>Game\Hook</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\PluginManager.h">
-      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Game\Hook\Direct3D12.h">
       <Filter>Game\Hook\D3D12</Filter>
