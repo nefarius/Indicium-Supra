@@ -414,8 +414,11 @@ void IndiciumMainThread(LPVOID Params)
 
     logger.information("Library initialized successfully");
 
-    /*
-     * TODO: implement proper shutdown and clean-up
+    //
+    // Wait until cancellation requested
+    // 
+    WaitForSingleObject(g_engine->EngineCancellationEvent, INFINITE);
+
     logger.information("Shutting down hooks...");
 
     if (MH_DisableHook(MH_ALL_HOOKS) != MH_OK)
@@ -435,7 +438,6 @@ void IndiciumMainThread(LPVOID Params)
     {
         logger.information("Hook engine disabled");
     }
-    */
 }
 
 void HookDInput8(UINTX* vtable8)
