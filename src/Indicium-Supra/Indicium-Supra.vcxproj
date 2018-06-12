@@ -181,6 +181,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Game\Hook\Direct3D11.cpp" />
     <ClCompile Include="Game\Hook\Direct3D12.cpp" />
     <ClCompile Include="Game\Hook\DirectInput8.cpp" />
@@ -193,6 +194,11 @@
     <ClCompile Include="Game\Hook\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumCore.h" />
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D10.h" />
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D11.h" />
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D12.h" />
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D9.h" />
     <ClInclude Include="..\..\include\Indicium\Plugin\Common.h" />
     <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D10.h" />
     <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D11.h" />

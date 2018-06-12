@@ -29,6 +29,7 @@
     <ClCompile Include="Game\Hook\Direct3D12.cpp">
       <Filter>Game\Hook\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">
@@ -57,6 +58,9 @@
     </Filter>
     <Filter Include="Game\Hook\D3D12">
       <UniqueIdentifier>{c6f9a2b6-b779-4663-b03b-05a92612abbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Engine">
+      <UniqueIdentifier>{a26e79e9-e370-42f5-bf95-655d700633c3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +131,21 @@
     </ClInclude>
     <ClInclude Include="Global.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumCore.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D9.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D10.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D11.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D12.h">
+      <Filter>Shared\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
