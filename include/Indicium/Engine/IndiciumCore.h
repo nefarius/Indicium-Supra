@@ -56,6 +56,11 @@ extern "C" {
         PFN_EVT_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked
     );
 
+    INDICIUM_API VOID IndiciumEngineShutdown(
+        _In_
+        PINDICIUM_ENGINE Engine
+    );
+
     INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(
         _In_
         PINDICIUM_ENGINE Engine,

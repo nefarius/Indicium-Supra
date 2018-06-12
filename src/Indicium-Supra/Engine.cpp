@@ -110,6 +110,15 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_EVT_
     return INDICIUM_ERROR_NONE;
 }
 
+INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine)
+{
+    if (!Engine) {
+        return;
+    }
+
+    SetEvent(Engine->EngineCancellationEvent);
+}
+
 INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks)
 {
     if (Engine) {
