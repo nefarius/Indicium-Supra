@@ -27,8 +27,6 @@ typedef EVT_INDICIUM_D3D12_RESIZE_TARGET *PFN_INDICIUM_D3D12_RESIZE_TARGET;
 
 typedef struct _INDICIUM_D3D12_EVENT_CALLBACKS
 {
-    ULONG Size;
-
     PFN_INDICIUM_D3D12_PRESENT          EvtIndiciumD3D12PrePresent;
     PFN_INDICIUM_D3D12_PRESENT          EvtIndiciumD3D12PostPresent;
 
@@ -44,8 +42,6 @@ INDICIUM_D3D12_EVENT_CALLBACKS_INIT(
 )
 {
     RtlZeroMemory(Callbacks, sizeof(INDICIUM_D3D12_EVENT_CALLBACKS));
-
-    Callbacks->Size = sizeof(INDICIUM_D3D12_EVENT_CALLBACKS);
 }
 
 #endif // IndiciumDirect3D12_h__

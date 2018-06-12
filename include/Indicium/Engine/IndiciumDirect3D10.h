@@ -38,8 +38,6 @@ D3D10_DEVICE_FROM_SWAPCHAIN(
 
 typedef struct _INDICIUM_D3D10_EVENT_CALLBACKS
 {
-    ULONG Size;
-
     PFN_INDICIUM_D3D10_PRESENT          EvtIndiciumD3D10PrePresent;
     PFN_INDICIUM_D3D10_PRESENT          EvtIndiciumD3D10PostPresent;
 
@@ -55,8 +53,6 @@ INDICIUM_D3D10_EVENT_CALLBACKS_INIT(
 )
 {
     RtlZeroMemory(Callbacks, sizeof(INDICIUM_D3D10_EVENT_CALLBACKS));
-
-    Callbacks->Size = sizeof(INDICIUM_D3D10_EVENT_CALLBACKS);
 }
 
 #endif // IndiciumDirect3D10_h__

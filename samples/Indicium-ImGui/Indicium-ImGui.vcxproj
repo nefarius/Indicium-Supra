@@ -193,6 +193,11 @@
     <None Include="Indicium-ImGui.ini" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Indicium-Supra\Indicium-Supra.vcxproj">
+      <Project>{db383579-da7f-48c0-ab1f-7c4c93544e2c}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets" Condition="Exists('..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets')" />

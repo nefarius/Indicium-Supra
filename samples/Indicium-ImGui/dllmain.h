@@ -23,9 +23,15 @@ SOFTWARE.
 */
 
 #pragma once
+
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include "imgui.h"
+
+#include <Indicium/Engine/IndiciumCore.h>
+#include <Indicium/Engine/IndiciumDirect3D9.h>
+#include <Indicium/Engine/IndiciumDirect3D10.h>
+#include <Indicium/Engine/IndiciumDirect3D11.h>
 
 typedef LRESULT(WINAPI *t_WindowProc)(
 	_In_ HWND hWnd,
@@ -46,3 +52,13 @@ void RenderScene();
 
 bool ImGui_ImplWin32_UpdateMouseCursor();
 IMGUI_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+EVT_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked;
+EVT_INDICIUM_D3D9_PRESENT EvtIndiciumD3D9Present;
+EVT_INDICIUM_D3D9_RESET EvtIndiciumD3D9Reset;
+EVT_INDICIUM_D3D9_PRESENT_EX EvtIndiciumD3D9PresentEx;
+EVT_INDICIUM_D3D9_RESET_EX EvtIndiciumD3D9ResetEx;
+EVT_INDICIUM_D3D10_PRESENT EvtIndiciumD3D10Present;
+EVT_INDICIUM_D3D10_RESIZE_TARGET EvtIndiciumD3D10ResizeTarget;
+EVT_INDICIUM_D3D11_PRESENT EvtIndiciumD3D11Present;
+EVT_INDICIUM_D3D11_RESIZE_TARGET EvtIndiciumD3D11ResizeTarget;

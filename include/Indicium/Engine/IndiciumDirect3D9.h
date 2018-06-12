@@ -63,8 +63,6 @@ typedef EVT_INDICIUM_D3D9_RESET_EX *PFN_INDICIUM_D3D9_RESET_EX;
 
 typedef struct _INDICIUM_D3D9_EVENT_CALLBACKS
 {
-    ULONG Size;
-
     PFN_INDICIUM_D3D9_PRESENT       EvtIndiciumD3D9PrePresent;
     PFN_INDICIUM_D3D9_PRESENT       EvtIndiciumD3D9PostPresent;
 
@@ -89,8 +87,6 @@ INDICIUM_D3D9_EVENT_CALLBACKS_INIT(
 )
 {
     RtlZeroMemory(Callbacks, sizeof(INDICIUM_D3D9_EVENT_CALLBACKS));
-
-    Callbacks->Size = sizeof(INDICIUM_D3D9_EVENT_CALLBACKS);
 }
 
 #endif // IndiciumDirect3D9_h__

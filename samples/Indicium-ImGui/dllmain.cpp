@@ -25,14 +25,6 @@ SOFTWARE.
 #include "dllmain.h"
 
 // 
-// Indicium Plugin
-// 
-#include <Indicium/Plugin/Direct3D9.h>
-#include <Indicium/Plugin/Direct3D9Ex.h>
-#include <Indicium/Plugin/Direct3D10.h>
-#include <Indicium/Plugin/Direct3D11.h>
-
-// 
 // MinHook
 // 
 #include <MinHook.h>
@@ -70,6 +62,7 @@ using Poco::Path;
 #include <imgui_impl_dx11.h>
 
 t_WindowProc OriginalWindowProc = nullptr;
+PINDICIUM_ENGINE engine = nullptr;
 
 /**
  * \fn  BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
@@ -93,6 +86,51 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     // 
     DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
 
+    INDICIUM_D3D9_EVENT_CALLBACKS d3d9;
+    INDICIUM_D3D9_EVENT_CALLBACKS_INIT(&d3d9);
+    d3d9.EvtIndiciumD3D9PrePresent = EvtIndiciumD3D9Present;
+    d3d9.EvtIndiciumD3D9PreReset = EvtIndiciumD3D9Reset;
+    d3d9.EvtIndiciumD3D9PrePresentEx = EvtIndiciumD3D9PresentEx;
+    d3d9.EvtIndiciumD3D9PreResetEx = EvtIndiciumD3D9ResetEx;
+
+    INDICIUM_D3D10_EVENT_CALLBACKS d3d10;
+    INDICIUM_D3D10_EVENT_CALLBACKS_INIT(&d3d10);
+    d3d10.EvtIndiciumD3D10PrePresent = EvtIndiciumD3D10Present;
+    d3d10.EvtIndiciumD3D10PreResizeTarget = EvtIndiciumD3D10ResizeTarget;
+
+    INDICIUM_D3D11_EVENT_CALLBACKS d3d11;
+    INDICIUM_D3D11_EVENT_CALLBACKS_INIT(&d3d11);
+    d3d11.EvtIndiciumD3D11PrePresent = EvtIndiciumD3D11Present;
+    d3d11.EvtIndiciumD3D11PreResizeTarget = EvtIndiciumD3D11ResizeTarget;
+
+    INDICIUM_ERROR err;
+
+    switch (dwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+
+        if (!engine)
+        {
+            engine = IndiciumEngineAlloc();
+
+            IndiciumEngineSetD3D9EventCallbacks(engine, &d3d9);
+            IndiciumEngineSetD3D10EventCallbacks(engine, &d3d10);
+            IndiciumEngineSetD3D11EventCallbacks(engine, &d3d11);
+
+            err = IndiciumEngineInit(engine, EvtIndiciumGameHooked);
+        }
+
+        break;
+    case DLL_PROCESS_DETACH:
+
+        IndiciumEngineShutdown(engine);
+        IndiciumEngineFree(engine);
+
+        break;
+    default:
+        break;
+    }
+
     return TRUE;
 }
 
@@ -109,7 +147,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
  *
  * \param   parameter1  The Direct3D version the core has detected.
  */
-INDICIUM_EXPORT(BOOLEAN) indicium_plugin_init(Direct3DVersion version)
+void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
 {
     std::string logfile("%TEMP%\\Indicium-ImGui.Plugin.log");
 
@@ -127,10 +165,11 @@ INDICIUM_EXPORT(BOOLEAN) indicium_plugin_init(Direct3DVersion version)
 
     logger.information("Initializing hook engine...");
 
-    if (MH_Initialize() != MH_OK)
+    MH_STATUS status;
+
+    if ((status = MH_Initialize()) != MH_OK || status != MH_ERROR_ALREADY_INITIALIZED)
     {
         logger.fatal("Couldn't initialize hook engine");
-        return FALSE;
     }
 
     logger.information("Hook engine initialized");
@@ -143,16 +182,11 @@ INDICIUM_EXPORT(BOOLEAN) indicium_plugin_init(Direct3DVersion version)
 
     // Setup style
     ImGui::StyleColorsDark();
-
-    //
-    // We support all version of Direct3D so we don't bother checking
-    // 
-    return TRUE;
 }
 
 #pragma region D3D9(Ex)
 
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_present(
+void EvtIndiciumD3D9Present(
     LPDIRECT3DDEVICE9   pDevice,
     const RECT          *pSourceRect,
     const RECT          *pDestRect,
@@ -193,7 +227,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_present(
     }
 }
 
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_reset(
+void EvtIndiciumD3D9Reset(
     LPDIRECT3DDEVICE9       pDevice,
     D3DPRESENT_PARAMETERS   *pPresentationParameters
 )
@@ -205,16 +239,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_reset(
     ImGui_ImplDX9_CreateDeviceObjects();
 }
 
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_endscene(
-    LPDIRECT3DDEVICE9 pDevice
-)
-{
-    //
-    // Not used
-    // 
-}
-
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_presentex(
+void EvtIndiciumD3D9PresentEx(
     LPDIRECT3DDEVICE9EX     pDevice,
     const RECT              *pSourceRect,
     const RECT              *pDestRect,
@@ -256,7 +281,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_presentex(
     }
 }
 
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_resetex(
+void EvtIndiciumD3D9ResetEx(
     LPDIRECT3DDEVICE9EX     pDevice,
     D3DPRESENT_PARAMETERS   *pPresentationParameters,
     D3DDISPLAYMODEEX        *pFullscreenDisplayMode
@@ -273,7 +298,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d9_resetex(
 
 #pragma region D3D10
 
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_present(
+void EvtIndiciumD3D10Present(
     IDXGISwapChain  *pSwapChain,
     UINT            SyncInterval,
     UINT            Flags
@@ -317,7 +342,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_present(
     }
 }
 
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_resizetarget(
+void EvtIndiciumD3D10ResizeTarget(
     IDXGISwapChain          *pSwapChain,
     const DXGI_MODE_DESC    *pNewTargetParameters
 )
@@ -333,7 +358,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d10_resizetarget(
 
 #pragma region D3D11
 
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_present(
+void EvtIndiciumD3D11Present(
     IDXGISwapChain  *pSwapChain,
     UINT            SyncInterval,
     UINT            Flags
@@ -386,7 +411,7 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_present(
     }
 }
 
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_resizetarget(
+void EvtIndiciumD3D11ResizeTarget(
     IDXGISwapChain          *pSwapChain,
     const DXGI_MODE_DESC    *pNewTargetParameters
 )

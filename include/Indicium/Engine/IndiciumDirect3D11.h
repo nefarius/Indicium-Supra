@@ -44,8 +44,6 @@ D3D11_DEVICE_CONTEXT_FROM_SWAPCHAIN(
 
 typedef struct _INDICIUM_D3D11_EVENT_CALLBACKS
 {
-    ULONG Size;
-
     PFN_INDICIUM_D3D11_PRESENT          EvtIndiciumD3D11PrePresent;
     PFN_INDICIUM_D3D11_PRESENT          EvtIndiciumD3D11PostPresent;
 
@@ -61,8 +59,6 @@ INDICIUM_D3D11_EVENT_CALLBACKS_INIT(
 )
 {
     RtlZeroMemory(Callbacks, sizeof(INDICIUM_D3D11_EVENT_CALLBACKS));
-
-    Callbacks->Size = sizeof(INDICIUM_D3D11_EVENT_CALLBACKS);
 }
 
 #endif // IndiciumDirect3D11_h__
