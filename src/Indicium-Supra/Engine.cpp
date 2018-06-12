@@ -119,6 +119,15 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine)
     SetEvent(Engine->EngineCancellationEvent);
 }
 
+INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)
+{
+    if (!Engine) {
+        return;
+    }
+
+    free(Engine);
+}
+
 INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks)
 {
     if (Engine) {

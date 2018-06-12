@@ -61,6 +61,11 @@ extern "C" {
         PINDICIUM_ENGINE Engine
     );
 
+    INDICIUM_API VOID IndiciumEngineFree(
+        _In_
+        PINDICIUM_ENGINE Engine
+    );
+
     INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(
         _In_
         PINDICIUM_ENGINE Engine,
