@@ -92,7 +92,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
         std::call_once(flag, []()
         {
             auto& logger = Logger::get(__func__);
-            auto hMain = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(initGame), nullptr, 0, nullptr);
+            auto hMain = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(IndiciumMainThread), nullptr, 0, nullptr);
 
             if (hMain == nullptr)
             {

@@ -221,7 +221,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Utils\Hook.h" />
     <ClInclude Include="Utils\Misc.h" />
-    <ClInclude Include="Utils\Windows.h" />
     <ClInclude Include="Game\Hook\Window.h" />
   </ItemGroup>
   <ItemGroup>

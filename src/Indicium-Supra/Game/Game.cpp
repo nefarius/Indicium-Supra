@@ -22,7 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Utils/Windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
 #include <Utils/Hook.h>
 
 #include <MinHook.h>
@@ -91,7 +93,7 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTI
 PluginManager g_plugins;
 AutoPtr<IniFileConfiguration> g_config;
 
-void initGame()
+void IndiciumMainThread()
 {
     auto& logger = Logger::get(__func__);
 
