@@ -10,44 +10,54 @@
 
 typedef struct _INDICIUM_ENGINE
 {
-    struct {
-        PFN_INDICIUM_D3D9_PRESENT PrePresent;
-        PFN_INDICIUM_D3D9_PRESENT PostPresent;
+    INDICIUM_D3D9_EVENT_CALLBACKS EventsD3D9;
 
-        PFN_INDICIUM_D3D9_RESET PreReset;
-        PFN_INDICIUM_D3D9_RESET PostReset;
+    INDICIUM_D3D10_EVENT_CALLBACKS EventsD3D10;
 
-        PFN_INDICIUM_D3D9_END_SCENE PreEndScene;
-        PFN_INDICIUM_D3D9_END_SCENE PostEndScene;
+    INDICIUM_D3D11_EVENT_CALLBACKS EventsD3D11;
 
-        PFN_INDICIUM_D3D9_PRESENT_EX PrePresentEx;
-        PFN_INDICIUM_D3D9_PRESENT_EX PostPresentEx;
+    INDICIUM_D3D12_EVENT_CALLBACKS EventsD3D12;
 
-        PFN_INDICIUM_D3D9_RESET_EX PreResetEx;
-        PFN_INDICIUM_D3D9_RESET_EX PostResetEx;
-    } EventsD3D9;
-
-    struct {
-        PFN_INDICIUM_D3D10_PRESENT PrePresent;
-        PFN_INDICIUM_D3D10_PRESENT PostPresent;
-
-        PFN_INDICIUM_D3D10_RESIZE_TARGET PreResizeTarget;
-        PFN_INDICIUM_D3D10_RESIZE_TARGET PostResizeTarget;
-    } EventsD3D10;
-
-    struct {
-        PFN_INDICIUM_D3D11_PRESENT PrePresent;
-        PFN_INDICIUM_D3D11_PRESENT PostPresent;
-
-        PFN_INDICIUM_D3D11_RESIZE_TARGET PreResizeTarget;
-        PFN_INDICIUM_D3D11_RESIZE_TARGET PostResizeTarget;
-    } EventsD3D11;
-
-    struct {
-        PFN_INDICIUM_D3D12_PRESENT PrePresent;
-        PFN_INDICIUM_D3D12_PRESENT PostPresent;
-
-        PFN_INDICIUM_D3D12_RESIZE_TARGET PreResizeTarget;
-        PFN_INDICIUM_D3D12_RESIZE_TARGET PostResizeTarget;
-    } EventsD3D12;
 } INDICIUM_ENGINE;
+
+
+INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void)
+{
+    auto engine = static_cast<PINDICIUM_ENGINE>(malloc(sizeof(INDICIUM_ENGINE)));
+
+    if (!engine) {
+        return nullptr;
+    }
+
+    RtlZeroMemory(engine, sizeof(INDICIUM_ENGINE));
+
+    return engine;
+}
+
+INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks)
+{
+    if (Engine) {
+        Engine->EventsD3D9 = *Callbacks;
+    }
+}
+
+INDICIUM_API VOID IndiciumEngineSetD3D10EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D10_EVENT_CALLBACKS Callbacks)
+{
+    if (Engine) {
+        Engine->EventsD3D10 = *Callbacks;
+    }
+}
+
+INDICIUM_API VOID IndiciumEngineSetD3D11EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D11_EVENT_CALLBACKS Callbacks)
+{
+    if (Engine) {
+        Engine->EventsD3D11 = *Callbacks;
+    }
+}
+
+INDICIUM_API VOID IndiciumEngineSetD3D12EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D12_EVENT_CALLBACKS Callbacks)
+{
+    if (Engine) {
+        Engine->EventsD3D12 = *Callbacks;
+    }
+}
