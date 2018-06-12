@@ -46,6 +46,8 @@ SOFTWARE.
 
 #include <Indicium/Plugin/Common.h>
 
+#include "Indicium/Engine/IndiciumCore.h"
+
 #include <Poco/Exception.h>
 #include <Poco/Logger.h>
 #include <Poco/AutoPtr.h>
@@ -93,8 +95,9 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTI
 PluginManager g_plugins;
 AutoPtr<IniFileConfiguration> g_config;
 
-void IndiciumMainThread()
+void IndiciumMainThread(LPVOID Params)
 {
+    auto engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
     auto& logger = Logger::get(__func__);
 
     logger.information("Library loaded into %s", GlobalState::instance().processName());

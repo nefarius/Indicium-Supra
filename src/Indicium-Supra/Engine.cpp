@@ -120,7 +120,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_EVT_
 
     logger.information("Indicium engine initialized, attempting to launch main thread");
 
-    Engine->EngineThread = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(IndiciumMainThread), nullptr, 0, nullptr);
+    Engine->EngineThread = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(IndiciumMainThread), Engine, 0, nullptr);
 
     if (!Engine->EngineThread) {
         logger.fatal("Couldn't create main thread, library unusable");
