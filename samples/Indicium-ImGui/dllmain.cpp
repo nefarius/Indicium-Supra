@@ -165,11 +165,11 @@ void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
 
     logger.information("Initializing hook engine...");
 
-    MH_STATUS status;
+    MH_STATUS status = MH_Initialize();
 
-    if ((status = MH_Initialize()) != MH_OK || status != MH_ERROR_ALREADY_INITIALIZED)
+    if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED)
     {
-        logger.fatal("Couldn't initialize hook engine");
+        logger.fatal("Couldn't initialize hook engine: %lu", (ULONG)status);
     }
 
     logger.information("Hook engine initialized");
