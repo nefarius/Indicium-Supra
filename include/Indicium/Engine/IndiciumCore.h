@@ -10,15 +10,37 @@ extern "C" {
     typedef enum _INDICIUM_ERRORS
     {
         INDICIUM_ERROR_NONE = 0x20000000,
-        INDICIUM_ERROR_WHATEVER = 0xE0000001
+        INDICIUM_ERROR_INVALID_SIZE = 0xE0000001
     } INDICIUM_ERROR;
 
+    typedef enum _INDICIUM_D3D_VERSION {
+        IndiciumDirect3DVersion9 = 0,
+        IndiciumDirect3DVersion10 = 1 << 0,
+        IndiciumDirect3DVersion11 = 1 << 1,
+        IndiciumDirect3DVersion12 = 1 << 2
+    } INDICIUM_D3D_VERSION, *PINDICIUM_D3D_VERSION;
+
+    //
+    // Indicium engine handle
+    // 
     typedef struct _INDICIUM_ENGINE *PINDICIUM_ENGINE;
 
+    //
+    // Forward declarations of version-specific callbacks
+    // 
     typedef struct _INDICIUM_D3D9_EVENT_CALLBACKS *PINDICIUM_D3D9_EVENT_CALLBACKS;
     typedef struct _INDICIUM_D3D10_EVENT_CALLBACKS *PINDICIUM_D3D10_EVENT_CALLBACKS;
     typedef struct _INDICIUM_D3D11_EVENT_CALLBACKS *PINDICIUM_D3D11_EVENT_CALLBACKS;
     typedef struct _INDICIUM_D3D12_EVENT_CALLBACKS *PINDICIUM_D3D12_EVENT_CALLBACKS;
+
+    typedef
+        _Function_class_(EVT_INDICIUM_GAME_HOOKED)
+        VOID
+        EVT_INDICIUM_GAME_HOOKED(
+            const INDICIUM_D3D_VERSION GameVersion
+        );
+
+    typedef EVT_INDICIUM_GAME_HOOKED *PFN_EVT_INDICIUM_GAME_HOOKED;
 
     INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void);
 
