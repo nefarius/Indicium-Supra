@@ -100,10 +100,11 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTI
 
 
 PluginManager g_plugins;
+PINDICIUM_ENGINE g_engine;
 
 void IndiciumMainThread(LPVOID Params)
 {
-    auto engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
+    g_engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
     auto& logger = Logger::get(__func__);
 
     logger.information("Library loaded into %s", GlobalState::instance().processName());
@@ -122,7 +123,7 @@ void IndiciumMainThread(LPVOID Params)
 
 #pragma region D3D9
 
-    if (engine->Configuration->getBool("D3D9.enabled", true))
+    if (g_engine->Configuration->getBool("D3D9.enabled", true))
     {
         try
         {
@@ -137,7 +138,7 @@ void IndiciumMainThread(LPVOID Params)
                 {
                     Logger::get("HookDX9").information("++ IDirect3DDevice9::Present called");
 
-                    g_plugins.load(Direct3DVersion::Direct3D9);
+                    INVOKE_INDICIUM_GAME_HOOKED(g_engine, IndiciumDirect3DVersion9);
                 });
 
                 g_plugins.d3d9_present(dev, a1, a2, a3, a4);
@@ -210,7 +211,7 @@ void IndiciumMainThread(LPVOID Params)
 
 #pragma region D3D10
 
-    if (engine->Configuration->getBool("D3D10.enabled", true))
+    if (g_engine->Configuration->getBool("D3D10.enabled", true))
     {
         try
         {
@@ -226,7 +227,7 @@ void IndiciumMainThread(LPVOID Params)
                 {
                     Logger::get("HookDX10").information("++ IDXGISwapChain::Present called");
 
-                    g_plugins.load(Direct3DVersion::Direct3D10);
+                    INVOKE_INDICIUM_GAME_HOOKED(g_engine, IndiciumDirect3DVersion10);
                 });
 
                 g_plugins.d3d10_present(chain, SyncInterval, Flags);
@@ -256,7 +257,7 @@ void IndiciumMainThread(LPVOID Params)
 
 #pragma region D3D11
 
-    if (engine->Configuration->getBool("D3D11.enabled", true))
+    if (g_engine->Configuration->getBool("D3D11.enabled", true))
     {
         try
         {
@@ -272,7 +273,7 @@ void IndiciumMainThread(LPVOID Params)
                 {
                     Logger::get("HookDX11").information("++ IDXGISwapChain::Present called");
 
-                    g_plugins.load(Direct3DVersion::Direct3D11);
+                    INVOKE_INDICIUM_GAME_HOOKED(g_engine, IndiciumDirect3DVersion11);
                 });
 
                 g_plugins.d3d11_present(chain, SyncInterval, Flags);
@@ -302,7 +303,7 @@ void IndiciumMainThread(LPVOID Params)
 
 #pragma region D3D12
 
-    if (engine->Configuration->getBool("D3D12.enabled", true))
+    if (g_engine->Configuration->getBool("D3D12.enabled", true))
     {
         try
         {
@@ -314,7 +315,12 @@ void IndiciumMainThread(LPVOID Params)
             g_swapChainPresent12Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
             {
                 static std::once_flag flag;
-                std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::Present called"); });
+                std::call_once(flag, []() 
+                {
+                    Logger::get("HookDX12").information("++ IDXGISwapChain::Present called"); 
+
+                    INVOKE_INDICIUM_GAME_HOOKED(g_engine, IndiciumDirect3DVersion12);
+                });
 
                 g_plugins.d3d12_present(chain, SyncInterval, Flags);
 
@@ -346,7 +352,7 @@ void IndiciumMainThread(LPVOID Params)
     //
     // TODO: legacy, fix me up!
     // 
-    if (engine->Configuration->getBool("DInput8.enabled", false))
+    if (g_engine->Configuration->getBool("DInput8.enabled", false))
     {
         bool dinput8_available;
         UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };

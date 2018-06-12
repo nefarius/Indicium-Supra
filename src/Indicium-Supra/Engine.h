@@ -24,3 +24,13 @@ typedef struct _INDICIUM_ENGINE
     Poco::AutoPtr<Poco::Util::IniFileConfiguration> Configuration;
 
 } INDICIUM_ENGINE;
+
+#define INVOKE_INDICIUM_GAME_HOOKED(_engine_, _version_)    \
+                                    (_engine_->EvtIndiciumGameHooked ? \
+                                    _engine_->EvtIndiciumGameHooked(_version_) : \
+                                    (void)0)
+
+#define INVOKE_D3D9_CALLBACK(_engine_, _callback_, ...)     \
+                            (_engine_->EventsD3D9._callback_ ? \
+                            _engine_->EventsD3D9._callback_(##__VA_ARGS__) : \
+                            (void)0)
