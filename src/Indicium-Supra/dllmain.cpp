@@ -26,7 +26,6 @@ SOFTWARE.
 #include "Global.h"
 
 #include <MinHook.h>
-#include <Utils/Windows.h>
 #include <Game/Game.h>
 
 // STL

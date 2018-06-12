@@ -7,6 +7,8 @@
 #include "Indicium/Engine/IndiciumDirect3D11.h"
 #include "Indicium/Engine/IndiciumDirect3D12.h"
 
+#include "Game/Game.h"
+
 
 typedef struct _INDICIUM_ENGINE
 {

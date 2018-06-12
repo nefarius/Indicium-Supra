@@ -23,6 +23,8 @@ SOFTWARE.
 */
 
 #pragma once
-#include <Utils/Windows.h>
+
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 
 extern HANDLE g_hDllHandle;
