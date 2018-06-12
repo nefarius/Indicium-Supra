@@ -188,7 +188,6 @@
     <ClCompile Include="Game\Hook\Direct3D10.cpp" />
     <ClCompile Include="Game\Hook\Direct3D9.cpp" />
     <ClCompile Include="Game\Hook\Direct3D9Ex.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Utils\PluginManager.cpp" />
     <ClCompile Include="Game\Hook\Window.cpp" />
@@ -213,7 +212,6 @@
     <ClInclude Include="Game\Hook\Direct3D10.h" />
     <ClInclude Include="Game\Hook\Direct3D9.h" />
     <ClInclude Include="Game\Hook\Direct3D9Ex.h" />
-    <ClInclude Include="dllmain.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="intarch.h" />
