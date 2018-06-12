@@ -100,7 +100,6 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTI
 
 
 PluginManager g_plugins;
-AutoPtr<IniFileConfiguration> g_config;
 
 void IndiciumMainThread(LPVOID Params)
 {
@@ -211,7 +210,7 @@ void IndiciumMainThread(LPVOID Params)
 
 #pragma region D3D10
 
-    if (g_config->getBool("D3D10.enabled", true))
+    if (engine->Configuration->getBool("D3D10.enabled", true))
     {
         try
         {
@@ -257,7 +256,7 @@ void IndiciumMainThread(LPVOID Params)
 
 #pragma region D3D11
 
-    if (g_config->getBool("D3D11.enabled", true))
+    if (engine->Configuration->getBool("D3D11.enabled", true))
     {
         try
         {
@@ -303,7 +302,7 @@ void IndiciumMainThread(LPVOID Params)
 
 #pragma region D3D12
 
-    if (g_config->getBool("D3D12.enabled", true))
+    if (engine->Configuration->getBool("D3D12.enabled", true))
     {
         try
         {
@@ -347,7 +346,7 @@ void IndiciumMainThread(LPVOID Params)
     //
     // TODO: legacy, fix me up!
     // 
-    if (g_config->getBool("DInput8.enabled", false))
+    if (engine->Configuration->getBool("DInput8.enabled", false))
     {
         bool dinput8_available;
         UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
