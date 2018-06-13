@@ -1,4 +1,4 @@
-version: 2.0.{build}.0
+version: 3.0.{build}.0
 image: Visual Studio 2017
 before_build:
 - nuget restore Indicium-Supra.sln
@@ -12,14 +12,10 @@ after_build:
     .\verpatch.exe .\bin\x64\Indicium-FW1FontWrapper.Plugin.dll /pv "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x64\Indicium-ImGui.Plugin.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x64\Indicium-ImGui.Plugin.dll /pv "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x64\Indicium-Supra.dll "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x64\Indicium-Supra.dll /pv "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-FW1FontWrapper.Plugin.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-FW1FontWrapper.Plugin.dll /pv "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-ImGui.Plugin.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-ImGui.Plugin.dll /pv "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x86\Indicium-Supra.dll "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x86\Indicium-Supra.dll /pv "$env:APPVEYOR_BUILD_VERSION"
 artifacts:
 - path: 'bin\**\*.dll'
   name: Indicium-Supra
