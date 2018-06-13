@@ -124,8 +124,11 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
         break;
     case DLL_PROCESS_DETACH:
 
-        IndiciumEngineShutdown(engine);
-        IndiciumEngineFree(engine);
+        if (engine)
+        {
+            IndiciumEngineShutdown(engine);
+            IndiciumEngineFree(engine);
+        }
 
         break;
     default:

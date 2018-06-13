@@ -27,7 +27,8 @@ SOFTWARE.
 
 #include "FW1FontWrapper.h"
 
-#include <Indicium\Plugin\Direct3D11.h>
+#include <Indicium\Engine\IndiciumCore.h>
+#include <Indicium\Engine\IndiciumDirect3D11.h>
 
 #ifdef _M_IX86
 #pragma comment(lib, "x86\\FW1FontWrapper.lib")
@@ -35,6 +36,11 @@ SOFTWARE.
 #pragma comment(lib, "x64\\FW1FontWrapper.lib")
 #endif
 #pragma comment(lib, "dxguid.lib")
+
+
+PINDICIUM_ENGINE engine = nullptr;
+
+EVT_INDICIUM_D3D11_PRESENT EvtIndiciumD3D11Present;
 
 
 /**
@@ -59,15 +65,43 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     // 
     DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
 
+    INDICIUM_D3D11_EVENT_CALLBACKS d3d11;
+    INDICIUM_D3D11_EVENT_CALLBACKS_INIT(&d3d11);
+    d3d11.EvtIndiciumD3D11PrePresent = EvtIndiciumD3D11Present;
+
+    INDICIUM_ERROR err;
+
+    switch (dwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+
+        if (!engine)
+        {
+            engine = IndiciumEngineAlloc();
+
+            IndiciumEngineSetD3D11EventCallbacks(engine, &d3d11);
+
+            err = IndiciumEngineInit(engine, NULL);
+        }
+
+        break;
+    case DLL_PROCESS_DETACH:
+
+        if (engine)
+        {
+            IndiciumEngineShutdown(engine);
+            IndiciumEngineFree(engine);
+        }
+
+        break;
+    default:
+        break;
+    }
+
     return TRUE;
 }
 
-INDICIUM_EXPORT(BOOLEAN) indicium_plugin_init(Direct3DVersion version)
-{
-    return (version == Direct3DVersion::Direct3D11);
-}
-
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_present(
+void EvtIndiciumD3D11Present(
     IDXGISwapChain  *pSwapChain,
     UINT            SyncInterval,
     UINT            Flags
@@ -112,11 +146,3 @@ INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_present(
     // pFW1Factory->Release();
     // pFW1Factory = nullptr;
 }
-
-INDICIUM_EXPORT(VOID) indicium_plugin_d3d11_resizetarget(
-    IDXGISwapChain          *pSwapChain,
-    const DXGI_MODE_DESC    *pNewTargetParameters
-)
-{
-}
-
