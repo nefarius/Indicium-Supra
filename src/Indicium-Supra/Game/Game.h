@@ -24,9 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include <intarch.h>
-
 void IndiciumMainThread(LPVOID Params);
 
-void HookDInput8(UINTX* vtable8);
+
 
