@@ -100,24 +100,6 @@
     <ClInclude Include="Game\Hook\Direct3D12.h">
       <Filter>Game\Hook\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Common.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D9.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D9Ex.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D10.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D11.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D12.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="Global.h">
       <Filter>Utils</Filter>
     </ClInclude>

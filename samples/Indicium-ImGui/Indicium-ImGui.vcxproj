@@ -72,28 +72,24 @@
     <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

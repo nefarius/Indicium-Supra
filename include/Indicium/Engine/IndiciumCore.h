@@ -1,7 +1,12 @@
 #ifndef IndiciumCore_h__
 #define IndiciumCore_h__
 
-#define INDICIUM_API
+
+#ifdef INDICIUM_EXPORTS
+#define INDICIUM_API __declspec(dllexport)
+#else
+#define INDICIUM_API __declspec(dllimport)
+#endif
 
 #ifdef __cplusplus
 extern "C" {
