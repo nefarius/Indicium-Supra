@@ -253,6 +253,8 @@ void IndiciumMainThread(LPVOID Params)
         static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent10Hook;
         static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget10Hook;
 
+        static INDICIUM_D3D_VERSION deviceVersion = IndiciumDirect3DVersionUnknown;
+
         try
         {
             AutoPtr<Direct3D10Hooking::Direct3D10> d3d10(new Direct3D10Hooking::Direct3D10);
@@ -263,18 +265,53 @@ void IndiciumMainThread(LPVOID Params)
             swapChainPresent10Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
             {
                 static std::once_flag flag;
-                std::call_once(flag, []()
+                std::call_once(flag, [&pChain = chain]()
                 {
-                    Logger::get("HookDX10").information("++ IDXGISwapChain::Present called");
+                    auto& logger = Logger::get("HookDX10");
 
-                    INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion10);
+                    logger.information("++ IDXGISwapChain::Present called");
+
+                    ID3D10Device *pp10Device = nullptr;
+                    ID3D11Device *pp11Device = nullptr;
+
+                    auto ret = pChain->GetDevice(__uuidof(ID3D10Device), (PVOID*)&pp10Device);
+
+                    if (SUCCEEDED(ret)) {
+                        logger.information("ID3D10Device object acquired");
+                        deviceVersion = IndiciumDirect3DVersion10;
+                        INVOKE_INDICIUM_GAME_HOOKED(engine, deviceVersion);
+                        return;
+                    }
+
+                    ret = pChain->GetDevice(__uuidof(ID3D11Device), (PVOID*)&pp11Device);
+
+                    if (SUCCEEDED(ret)) {
+                        logger.information("ID3D11Device object acquired");
+                        deviceVersion = IndiciumDirect3DVersion11;
+                        INVOKE_INDICIUM_GAME_HOOKED(engine, deviceVersion);
+                        return;
+                    }
+
+                    logger.error("Couldn't fetch device pointer");
                 });
 
-                INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PrePresent, chain, SyncInterval, Flags);
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PrePresent, chain, SyncInterval, Flags);
+                }
+
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PrePresent, chain, SyncInterval, Flags);
+                }
 
                 auto ret = swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
 
-                INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostPresent, chain, SyncInterval, Flags);
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostPresent, chain, SyncInterval, Flags);
+                }
+
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostPresent, chain, SyncInterval, Flags);
+                }
 
                 return ret;
             });
@@ -286,11 +323,23 @@ void IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-                INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PreResizeTarget, chain, pNewTargetParameters);
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PreResizeTarget, chain, pNewTargetParameters);
+                }
+
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
+                }
 
                 auto ret = swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
 
-                INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostResizeTarget, chain, pNewTargetParameters);
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostResizeTarget, chain, pNewTargetParameters);
+                }
+
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeTarget, chain, pNewTargetParameters);
+                }
 
                 return ret;
             });
@@ -441,14 +490,14 @@ void IndiciumMainThread(LPVOID Params)
             {
                 logger.warning("Couldn't get VTable for DirectInput8");
             }
-        }
+            }
 
         if (dinput8_available)
         {
             logger.information("Game uses DirectInput8");
             HookDInput8(vtable8);
         }
-    }
+        }
 #endif
 
     logger.information("Library initialized successfully");

@@ -20,10 +20,11 @@ extern "C" {
     } INDICIUM_ERROR;
 
     typedef enum _INDICIUM_D3D_VERSION {
-        IndiciumDirect3DVersion9 = 0,
-        IndiciumDirect3DVersion10 = 1 << 0,
-        IndiciumDirect3DVersion11 = 1 << 1,
-        IndiciumDirect3DVersion12 = 1 << 2
+        IndiciumDirect3DVersionUnknown = 0,
+        IndiciumDirect3DVersion9 = 1 << 0,
+        IndiciumDirect3DVersion10 = 1 << 1,
+        IndiciumDirect3DVersion11 = 1 << 2,
+        IndiciumDirect3DVersion12 = 1 << 3
     } INDICIUM_D3D_VERSION, *PINDICIUM_D3D_VERSION;
 
     //
