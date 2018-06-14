@@ -429,6 +429,8 @@ void EvtIndiciumD3D11ResizeTarget(
 
 #pragma endregion
 
+#pragma region WNDPROC Hooking
+
 void HookWindowProc(HWND hWnd)
 {
     auto& logger = Logger::get(__func__);
@@ -517,6 +519,8 @@ LRESULT WINAPI DetourWindowProc(
 
     return OriginalWindowProc(hWnd, Msg, wParam, lParam);
 }
+
+#pragma endregion
 
 void RenderScene()
 {
