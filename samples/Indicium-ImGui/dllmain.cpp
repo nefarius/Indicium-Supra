@@ -69,6 +69,7 @@ using Poco::Path;
 #include <imgui_impl_dx10.h>
 #include <imgui_impl_dx11.h>
 
+t_WindowProc OriginalDefWindowProc = nullptr;
 t_WindowProc OriginalWindowProc = nullptr;
 
 /**
@@ -404,21 +405,74 @@ void HookWindowProc(HWND hWnd)
 {
     auto& logger = Logger::get(__func__);
 
+    MH_STATUS ret;
+
+    if (IsWindowUnicode(hWnd))
+    {
+        logger.information("The window is a native Unicode window");
+
+        if ((ret = MH_CreateHook(
+            &DefWindowProcW,
+            &DetourDefWindowProc,
+            reinterpret_cast<LPVOID*>(&OriginalDefWindowProc))
+            ) != MH_OK)
+        {
+            logger.error("Couldn't create hook for DefWindowProcW: %lu", static_cast<ULONG>(ret));
+            return;
+        }
+
+        if (MH_EnableHook(&DefWindowProcW) != MH_OK)
+        {
+            logger.error("Couldn't enable DefWindowProcW hook");
+        }
+    }
+    else
+    {
+        logger.information("The window is a native ANSI window");
+
+        if ((ret = MH_CreateHook(
+            &DefWindowProcA,
+            &DetourDefWindowProc,
+            reinterpret_cast<LPVOID*>(&OriginalDefWindowProc))
+            ) != MH_OK)
+        {
+            logger.error("Couldn't create hook for DefWindowProcA: %lu", static_cast<ULONG>(ret));
+            return;
+        }
+
+        if (MH_EnableHook(&DefWindowProcA) != MH_OK)
+        {
+            logger.error("Couldn't enable DefWindowProcW hook");
+        }
+    }
+
     auto lptrWndProc = reinterpret_cast<t_WindowProc>(GetWindowLongPtr(hWnd, GWLP_WNDPROC));
 
     if (MH_CreateHook(lptrWndProc, &DetourWindowProc, reinterpret_cast<LPVOID*>(&OriginalWindowProc)) != MH_OK)
     {
-        logger.error("Couldn't create hook for WNDPROC");
+        logger.warning("Couldn't create hook for GWLP_WNDPROC");
         return;
     }
 
     if (MH_EnableHook(lptrWndProc) != MH_OK)
     {
-        logger.error("Couldn't enable DefWindowProc hooks");
-        return;
+        logger.error("Couldn't enable GWLP_WNDPROC hook");
     }
+}
 
-    logger.information("WindowProc hooked");
+LRESULT WINAPI DetourDefWindowProc(
+    _In_ HWND hWnd,
+    _In_ UINT Msg,
+    _In_ WPARAM wParam,
+    _In_ LPARAM lParam
+)
+{
+    static std::once_flag flag;
+    std::call_once(flag, []() {Logger::get("DetourDefWindowProc").information("++ DetourDefWindowProc called"); });
+
+    ImGui_ImplWin32_WndProcHandler(hWnd, Msg, wParam, lParam);
+
+    return OriginalDefWindowProc(hWnd, Msg, wParam, lParam);
 }
 
 LRESULT WINAPI DetourWindowProc(

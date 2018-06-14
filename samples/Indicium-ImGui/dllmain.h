@@ -34,12 +34,19 @@ typedef LRESULT(WINAPI *t_WindowProc)(
 	_In_ LPARAM lParam
 	);
 
+LRESULT WINAPI DetourDefWindowProc(
+    _In_ HWND hWnd,
+    _In_ UINT Msg,
+    _In_ WPARAM wParam,
+    _In_ LPARAM lParam
+);
+
 LRESULT WINAPI DetourWindowProc(
-	_In_ HWND hWnd,
-	_In_ UINT Msg,
-	_In_ WPARAM wParam,
-	_In_ LPARAM lParam
-	);
+    _In_ HWND hWnd,
+    _In_ UINT Msg,
+    _In_ WPARAM wParam,
+    _In_ LPARAM lParam
+);
 
 void HookWindowProc(HWND hWnd);
 void RenderScene();
