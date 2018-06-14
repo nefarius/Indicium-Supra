@@ -4,6 +4,8 @@ API-Hooking and rendering framework for DirectX-based games.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/rt4ybpwrhn22kegm?svg=true)](https://ci.appveyor.com/project/nefarius/indicium-supra)
 
+**WARNING: Documentation on this branch is invalid and outdated!** 
+
 ## Summary
 `Indicium-Supra` exposes the following DirectX/Direct3D rendering COM functions to custom plugins:
  * `IDirect3DDevice9::Present`
