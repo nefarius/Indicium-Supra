@@ -1,5 +1,7 @@
 # Plugin development
 
+**DEPRECATED! Fix and/or move to Wiki!**
+
 The actual rendering within the target process is done by plugins. Developing a plugin is very simple, just follow these steps to get a basic skeleton:
 
 Create a new `Dynamic-Link Library (DLL)`:
