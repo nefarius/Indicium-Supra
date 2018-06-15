@@ -72,25 +72,21 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
   </PropertyGroup>
@@ -109,7 +105,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>libMinHook.x86.lib;Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -128,7 +124,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>libMinHook.x64.lib;Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -152,7 +148,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>libMinHook.x86.lib;Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -176,7 +172,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>libMinHook.x64.lib;Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -219,6 +215,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\3rd\minhook\build\VC15\libMinHook.vcxproj">
+      <Project>{f142a341-5ee0-442d-a15f-98ae9b48dbae}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
