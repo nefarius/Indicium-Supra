@@ -65,7 +65,21 @@ t_WindowProc OriginalDefWindowProc = nullptr;
 t_WindowProc OriginalWindowProc = nullptr;
 PINDICIUM_ENGINE engine = nullptr;
 
-
+/**
+ * \fn  BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
+ *
+ * \brief   DLL main entry point. Only Indicium engine initialization or shutdown should happen
+ *          here to avoid deadlocks.
+ *
+ * \author  Benjamin "Nefarius" Höglinger
+ * \date    16.06.2018
+ *
+ * \param   hInstance   The instance handle.
+ * \param   dwReason    The call reason.
+ * \param   parameter3  Unused.
+ *
+ * \return  TRUE on success, FALSE otherwise (will abort loading the library).
+ */
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 {
     //
@@ -98,8 +112,14 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
         if (!engine)
         {
+            //
+            // Get engine handle
+            // 
             engine = IndiciumEngineAlloc();
 
+            //
+            // Register render pipeline callbacks
+            // 
             IndiciumEngineSetD3D9EventCallbacks(engine, &d3d9);
             IndiciumEngineSetD3D10EventCallbacks(engine, &d3d10);
             IndiciumEngineSetD3D11EventCallbacks(engine, &d3d11);
@@ -124,6 +144,18 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     return TRUE;
 }
 
+/**
+ * \fn  void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
+ *
+ * \brief   Gets called when the games' rendering pipeline has successfully been hooked and the
+ *          rendering callbacks are about to get fired. The detected version of the used
+ *          rendering objects is reported as well.
+ *
+ * \author  Benjamin "Nefarius" Höglinger
+ * \date    16.06.2018
+ *
+ * \param   GameVersion The detected DirectX/Direct3D version.
+ */
 void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
 {
     std::string logfile("%TEMP%\\Indicium-ImGui.Plugin.log");
@@ -161,6 +193,15 @@ void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
     ImGui::StyleColorsDark();
 }
 
+/**
+ * \fn  void EvtIndiciumGameUnhooked()
+ *
+ * \brief   Gets called when all core engine hooks have been released. At this stage it is save
+ *          to remove our own additional hooks and shut down the hooking sub-system as well.
+ *
+ * \author  Benjamin "Nefarius" Höglinger
+ * \date    16.06.2018
+ */
 void EvtIndiciumGameUnhooked()
 {
     auto& logger = Logger::get(__func__);

@@ -87,6 +87,9 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
 
     logger.information("Indicium engine initialized, attempting to launch main thread");
 
+    //
+    // Kickstart hooking the rendering pipeline
+    // 
     Engine->EngineThread = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(IndiciumMainThread), Engine, 0, nullptr);
 
     if (!Engine->EngineThread) {
@@ -106,7 +109,7 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     }
 
     SetEvent(Engine->EngineCancellationEvent);
-    WaitForSingleObject(Engine->EngineCancellationCompletedEvent, /*1000*/ INFINITE);
+    WaitForSingleObject(Engine->EngineCancellationCompletedEvent, 1000);
 
     if (EvtIndiciumGameUnhooked) {
         EvtIndiciumGameUnhooked();
