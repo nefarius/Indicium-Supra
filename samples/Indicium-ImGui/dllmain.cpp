@@ -470,43 +470,34 @@ void HookWindowProc(HWND hWnd)
 
     MH_STATUS ret;
 
-    if (IsWindowUnicode(hWnd))
+    if ((ret = MH_CreateHook(
+        &DefWindowProcW,
+        &DetourDefWindowProc,
+        reinterpret_cast<LPVOID*>(&OriginalDefWindowProc))
+        ) != MH_OK)
     {
-        logger.information("The window is a native Unicode window");
-
-        if ((ret = MH_CreateHook(
-            &DefWindowProcW,
-            &DetourDefWindowProc,
-            reinterpret_cast<LPVOID*>(&OriginalDefWindowProc))
-            ) != MH_OK)
-        {
-            logger.error("Couldn't create hook for DefWindowProcW: %lu", static_cast<ULONG>(ret));
-            return;
-        }
-        
-        if (MH_EnableHook(&DefWindowProcW) != MH_OK)
-        {
-            logger.error("Couldn't enable DefWindowProcW hook");
-        }
+        logger.error("Couldn't create hook for DefWindowProcW: %lu", static_cast<ULONG>(ret));
+        return;
     }
-    else
+
+    if (ret == MH_OK && MH_EnableHook(&DefWindowProcW) != MH_OK)
     {
-        logger.information("The window is a native ANSI window");
+        logger.error("Couldn't enable DefWindowProcW hook");
+    }   
 
-        if ((ret = MH_CreateHook(
-            &DefWindowProcA,
-            &DetourDefWindowProc,
-            reinterpret_cast<LPVOID*>(&OriginalDefWindowProc))
-            ) != MH_OK)
-        {
-            logger.error("Couldn't create hook for DefWindowProcA: %lu", static_cast<ULONG>(ret));
-            return;
-        }
+    if ((ret = MH_CreateHook(
+        &DefWindowProcA,
+        &DetourDefWindowProc,
+        reinterpret_cast<LPVOID*>(&OriginalDefWindowProc))
+        ) != MH_OK)
+    {
+        logger.error("Couldn't create hook for DefWindowProcA: %lu", static_cast<ULONG>(ret));
+        return;
+    }
 
-        if (MH_EnableHook(&DefWindowProcA) != MH_OK)
-        {
-            logger.error("Couldn't enable DefWindowProcW hook");
-        }
+    if (ret == MH_OK && MH_EnableHook(&DefWindowProcA) != MH_OK)
+    {
+        logger.error("Couldn't enable DefWindowProcW hook");
     }
 
     auto lptrWndProc = reinterpret_cast<t_WindowProc>(GetWindowLongPtr(hWnd, GWLP_WNDPROC));
@@ -563,44 +554,85 @@ void RenderScene()
     std::call_once(flag, []() {Logger::get("RenderScene").information("++ RenderScene called"); });
 
     static bool show_overlay = true;
-    static bool show_test_window = true;
-    static bool show_another_window = false;
-    static ImVec4 clear_col = ImColor(114, 144, 154);
 
     if (show_overlay)
     {
+        ImGui::ShowMetricsWindow();
 
-        // 1. Show a simple window
-        // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
         {
-            static float f = 0.0f;
-            ImGui::Text("Hello, world!");
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-            ImGui::ColorEdit3("clear color", (float*)&clear_col);
-            if (ImGui::Button("Test Window")) show_test_window ^= 1;
-            if (ImGui::Button("Another Window")) show_another_window ^= 1;
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        }
+            ImGui::SetNextWindowSize(ImVec2(800, 100), ImGuiSetCond_FirstUseEver);
+            ImGui::Begin(
+                "Some plots =)",
+                nullptr,
+                ImGuiWindowFlags_AlwaysAutoResize
+            );
 
-        // 2. Show another simple window, this time using an explicit Begin/End pair
-        if (show_another_window)
-        {
-            ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
-            ImGui::Begin("Another Window", &show_another_window);
-            ImGui::Text("Hello");
+            static bool animate = true;
+            ImGui::Checkbox("Animate", &animate);
+
+            static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
+            ImGui::PlotLines("Frame Times", arr, IM_ARRAYSIZE(arr));
+
+            // Create a dummy array of contiguous float values to plot
+            // Tip: If your float aren't contiguous but part of a structure, you can pass a pointer to your first float and the sizeof() of your structure in the Stride parameter.
+            static float values[90] = { 0 };
+            static int values_offset = 0;
+            static float refresh_time = 0.0f;
+            if (!animate || refresh_time == 0.0f)
+                refresh_time = ImGui::GetTime();
+            while (refresh_time < ImGui::GetTime()) // Create dummy data at fixed 60 hz rate for the demo
+            {
+                static float phase = 0.0f;
+                values[values_offset] = cosf(phase);
+                values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
+                phase += 0.10f*values_offset;
+                refresh_time += 1.0f / 60.0f;
+            }
+            ImGui::PlotLines("Lines", values, IM_ARRAYSIZE(values), values_offset, "avg 0.0", -1.0f, 1.0f, ImVec2(0, 80));
+            ImGui::PlotHistogram("Histogram", arr, IM_ARRAYSIZE(arr), 0, NULL, 0.0f, 1.0f, ImVec2(0, 80));
+
+            // Use functions to generate output
+            // FIXME: This is rather awkward because current plot API only pass in indices. We probably want an API passing floats and user provide sample rate/count.
+            struct Funcs
+            {
+                static float Sin(void*, int i) { return sinf(i * 0.1f); }
+                static float Saw(void*, int i) { return (i & 1) ? 1.0f : -1.0f; }
+            };
+            static int func_type = 0, display_count = 70;
+            ImGui::Separator();
+            ImGui::PushItemWidth(100); ImGui::Combo("func", &func_type, "Sin\0Saw\0"); ImGui::PopItemWidth();
+            ImGui::SameLine();
+            ImGui::SliderInt("Sample count", &display_count, 1, 400);
+            float(*func)(void*, int) = (func_type == 0) ? Funcs::Sin : Funcs::Saw;
+            ImGui::PlotLines("Lines", func, NULL, display_count, 0, NULL, -1.0f, 1.0f, ImVec2(0, 80));
+            ImGui::PlotHistogram("Histogram", func, NULL, display_count, 0, NULL, -1.0f, 1.0f, ImVec2(0, 80));
+            ImGui::Separator();
+
+            // Animate a simple progress bar
+            static float progress = 0.0f, progress_dir = 1.0f;
+            if (animate)
+            {
+                progress += progress_dir * 0.4f * ImGui::GetIO().DeltaTime;
+                if (progress >= +1.1f) { progress = +1.1f; progress_dir *= -1.0f; }
+                if (progress <= -0.1f) { progress = -0.1f; progress_dir *= -1.0f; }
+            }
+
+            // Typically we would use ImVec2(-1.0f,0.0f) to use all available width, or ImVec2(width,0.0f) for a specified width. ImVec2(0.0f,0.0f) uses ItemWidth.
+            ImGui::ProgressBar(progress, ImVec2(0.0f, 0.0f));
+            ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+            ImGui::Text("Progress Bar");
+
+            float progress_saturated = (progress < 0.0f) ? 0.0f : (progress > 1.0f) ? 1.0f : progress;
+            char buf[32];
+            sprintf(buf, "%d/%d", (int)(progress_saturated * 1753), 1753);
+            ImGui::ProgressBar(progress, ImVec2(0.f, 0.f), buf);
+
             ImGui::End();
-        }
-
-        // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
-        if (show_test_window)
-        {
-            ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
-            ImGui::ShowTestWindow();
         }
     }
 
     static auto pressedPast = false, pressedNow = false;
-    if (GetAsyncKeyState(VK_F11) & 0x8000)
+    if (GetAsyncKeyState(VK_F12) & 0x8000)
     {
         pressedNow = true;
     }
@@ -617,7 +649,9 @@ void RenderScene()
         pressedPast = true;
     }
 
-    ImGui::Render();
+    if (show_overlay) {
+        ImGui::Render();
+    }
 }
 
 #pragma endregion
