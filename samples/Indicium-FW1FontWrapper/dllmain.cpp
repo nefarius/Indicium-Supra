@@ -89,7 +89,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
         if (engine)
         {
-            IndiciumEngineShutdown(engine);
+            IndiciumEngineShutdown(engine, NULL);
             IndiciumEngineFree(engine);
         }
 
