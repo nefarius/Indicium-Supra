@@ -65,21 +65,7 @@ t_WindowProc OriginalDefWindowProc = nullptr;
 t_WindowProc OriginalWindowProc = nullptr;
 PINDICIUM_ENGINE engine = nullptr;
 
-/**
- * \fn  BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
- *
- * \brief   Your typical DLL entry point function. We're not doing much here since a special
- *          initialization routine gets called upon getting loaded by Indicium-Supra.
- *
- * \author  Benjamin "Nefarius" Höglinger
- * \date    05.05.2018
- *
- * \param   hInstance   The instance.
- * \param   dwReason    The reason.
- * \param   parameter3  The third parameter.
- *
- * \return  A WINAPI.
- */
+
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 {
     //
@@ -138,19 +124,6 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     return TRUE;
 }
 
-/**
- * \fn  INDICIUM_EXPORT(BOOLEAN) indicium_plugin_init(Direct3DVersion version)
- *
- * \brief   This gets called by the core plugin manager once the used Direct3D version has been
- *          established. Here we basically decide if our plugin supports the game's version and
- *          tell the plugin manager if we can get loaded or not. Returning TRUE will result in
- *          full library boot-up, while returning FALSE will cause the library to get unloaded.
- *
- * \author  Benjamin "Nefarius" Höglinger
- * \date    05.05.2018
- *
- * \param   parameter1  The Direct3D version the core has detected.
- */
 void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
 {
     std::string logfile("%TEMP%\\Indicium-ImGui.Plugin.log");
@@ -522,6 +495,8 @@ LRESULT WINAPI DetourWindowProc(
 
 #pragma endregion
 
+#pragma region Main content rendering
+
 void RenderScene()
 {
     static std::once_flag flag;
@@ -585,7 +560,9 @@ void RenderScene()
     ImGui::Render();
 }
 
-#pragma region ImGui
+#pragma endregion
+
+#pragma region ImGui-specific (taken from their examples unmodified)
 
 bool ImGui_ImplWin32_UpdateMouseCursor()
 {
