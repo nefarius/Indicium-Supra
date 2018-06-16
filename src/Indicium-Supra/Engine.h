@@ -7,7 +7,7 @@ typedef struct _INDICIUM_ENGINE
 {
     INDICIUM_D3D_VERSION GameVersion;
 
-    PFN_EVT_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked;
+    PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked;
 
     INDICIUM_D3D9_EVENT_CALLBACKS EventsD3D9;
 
@@ -20,6 +20,8 @@ typedef struct _INDICIUM_ENGINE
     HANDLE EngineThread;
 
     HANDLE EngineCancellationEvent;
+
+    HANDLE EngineCancellationCompletedEvent;
 
     Poco::AutoPtr<Poco::Util::IniFileConfiguration> Configuration;
 

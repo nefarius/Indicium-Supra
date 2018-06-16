@@ -45,7 +45,7 @@ INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void)
     return engine;
 }
 
-INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_EVT_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked)
+INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked)
 {
     if (!Engine) {
         return INDICIUM_ERROR_INVALID_ENGINE_HANDLE;
@@ -60,6 +60,11 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_EVT_
     // Event to notify engine thread about termination
     // 
     Engine->EngineCancellationEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
+    //
+    // Event to notify shutdown function that the game has been unhooked
+    // 
+    Engine->EngineCancellationCompletedEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
     //
     // Fetch configuration
@@ -94,13 +99,18 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_EVT_
     return INDICIUM_ERROR_NONE;
 }
 
-INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine)
+INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked)
 {
     if (!Engine) {
         return;
     }
 
     SetEvent(Engine->EngineCancellationEvent);
+    WaitForSingleObject(Engine->EngineCancellationCompletedEvent, /*1000*/ INFINITE);
+
+    if (EvtIndiciumGameUnhooked) {
+        EvtIndiciumGameUnhooked();
+    }
 }
 
 INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)

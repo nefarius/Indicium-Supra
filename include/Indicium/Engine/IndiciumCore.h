@@ -47,20 +47,29 @@ extern "C" {
             const INDICIUM_D3D_VERSION GameVersion
         );
 
-    typedef EVT_INDICIUM_GAME_HOOKED *PFN_EVT_INDICIUM_GAME_HOOKED;
+    typedef EVT_INDICIUM_GAME_HOOKED *PFN_INDICIUM_GAME_HOOKED;
+
+    typedef
+        _Function_class_(EVT_INDICIUM_GAME_UNHOOKED)
+        VOID
+        EVT_INDICIUM_GAME_UNHOOKED();
+
+    typedef EVT_INDICIUM_GAME_UNHOOKED *PFN_INDICIUM_GAME_UNHOOKED;
 
     INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void);
 
     INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(
         _In_
         PINDICIUM_ENGINE Engine,
-        _In_
-        PFN_EVT_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked
+        _In_opt_
+        PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked
     );
 
     INDICIUM_API VOID IndiciumEngineShutdown(
         _In_
-        PINDICIUM_ENGINE Engine
+        PINDICIUM_ENGINE Engine,
+        _In_opt_
+        PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked
     );
 
     INDICIUM_API VOID IndiciumEngineFree(

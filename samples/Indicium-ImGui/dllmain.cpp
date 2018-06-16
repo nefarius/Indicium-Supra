@@ -112,7 +112,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
         if (engine)
         {
-            IndiciumEngineShutdown(engine);
+            IndiciumEngineShutdown(engine, EvtIndiciumGameUnhooked);
             IndiciumEngineFree(engine);
         }
 
@@ -159,6 +159,25 @@ void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
 
     // Setup style
     ImGui::StyleColorsDark();
+}
+
+void EvtIndiciumGameUnhooked()
+{
+    auto& logger = Logger::get(__func__);
+
+    if (MH_DisableHook(MH_ALL_HOOKS) != MH_OK)
+    {
+        logger.fatal("Couldn't disable hooks, host process might crash");
+        return;
+    }
+
+    logger.information("Hooks disabled");
+
+    if (MH_Uninitialize() != MH_OK)
+    {
+        logger.fatal("Couldn't shut down hook engine, host process might crash");
+        return;
+    }
 }
 
 #pragma region D3D9(Ex)
