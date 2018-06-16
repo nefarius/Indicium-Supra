@@ -22,7 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <Utils/Windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
 #include <Utils/Hook.h>
 
 #include <MinHook.h>
@@ -30,6 +32,9 @@ SOFTWARE.
 #include "Game.h"
 #include "Global.h"
 
+//
+// Hooking helper sub-systems
+// 
 #include <Game/Hook/Direct3D9.h>
 #include <Game/Hook/Direct3D9Ex.h>
 #include <Game/Hook/DXGI.h>
@@ -38,12 +43,29 @@ SOFTWARE.
 #include <Game/Hook/Direct3D12.h>
 #include <Game/Hook/DirectInput8.h>
 
-#include <Utils/PluginManager.h>
+//
+// Public
+// 
+#include "Indicium/Engine/IndiciumCore.h"
+#include "Indicium/Engine/IndiciumDirect3D9.h"
+#include "Indicium/Engine/IndiciumDirect3D10.h"
+#include "Indicium/Engine/IndiciumDirect3D11.h"
+#include "Indicium/Engine/IndiciumDirect3D12.h"
 
+//
+// Internal
+// 
+#include "Engine.h"
+#include "Indicium/Engine/IndiciumCore.h"
+
+//
+// STL
+// 
 #include <mutex>
 
-#include <Indicium/Plugin/Common.h>
-
+//
+// POCO
+// 
 #include <Poco/Exception.h>
 #include <Poco/Logger.h>
 #include <Poco/AutoPtr.h>
@@ -57,29 +79,10 @@ using Poco::Buffer;
 using Poco::Util::IniFileConfiguration;
 using Poco::Path;
 
+// NOTE: DirectInput hooking is technically implemented but not really useful
+// #define HOOK_DINPUT8
 
-// D3D9
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> g_present9Hook;
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> g_reset9Hook;
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> g_endScene9Hook;
-
-// D3D9Ex
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> g_present9ExHook;
-Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> g_reset9ExHook;
-
-// D3D10
-Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent10Hook;
-Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget10Hook;
-
-// D3D11
-Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent11Hook;
-Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget11Hook;
-
-// D3D12
-Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> g_swapChainPresent12Hook;
-Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> g_swapChainResizeTarget12Hook;
-
-
+#ifdef HOOK_DINPUT8
 // DInput8
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8> g_acquire8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD> g_getDeviceData8Hook;
@@ -87,12 +90,22 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEINSTANC
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_getDeviceState8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTINSTANCE, DWORD, DWORD> g_getObjectInfo8Hook;
 
+void HookDInput8(UINTX* vtable8);
+#endif
 
-PluginManager g_plugins;
-AutoPtr<IniFileConfiguration> g_config;
-
-void initGame()
+/**
+ * \fn  void IndiciumMainThread(LPVOID Params)
+ *
+ * \brief   Indicium Engine main thread. All the hooking happens here.
+ *
+ * \author  Benjamin "Nefarius" Höglinger
+ * \date    13.06.2018
+ *
+ * \param   Params  Options for controlling the operation.
+ */
+void IndiciumMainThread(LPVOID Params)
 {
+    static PINDICIUM_ENGINE engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
     auto& logger = Logger::get(__func__);
 
     logger.information("Library loaded into %s", GlobalState::instance().processName());
@@ -101,17 +114,53 @@ void initGame()
 
     logger.information("Initializing hook engine...");
 
-    if (MH_Initialize() != MH_OK)
+    MH_STATUS status = MH_Initialize();
+
+    //
+    // Somebody else might have already initialized MinHook so don't fail
+    // 
+    if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED)
     {
-        logger.fatal("Couldn't initialize hook engine");
+        logger.fatal("Couldn't initialize hook engine: %lu", (ULONG)status);
         return;
     }
 
     logger.information("Hook engine initialized");
 
+    // 
+    // D3D9 Hooks
+    // 
+    static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> present9Hook;
+    static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> reset9Hook;
+    static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> endScene9Hook;
+
+    // 
+    // D3D9Ex Hooks
+    // 
+    static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> present9ExHook;
+    static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> reset9ExHook;
+
+    // 
+    // D3D10 Hooks
+    // 
+    static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent10Hook;
+    static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget10Hook;
+
+    // 
+    // D3D11 Hooks
+    // 
+    static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent11Hook;
+    static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget11Hook;
+
+    // 
+    // D3D12 Hooks
+    // 
+    static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent12Hook;
+    static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget12Hook;
+
 #pragma region D3D9
 
-    if (g_config->getBool("D3D9.enabled", true))
+    if (engine->Configuration->getBool("D3D9.enabled", true))
     {
         try
         {
@@ -119,74 +168,116 @@ void initGame()
 
             logger.information("Hooking IDirect3DDevice9::Present");
 
-            g_present9Hook.apply(d3d->vtable()[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
+            present9Hook.apply(d3d->vtable()[Direct3D9Hooking::Present], [](
+                LPDIRECT3DDEVICE9 dev, 
+                CONST RECT* a1, 
+                CONST RECT* a2, 
+                HWND a3, 
+                CONST RGNDATA* a4
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
                     Logger::get("HookDX9").information("++ IDirect3DDevice9::Present called");
 
-                    g_plugins.load(Direct3DVersion::Direct3D9);
+                    INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion9);
                 });
 
-                g_plugins.d3d9_present(dev, a1, a2, a3, a4);
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PrePresent, dev, a1, a2, a3, a4);
 
-                return g_present9Hook.callOrig(dev, a1, a2, a3, a4);
+                auto ret = present9Hook.callOrig(dev, a1, a2, a3, a4);
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostPresent, dev, a1, a2, a3, a4);
+
+                return ret;
             });
 
             logger.information("Hooking IDirect3DDevice9::Reset");
 
-            g_reset9Hook.apply(d3d->vtable()[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
+            reset9Hook.apply(d3d->vtable()[Direct3D9Hooking::Reset], [](
+                LPDIRECT3DDEVICE9 dev, 
+                D3DPRESENT_PARAMETERS* pp
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Reset called"); });
 
-                g_plugins.d3d9_reset(dev, pp);
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreReset, dev, pp);
 
-                return g_reset9Hook.callOrig(dev, pp);
+                auto ret = reset9Hook.callOrig(dev, pp);
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostReset, dev, pp);
+
+                return ret;
             });
 
             logger.information("Hooking IDirect3DDevice9::EndScene");
 
-            g_endScene9Hook.apply(d3d->vtable()[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
+            endScene9Hook.apply(d3d->vtable()[Direct3D9Hooking::EndScene], [](
+                LPDIRECT3DDEVICE9 dev
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::EndScene called"); });
 
-                g_plugins.d3d9_endscene(dev);
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreEndScene, dev);
 
-                return g_endScene9Hook.callOrig(dev);
+                auto ret = endScene9Hook.callOrig(dev);
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostEndScene, dev);
+
+                return ret;
             });
 
             AutoPtr<Direct3D9Hooking::Direct3D9Ex> d3dEx(new Direct3D9Hooking::Direct3D9Ex);
 
             logger.information("Hooking IDirect3DDevice9Ex::PresentEx");
 
-            g_present9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
+            present9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::PresentEx], [](
+                LPDIRECT3DDEVICE9EX dev, 
+                CONST RECT* a1, 
+                CONST RECT* a2, 
+                HWND a3, 
+                CONST RGNDATA* a4, 
+                DWORD a5
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
                     Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::PresentEx called");
 
-                    g_plugins.load(Direct3DVersion::Direct3D9);
+                    INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion9);
                 });
 
-                g_plugins.d3d9_presentex(dev, a1, a2, a3, a4, a5);
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PrePresentEx, dev, a1, a2, a3, a4, a5);
 
-                return g_present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
+                auto ret = present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostPresentEx, dev, a1, a2, a3, a4, a5);
+
+                return ret;
             });
 
             logger.information("Hooking IDirect3DDevice9Ex::ResetEx");
 
-            g_reset9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
+            reset9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::ResetEx], [](
+                LPDIRECT3DDEVICE9EX dev,
+                D3DPRESENT_PARAMETERS* pp, 
+                D3DDISPLAYMODEEX* ppp
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::ResetEx called"); });
 
-                g_plugins.d3d9_resetex(dev, pp, ppp);
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreResetEx, dev, pp, ppp);
 
-                return g_reset9ExHook.callOrig(dev, pp, ppp);
+                auto ret = reset9ExHook.callOrig(dev, pp, ppp);
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostResetEx, dev, pp, ppp);
+
+                return ret;
             });
         }
         catch (Poco::Exception& pex)
@@ -199,8 +290,10 @@ void initGame()
 
 #pragma region D3D10
 
-    if (g_config->getBool("D3D10.enabled", true))
+    if (engine->Configuration->getBool("D3D10.enabled", true))
     {
+        static INDICIUM_D3D_VERSION deviceVersion = IndiciumDirect3DVersionUnknown;
+
         try
         {
             AutoPtr<Direct3D10Hooking::Direct3D10> d3d10(new Direct3D10Hooking::Direct3D10);
@@ -208,31 +301,93 @@ void initGame()
 
             logger.information("Hooking IDXGISwapChain::Present");
 
-            g_swapChainPresent10Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+            swapChainPresent10Hook.apply(vtable[DXGIHooking::Present], [](
+                IDXGISwapChain* chain, 
+                UINT SyncInterval, 
+                UINT Flags
+                ) -> HRESULT
             {
                 static std::once_flag flag;
-                std::call_once(flag, []()
+                std::call_once(flag, [&pChain = chain]()
                 {
-                    Logger::get("HookDX10").information("++ IDXGISwapChain::Present called");
+                    auto& logger = Logger::get("HookDX10");
 
-                    g_plugins.load(Direct3DVersion::Direct3D10);
+                    logger.information("++ IDXGISwapChain::Present called");
+
+                    ID3D10Device *pp10Device = nullptr;
+                    ID3D11Device *pp11Device = nullptr;
+
+                    auto ret = pChain->GetDevice(__uuidof(ID3D10Device), (PVOID*)&pp10Device);
+
+                    if (SUCCEEDED(ret)) {
+                        logger.information("ID3D10Device object acquired");
+                        deviceVersion = IndiciumDirect3DVersion10;
+                        INVOKE_INDICIUM_GAME_HOOKED(engine, deviceVersion);
+                        return;
+                    }
+
+                    ret = pChain->GetDevice(__uuidof(ID3D11Device), (PVOID*)&pp11Device);
+
+                    if (SUCCEEDED(ret)) {
+                        logger.information("ID3D11Device object acquired");
+                        deviceVersion = IndiciumDirect3DVersion11;
+                        INVOKE_INDICIUM_GAME_HOOKED(engine, deviceVersion);
+                        return;
+                    }
+
+                    logger.error("Couldn't fetch device pointer");
                 });
 
-                g_plugins.d3d10_present(chain, SyncInterval, Flags);
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PrePresent, chain, SyncInterval, Flags);
+                }
 
-                return g_swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PrePresent, chain, SyncInterval, Flags);
+                }
+
+                auto ret = swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
+
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostPresent, chain, SyncInterval, Flags);
+                }
+
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostPresent, chain, SyncInterval, Flags);
+                }
+
+                return ret;
             });
 
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
-            g_swapChainResizeTarget10Hook.apply(vtable[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+            swapChainResizeTarget10Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
+                IDXGISwapChain* chain, 
+                const DXGI_MODE_DESC* pNewTargetParameters
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-                g_plugins.d3d10_resizetarget(chain, pNewTargetParameters);
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PreResizeTarget, chain, pNewTargetParameters);
+                }
 
-                return g_swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
+                }
+
+                auto ret = swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
+
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostResizeTarget, chain, pNewTargetParameters);
+                }
+
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeTarget, chain, pNewTargetParameters);
+                }
+
+                return ret;
             });
         }
         catch (Poco::Exception& pex)
@@ -245,7 +400,7 @@ void initGame()
 
 #pragma region D3D11
 
-    if (g_config->getBool("D3D11.enabled", true))
+    if (engine->Configuration->getBool("D3D11.enabled", true))
     {
         try
         {
@@ -254,31 +409,46 @@ void initGame()
 
             logger.information("Hooking IDXGISwapChain::Present");
 
-            g_swapChainPresent11Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+            swapChainPresent11Hook.apply(vtable[DXGIHooking::Present], [](
+                IDXGISwapChain* chain, 
+                UINT SyncInterval, 
+                UINT Flags
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
                     Logger::get("HookDX11").information("++ IDXGISwapChain::Present called");
 
-                    g_plugins.load(Direct3DVersion::Direct3D11);
+                    INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion11);
                 });
 
-                g_plugins.d3d11_present(chain, SyncInterval, Flags);
+                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PrePresent, chain, SyncInterval, Flags);
 
-                return g_swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
+                auto ret = swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
+
+                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostPresent, chain, SyncInterval, Flags);
+
+                return ret;
             });
 
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
-            g_swapChainResizeTarget11Hook.apply(vtable[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+            swapChainResizeTarget11Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
+                IDXGISwapChain* chain, 
+                const DXGI_MODE_DESC* pNewTargetParameters
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-                g_plugins.d3d11_resizetarget(chain, pNewTargetParameters);
+                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
 
-                return g_swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
+                auto ret = swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
+
+                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeTarget, chain, pNewTargetParameters);
+
+                return ret;
             });
         }
         catch (Poco::Exception& pex)
@@ -291,7 +461,7 @@ void initGame()
 
 #pragma region D3D12
 
-    if (g_config->getBool("D3D12.enabled", true))
+    if (engine->Configuration->getBool("D3D12.enabled", true))
     {
         try
         {
@@ -300,29 +470,47 @@ void initGame()
 
             logger.information("Hooking IDXGISwapChain::Present");
 
-            g_swapChainPresent12Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+            swapChainPresent12Hook.apply(vtable[DXGIHooking::Present], [](
+                IDXGISwapChain* chain, 
+                UINT SyncInterval, 
+                UINT Flags
+                ) -> HRESULT
             {
                 static std::once_flag flag;
-                std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::Present called"); });
+                std::call_once(flag, []()
+                {
+                    Logger::get("HookDX12").information("++ IDXGISwapChain::Present called");
 
-                g_plugins.d3d12_present(chain, SyncInterval, Flags);
+                    INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion12);
+                });
 
-                return g_swapChainPresent12Hook.callOrig(chain, SyncInterval, Flags);
+                INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PrePresent, chain, SyncInterval, Flags);
+
+                auto ret = swapChainPresent12Hook.callOrig(chain, SyncInterval, Flags);
+
+                INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PostPresent, chain, SyncInterval, Flags);
+
+                return ret;
             });
 
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
-            g_swapChainResizeTarget12Hook.apply(vtable[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+            swapChainResizeTarget12Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
+                IDXGISwapChain* chain, 
+                const DXGI_MODE_DESC* pNewTargetParameters
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::ResizeTarget called"); });
 
-                g_plugins.d3d12_resizetarget(chain, pNewTargetParameters);
+                INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PreResizeTarget, chain, pNewTargetParameters);
 
-                return g_swapChainResizeTarget12Hook.callOrig(chain, pNewTargetParameters);
+                auto ret = swapChainResizeTarget12Hook.callOrig(chain, pNewTargetParameters);
+
+                INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PostResizeTarget, chain, pNewTargetParameters);
+
+                return ret;
             });
-
-            g_plugins.load(Direct3DVersion::Direct3D12);
         }
         catch (Poco::Exception& pex)
         {
@@ -332,10 +520,11 @@ void initGame()
 
 #pragma endregion
 
+#ifdef HOOK_DINPUT8
     //
     // TODO: legacy, fix me up!
     // 
-    if (g_config->getBool("DInput8.enabled", false))
+    if (engine->Configuration->getBool("DInput8.enabled", false))
     {
         bool dinput8_available;
         UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
@@ -356,34 +545,39 @@ void initGame()
             logger.information("Game uses DirectInput8");
             HookDInput8(vtable8);
         }
-    }
+}
+#endif
 
     logger.information("Library initialized successfully");
 
-    /*
-     * TODO: implement proper shutdown and clean-up
+    //
+    // Wait until cancellation requested
+    // 
+    WaitForSingleObject(engine->EngineCancellationEvent, INFINITE);
+
     logger.information("Shutting down hooks...");
 
-    if (MH_DisableHook(MH_ALL_HOOKS) != MH_OK)
-    {
-        logger.fatal("Couldn't disable hooks, host process might crash");
-    }
-    else
-    {
-        logger.information("Hooks disabled");
-    }
+    present9Hook.remove();
+    reset9Hook.remove();
+    endScene9Hook.remove();
+    present9ExHook.remove();
+    reset9ExHook.remove();
+    swapChainPresent10Hook.remove();
+    swapChainResizeTarget10Hook.remove();
+    swapChainPresent11Hook.remove();
+    swapChainResizeTarget11Hook.remove();
+    swapChainPresent12Hook.remove();
+    swapChainResizeTarget12Hook.remove();
 
-    if (MH_Uninitialize() != MH_OK)
-    {
-        logger.fatal("Couldn't shut down hook engine, host process might crash");
-    }
-    else
-    {
-        logger.information("Hook engine disabled");
-    }
-    */
+    logger.information("Hooks disabled");
+
+    //
+    // Inform caller that it's safe to continue
+    // 
+    SetEvent(engine->EngineCancellationCompletedEvent);
 }
 
+#ifdef HOOK_DINPUT8
 void HookDInput8(UINTX* vtable8)
 {
     auto& logger = Logger::get(__func__);
@@ -437,4 +631,4 @@ void HookDInput8(UINTX* vtable8)
         return g_getObjectInfo8Hook.callOrig(dev, pdidoi, dwObj, dwHow);
     });
 }
-
+#endif

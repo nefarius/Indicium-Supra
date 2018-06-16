@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Game\Game.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -23,12 +22,10 @@
     <ClCompile Include="Game\Hook\Direct3D11.cpp">
       <Filter>Game\Hook\D3D11</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\PluginManager.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Hook\Direct3D12.cpp">
       <Filter>Game\Hook\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">
@@ -58,9 +55,11 @@
     <Filter Include="Game\Hook\D3D12">
       <UniqueIdentifier>{c6f9a2b6-b779-4663-b03b-05a92612abbf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shared\Engine">
+      <UniqueIdentifier>{a26e79e9-e370-42f5-bf95-655d700633c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dllmain.h" />
     <ClInclude Include="Game\Game.h">
       <Filter>Game</Filter>
     </ClInclude>
@@ -68,9 +67,6 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Misc.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\Windows.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
@@ -101,33 +97,28 @@
     <ClInclude Include="Game\Hook\DXGI.h">
       <Filter>Game\Hook</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\PluginManager.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Hook\Direct3D12.h">
       <Filter>Game\Hook\D3D12</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Common.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D9.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D9Ex.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D10.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D11.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D12.h">
-      <Filter>Shared</Filter>
     </ClInclude>
     <ClInclude Include="Global.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumCore.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D9.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D10.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D11.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D12.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />

@@ -69,31 +69,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <TargetName>$(ProjectName).Plugin</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -108,7 +100,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libMinHook.x86.lib;Iphlpapi.lib;d3d9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;d3d9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -124,7 +116,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libMinHook.x64.lib;Iphlpapi.lib;d3d9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;d3d9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,7 +136,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>libMinHook.x86.lib;Iphlpapi.lib;d3d9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;d3d9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,7 +156,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>libMinHook.x64.lib;Iphlpapi.lib;d3d9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;d3d9.lib;d3d10.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -192,6 +184,14 @@
   <ItemGroup>
     <None Include="Indicium-ImGui.ini" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\3rd\minhook\build\VC15\libMinHook.vcxproj">
+      <Project>{f142a341-5ee0-442d-a15f-98ae9b48dbae}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Indicium-Supra\Indicium-Supra.vcxproj">
+      <Project>{db383579-da7f-48c0-ab1f-7c4c93544e2c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

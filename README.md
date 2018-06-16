@@ -2,35 +2,26 @@
 
 API-Hooking and rendering framework for DirectX-based games.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/rt4ybpwrhn22kegm?svg=true)](https://ci.appveyor.com/project/nefarius/indicium-supra)
+[![Build status](https://ci.appveyor.com/api/projects/status/rt4ybpwrhn22kegm?svg=true)](https://ci.appveyor.com/project/nefarius/indicium-supra) [![Discord](https://img.shields.io/discord/346756263763378176.svg)](https://discord.gg/QTJpBX5) [![Twitter Follow](https://img.shields.io/twitter/follow/nefariusmaximus.svg?style=social&label=Follow)](https://twitter.com/nefariusmaximus) [![Website](https://img.shields.io/website-up-down-green-red/https/vigem.org.svg?label=ViGEm.org)](https://vigem.org/)
 
-## Summary
-`Indicium-Supra` exposes the following DirectX/Direct3D rendering COM functions to custom plugins:
- * `IDirect3DDevice9::Present`
- * `IDirect3DDevice9::Reset`
- * `IDirect3DDevice9::EndScene`
- * `IDirect3DDevice9Ex::PresentEx`
- * `IDirect3DDevice9Ex::ResetEx`
- * `IDXGISwapChain::Present`
- * `IDXGISwapChain::ResizeTarget`
+## About
+`Indicium-Supra` consists of a self-contained library (DLL) which exposes a minimalistic API for rendering custom content in foreign processes eliminating the need for in-depth knowledge about Direct3D and API-hooking. The most common use-case might be drawing custom overlays on top of your games. The framework takes care about pesky tasks like detecting the DirectX version the game was built for and supports runtime-hooking (no special launcher application required).
 
-The core DLL can be injected in any DirectX-based game/process (32-Bit or 64-Bit) and does all of the heavy lifting automatically. On loading it tries to detect the used DirectX/Direct3D version, acquire the virtual function pointer table and hook into all common functions used for rendering. Every time the host process renders content, the function calls get intercepted and forwarded to one or more plugins which also get loaded on library boot. The plugins can then do what they want with the provided device/swapchain pointers (like render additional content or blank out certain parts of the resulting image).
-
-## Prerequisites
- * Visual Studio **2017** ([Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15) is just fine)
- * [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
- * [POCO C++ libraries](https://pocoproject.org/) (referenced by NuGet)
- * [MinHook](https://github.com/TsudaKageyu/minhook) (referenced by NuGet)
- 
 ## Supported DirectX versions
  * DirectX 9.0
  * DirectX 9.0 Extended (Vista+)
  * DirectX 10
  * DirectX 11
- * DirectX 12 (experimental)
+ * DirectX 12 (implemented but untested)
 
 ## How to build
-Building should be pretty straight-forward since the POCO libraries get fetched pre-compiled via NuGet on first build automatically. You have multiple choices for getting things done.
+### Prerequisites
+ * Visual Studio **2017** ([Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15) is just fine)
+ * [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
+ * [POCO C++ libraries](https://pocoproject.org/) (referenced by NuGet)
+ * [MinHook](https://github.com/TsudaKageyu/minhook) (referenced as submodule)
+
+ Building should be pretty straight-forward since the POCO libraries get fetched pre-compiled via NuGet on first build automatically. You have multiple choices for getting things done.
 
 ### Visual Studio
 Just open the solution file `Indicium-Supra.sln` and start the build from there.
@@ -49,10 +40,11 @@ powershell .\build.ps1 -configuration release
 Now if you're really in a hurry you can [grab pre-built binaries from the buildbot](https://buildbot.vigem.org/builds/Indicium-Supra/master/). Boom, done.
 
 ## How to use
-Inject the resulting `Indicium-Supra.dll` into the target process using a DLL injection utility of your choice (you can ofc. [use mine as well](https://github.com/nefarius/Injector)). To do anything useful you also need one or more plugins in the same directory as well. The plugin DLLs names have to end with `.Plugin.dll` to get auto-detected and loaded. Example:
+Inject the resulting `Indicium-Supra.dll` into the target process first using a DLL injection utility of your choice (you can ofc. [use mine as well](https://github.com/nefarius/Injector)). To do anything useful you also need one or more host libraries injected as well. The following example loads the [imgui sample](samples/Indicium-ImGui):
 
-```Bash
+```PowerShell
 Injector --inject --module-name Indicium-Supra.dll --process-name hl2.exe
+Injector --inject --module-name Indicium-ImGui.dll --process-name hl2.exe
 ```
 
 ## Diagnostics
@@ -60,6 +52,7 @@ The core library logs its progress and potential errors to the file `%TEMP%\Indi
 
 ## Demos
 The following screenshots show [imgui](https://github.com/ocornut/imgui) getting rendered in foreign processes using different versions of DirectX.
+
 ### DirectX 9
 Half-Life 2, 32-Bit
 

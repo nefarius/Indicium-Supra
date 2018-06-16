@@ -24,11 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include <intarch.h>
-#include <Utils/Windows.h>
+void IndiciumMainThread(LPVOID Params);
 
 
-void initGame();
-
-void HookDInput8(UINTX* vtable8);
 

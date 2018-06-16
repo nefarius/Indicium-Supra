@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Indicium_Supra</RootNamespace>
     <ProjectName>Indicium-Supra</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -72,25 +72,21 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)3rd\minhook;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)3rd\minhook;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(MSBuildProjectDirectory);$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
   </PropertyGroup>
@@ -100,7 +96,7 @@
       </PrecompiledHeader>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>INDICIUM_EXPORTS;WIN32;_DEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <SuppressStartupBanner>false</SuppressStartupBanner>
@@ -109,7 +105,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>libMinHook.x86.lib;Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -119,7 +115,7 @@
       </PrecompiledHeader>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>INDICIUM_EXPORTS;WIN32;_DEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <SuppressStartupBanner>false</SuppressStartupBanner>
@@ -128,7 +124,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>libMinHook.x64.lib;Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -140,7 +136,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>INDICIUM_EXPORTS;WIN32;NDEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -152,7 +148,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>libMinHook.x86.lib;Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
@@ -164,7 +160,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>INDICIUM_EXPORTS;WIN32;NDEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -176,29 +172,28 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>libMinHook.x64.lib;Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Iphlpapi.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>false</SuppressStartupBanner>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Game\Hook\Direct3D11.cpp" />
     <ClCompile Include="Game\Hook\Direct3D12.cpp" />
     <ClCompile Include="Game\Hook\DirectInput8.cpp" />
     <ClCompile Include="Game\Hook\Direct3D10.cpp" />
     <ClCompile Include="Game\Hook\Direct3D9.cpp" />
     <ClCompile Include="Game\Hook\Direct3D9Ex.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Game\Game.cpp" />
-    <ClCompile Include="Utils\PluginManager.cpp" />
     <ClCompile Include="Game\Hook\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\Indicium\Plugin\Common.h" />
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D10.h" />
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D11.h" />
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D12.h" />
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D9.h" />
-    <ClInclude Include="..\..\include\Indicium\Plugin\Direct3D9Ex.h" />
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumCore.h" />
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D10.h" />
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D11.h" />
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D12.h" />
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDirect3D9.h" />
+    <ClInclude Include="Engine.h" />
     <ClInclude Include="Game\Hook\Direct3D12.h" />
     <ClInclude Include="Game\Hook\DXGI.h" />
     <ClInclude Include="Game\Hook\Direct3D11.h" />
@@ -207,15 +202,12 @@
     <ClInclude Include="Game\Hook\Direct3D10.h" />
     <ClInclude Include="Game\Hook\Direct3D9.h" />
     <ClInclude Include="Game\Hook\Direct3D9Ex.h" />
-    <ClInclude Include="dllmain.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="intarch.h" />
-    <ClInclude Include="Utils\PluginManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Utils\Hook.h" />
     <ClInclude Include="Utils\Misc.h" />
-    <ClInclude Include="Utils\Windows.h" />
     <ClInclude Include="Game\Hook\Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -223,6 +215,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\3rd\minhook\build\VC15\libMinHook.vcxproj">
+      <Project>{f142a341-5ee0-442d-a15f-98ae9b48dbae}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
