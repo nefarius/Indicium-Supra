@@ -114,9 +114,14 @@ void IndiciumMainThread(LPVOID Params)
 
     logger.information("Initializing hook engine...");
 
-    if (MH_Initialize() != MH_OK)
+    MH_STATUS status = MH_Initialize();
+
+    //
+    // Somebody else might have already initialized MinHook so don't fail
+    // 
+    if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED)
     {
-        logger.fatal("Couldn't initialize hook engine");
+        logger.fatal("Couldn't initialize hook engine: %lu", (ULONG)status);
         return;
     }
 
@@ -163,7 +168,13 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDirect3DDevice9::Present");
 
-            present9Hook.apply(d3d->vtable()[Direct3D9Hooking::Present], [](LPDIRECT3DDEVICE9 dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4) -> HRESULT
+            present9Hook.apply(d3d->vtable()[Direct3D9Hooking::Present], [](
+                LPDIRECT3DDEVICE9 dev, 
+                CONST RECT* a1, 
+                CONST RECT* a2, 
+                HWND a3, 
+                CONST RGNDATA* a4
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []()
@@ -184,7 +195,10 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDirect3DDevice9::Reset");
 
-            reset9Hook.apply(d3d->vtable()[Direct3D9Hooking::Reset], [](LPDIRECT3DDEVICE9 dev, D3DPRESENT_PARAMETERS* pp) -> HRESULT
+            reset9Hook.apply(d3d->vtable()[Direct3D9Hooking::Reset], [](
+                LPDIRECT3DDEVICE9 dev, 
+                D3DPRESENT_PARAMETERS* pp
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::Reset called"); });
@@ -200,7 +214,9 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDirect3DDevice9::EndScene");
 
-            endScene9Hook.apply(d3d->vtable()[Direct3D9Hooking::EndScene], [](LPDIRECT3DDEVICE9 dev) -> HRESULT
+            endScene9Hook.apply(d3d->vtable()[Direct3D9Hooking::EndScene], [](
+                LPDIRECT3DDEVICE9 dev
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX9").information("++ IDirect3DDevice9::EndScene called"); });
@@ -218,7 +234,14 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDirect3DDevice9Ex::PresentEx");
 
-            present9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::PresentEx], [](LPDIRECT3DDEVICE9EX dev, CONST RECT* a1, CONST RECT* a2, HWND a3, CONST RGNDATA* a4, DWORD a5) -> HRESULT
+            present9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::PresentEx], [](
+                LPDIRECT3DDEVICE9EX dev, 
+                CONST RECT* a1, 
+                CONST RECT* a2, 
+                HWND a3, 
+                CONST RGNDATA* a4, 
+                DWORD a5
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []()
@@ -239,7 +262,11 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDirect3DDevice9Ex::ResetEx");
 
-            reset9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::ResetEx], [](LPDIRECT3DDEVICE9EX dev, D3DPRESENT_PARAMETERS* pp, D3DDISPLAYMODEEX* ppp) -> HRESULT
+            reset9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::ResetEx], [](
+                LPDIRECT3DDEVICE9EX dev,
+                D3DPRESENT_PARAMETERS* pp, 
+                D3DDISPLAYMODEEX* ppp
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::ResetEx called"); });
@@ -274,7 +301,11 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDXGISwapChain::Present");
 
-            swapChainPresent10Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+            swapChainPresent10Hook.apply(vtable[DXGIHooking::Present], [](
+                IDXGISwapChain* chain, 
+                UINT SyncInterval, 
+                UINT Flags
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, [&pChain = chain]()
@@ -330,7 +361,10 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
-            swapChainResizeTarget10Hook.apply(vtable[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+            swapChainResizeTarget10Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
+                IDXGISwapChain* chain, 
+                const DXGI_MODE_DESC* pNewTargetParameters
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::ResizeTarget called"); });
@@ -375,7 +409,11 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDXGISwapChain::Present");
 
-            swapChainPresent11Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+            swapChainPresent11Hook.apply(vtable[DXGIHooking::Present], [](
+                IDXGISwapChain* chain, 
+                UINT SyncInterval, 
+                UINT Flags
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []()
@@ -396,7 +434,10 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
-            swapChainResizeTarget11Hook.apply(vtable[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+            swapChainResizeTarget11Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
+                IDXGISwapChain* chain, 
+                const DXGI_MODE_DESC* pNewTargetParameters
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::ResizeTarget called"); });
@@ -429,7 +470,11 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDXGISwapChain::Present");
 
-            swapChainPresent12Hook.apply(vtable[DXGIHooking::Present], [](IDXGISwapChain* chain, UINT SyncInterval, UINT Flags) -> HRESULT
+            swapChainPresent12Hook.apply(vtable[DXGIHooking::Present], [](
+                IDXGISwapChain* chain, 
+                UINT SyncInterval, 
+                UINT Flags
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []()
@@ -450,7 +495,10 @@ void IndiciumMainThread(LPVOID Params)
 
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
-            swapChainResizeTarget12Hook.apply(vtable[DXGIHooking::ResizeTarget], [](IDXGISwapChain* chain, const DXGI_MODE_DESC* pNewTargetParameters) -> HRESULT
+            swapChainResizeTarget12Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
+                IDXGISwapChain* chain, 
+                const DXGI_MODE_DESC* pNewTargetParameters
+                ) -> HRESULT
             {
                 static std::once_flag flag;
                 std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::ResizeTarget called"); });
@@ -523,13 +571,9 @@ void IndiciumMainThread(LPVOID Params)
 
     logger.information("Hooks disabled");
 
-    //if (MH_Uninitialize() != MH_OK)
-    //{
-    //    logger.fatal("Couldn't shut down hook engine, host process might crash");
-    //}
-
-    //logger.information("Hook engine disabled");
-
+    //
+    // Inform caller that it's safe to continue
+    // 
     SetEvent(engine->EngineCancellationCompletedEvent);
 }
 
