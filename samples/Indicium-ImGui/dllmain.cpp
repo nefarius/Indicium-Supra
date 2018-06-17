@@ -560,7 +560,7 @@ void RenderScene()
         ImGui::ShowMetricsWindow();
 
         {
-            ImGui::SetNextWindowSize(ImVec2(800, 100), ImGuiSetCond_FirstUseEver);
+            ImGui::SetNextWindowPos(ImVec2(1400, 60));
             ImGui::Begin(
                 "Some plots =)",
                 nullptr,
