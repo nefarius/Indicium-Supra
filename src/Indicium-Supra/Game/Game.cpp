@@ -169,10 +169,10 @@ void IndiciumMainThread(LPVOID Params)
             logger.information("Hooking IDirect3DDevice9::Present");
 
             present9Hook.apply(d3d->vtable()[Direct3D9Hooking::Present], [](
-                LPDIRECT3DDEVICE9 dev, 
-                CONST RECT* a1, 
-                CONST RECT* a2, 
-                HWND a3, 
+                LPDIRECT3DDEVICE9 dev,
+                CONST RECT* a1,
+                CONST RECT* a2,
+                HWND a3,
                 CONST RGNDATA* a4
                 ) -> HRESULT
             {
@@ -196,7 +196,7 @@ void IndiciumMainThread(LPVOID Params)
             logger.information("Hooking IDirect3DDevice9::Reset");
 
             reset9Hook.apply(d3d->vtable()[Direct3D9Hooking::Reset], [](
-                LPDIRECT3DDEVICE9 dev, 
+                LPDIRECT3DDEVICE9 dev,
                 D3DPRESENT_PARAMETERS* pp
                 ) -> HRESULT
             {
@@ -229,17 +229,23 @@ void IndiciumMainThread(LPVOID Params)
 
                 return ret;
             });
+        }
+        catch (Poco::Exception& pex)
+        {
+            logger.error("Hooking D3D9 failed: %s", pex.displayText());
+        }
 
+        try {
             AutoPtr<Direct3D9Hooking::Direct3D9Ex> d3dEx(new Direct3D9Hooking::Direct3D9Ex);
 
             logger.information("Hooking IDirect3DDevice9Ex::PresentEx");
 
             present9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::PresentEx], [](
-                LPDIRECT3DDEVICE9EX dev, 
-                CONST RECT* a1, 
-                CONST RECT* a2, 
-                HWND a3, 
-                CONST RGNDATA* a4, 
+                LPDIRECT3DDEVICE9EX dev,
+                CONST RECT* a1,
+                CONST RECT* a2,
+                HWND a3,
+                CONST RGNDATA* a4,
                 DWORD a5
                 ) -> HRESULT
             {
@@ -264,7 +270,7 @@ void IndiciumMainThread(LPVOID Params)
 
             reset9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::ResetEx], [](
                 LPDIRECT3DDEVICE9EX dev,
-                D3DPRESENT_PARAMETERS* pp, 
+                D3DPRESENT_PARAMETERS* pp,
                 D3DDISPLAYMODEEX* ppp
                 ) -> HRESULT
             {
@@ -282,7 +288,7 @@ void IndiciumMainThread(LPVOID Params)
         }
         catch (Poco::Exception& pex)
         {
-            logger.error(pex.displayText());
+            logger.error("Hooking D3D9Ex failed: %s", pex.displayText());
         }
     }
 
@@ -302,8 +308,8 @@ void IndiciumMainThread(LPVOID Params)
             logger.information("Hooking IDXGISwapChain::Present");
 
             swapChainPresent10Hook.apply(vtable[DXGIHooking::Present], [](
-                IDXGISwapChain* chain, 
-                UINT SyncInterval, 
+                IDXGISwapChain* chain,
+                UINT SyncInterval,
                 UINT Flags
                 ) -> HRESULT
             {
@@ -362,7 +368,7 @@ void IndiciumMainThread(LPVOID Params)
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
             swapChainResizeTarget10Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
-                IDXGISwapChain* chain, 
+                IDXGISwapChain* chain,
                 const DXGI_MODE_DESC* pNewTargetParameters
                 ) -> HRESULT
             {
@@ -410,8 +416,8 @@ void IndiciumMainThread(LPVOID Params)
             logger.information("Hooking IDXGISwapChain::Present");
 
             swapChainPresent11Hook.apply(vtable[DXGIHooking::Present], [](
-                IDXGISwapChain* chain, 
-                UINT SyncInterval, 
+                IDXGISwapChain* chain,
+                UINT SyncInterval,
                 UINT Flags
                 ) -> HRESULT
             {
@@ -435,7 +441,7 @@ void IndiciumMainThread(LPVOID Params)
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
             swapChainResizeTarget11Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
-                IDXGISwapChain* chain, 
+                IDXGISwapChain* chain,
                 const DXGI_MODE_DESC* pNewTargetParameters
                 ) -> HRESULT
             {
@@ -471,8 +477,8 @@ void IndiciumMainThread(LPVOID Params)
             logger.information("Hooking IDXGISwapChain::Present");
 
             swapChainPresent12Hook.apply(vtable[DXGIHooking::Present], [](
-                IDXGISwapChain* chain, 
-                UINT SyncInterval, 
+                IDXGISwapChain* chain,
+                UINT SyncInterval,
                 UINT Flags
                 ) -> HRESULT
             {
@@ -496,7 +502,7 @@ void IndiciumMainThread(LPVOID Params)
             logger.information("Hooking IDXGISwapChain::ResizeTarget");
 
             swapChainResizeTarget12Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
-                IDXGISwapChain* chain, 
+                IDXGISwapChain* chain,
                 const DXGI_MODE_DESC* pNewTargetParameters
                 ) -> HRESULT
             {
@@ -545,7 +551,7 @@ void IndiciumMainThread(LPVOID Params)
             logger.information("Game uses DirectInput8");
             HookDInput8(vtable8);
         }
-}
+        }
 #endif
 
     logger.information("Library initialized successfully");
