@@ -162,6 +162,14 @@ void IndiciumMainThread(LPVOID Params)
 
     if (engine->Configuration->getBool("D3D9.enabled", true))
     {
+        /*
+         * The following section is disabled because hooking IDirect3DDevice9Ex functions
+         * should work on "vanilla" D3D9 (like Half-Life 2) equally well while also supporting
+         * both windowed and full-screen mode without modifications. Section will be left here
+         * for experiments and tests.
+         */
+#ifdef D3D9_LEGACY_HOOKING
+
         try
         {
             AutoPtr<Direct3D9Hooking::Direct3D9> d3d(new Direct3D9Hooking::Direct3D9);
@@ -235,8 +243,75 @@ void IndiciumMainThread(LPVOID Params)
             logger.error("Hooking D3D9 failed: %s", pex.displayText());
         }
 
-        try {
+#endif
+
+        try
+        {
             AutoPtr<Direct3D9Hooking::Direct3D9Ex> d3dEx(new Direct3D9Hooking::Direct3D9Ex);
+
+            logger.information("Hooking IDirect3DDevice9Ex::Present");
+
+            present9Hook.apply(d3dEx->vtable()[Direct3D9Hooking::Present], [](
+                LPDIRECT3DDEVICE9 dev,
+                CONST RECT* a1,
+                CONST RECT* a2,
+                HWND a3,
+                CONST RGNDATA* a4
+                ) -> HRESULT
+            {
+                static std::once_flag flag;
+                std::call_once(flag, []()
+                {
+                    Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::Present called");
+
+                    INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion9);
+                });
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PrePresent, dev, a1, a2, a3, a4);
+
+                auto ret = present9Hook.callOrig(dev, a1, a2, a3, a4);
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostPresent, dev, a1, a2, a3, a4);
+
+                return ret;
+            });
+
+            logger.information("Hooking IDirect3DDevice9Ex::Reset");
+
+            reset9Hook.apply(d3dEx->vtable()[Direct3D9Hooking::Reset], [](
+                LPDIRECT3DDEVICE9 dev,
+                D3DPRESENT_PARAMETERS* pp
+                ) -> HRESULT
+            {
+                static std::once_flag flag;
+                std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::Reset called"); });
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreReset, dev, pp);
+
+                auto ret = reset9Hook.callOrig(dev, pp);
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostReset, dev, pp);
+
+                return ret;
+            });
+
+            logger.information("Hooking IDirect3DDevice9Ex::EndScene");
+
+            endScene9Hook.apply(d3dEx->vtable()[Direct3D9Hooking::EndScene], [](
+                LPDIRECT3DDEVICE9 dev
+                ) -> HRESULT
+            {
+                static std::once_flag flag;
+                std::call_once(flag, []() { Logger::get("HookDX9Ex").information("++ IDirect3DDevice9Ex::EndScene called"); });
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreEndScene, dev);
+
+                auto ret = endScene9Hook.callOrig(dev);
+
+                INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostEndScene, dev);
+
+                return ret;
+            });
 
             logger.information("Hooking IDirect3DDevice9Ex::PresentEx");
 
