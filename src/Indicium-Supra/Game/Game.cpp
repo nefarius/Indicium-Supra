@@ -145,18 +145,21 @@ void IndiciumMainThread(LPVOID Params)
     // 
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent10Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget10Hook;
+    static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> swapChainResizeBuffers10Hook;
 
     // 
     // D3D11 Hooks
     // 
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent11Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget11Hook;
+    static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> swapChainResizeBuffers11Hook;
 
     // 
     // D3D12 Hooks
     // 
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent12Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget12Hook;
+    static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> swapChainResizeBuffers12Hook;
 
 #pragma region D3D9
 
@@ -470,6 +473,46 @@ void IndiciumMainThread(LPVOID Params)
 
                 return ret;
             });
+
+            logger.information("Hooking IDXGISwapChain::ResizeBuffers");
+
+            swapChainResizeBuffers10Hook.apply(vtable[DXGIHooking::ResizeBuffers], [](
+                IDXGISwapChain* chain,
+                UINT            BufferCount,
+                UINT            Width,
+                UINT            Height,
+                DXGI_FORMAT     NewFormat,
+                UINT            SwapChainFlags
+                ) -> HRESULT
+            {
+                static std::once_flag flag;
+                std::call_once(flag, []() { Logger::get("HookDX10").information("++ IDXGISwapChain::ResizeBuffers called"); });
+
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PreResizeBuffers, chain, 
+                        BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                }
+
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeBuffers, chain, 
+                        BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                }
+
+                auto ret = swapChainResizeBuffers10Hook.callOrig(chain, 
+                    BufferCount, Width, Height, NewFormat, SwapChainFlags);
+
+                if (deviceVersion == IndiciumDirect3DVersion10) {
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostResizeBuffers, chain, 
+                        BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                }
+
+                if (deviceVersion == IndiciumDirect3DVersion11) {
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeBuffers, chain, 
+                        BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                }
+
+                return ret;
+            });
         }
         catch (Poco::Exception& pex)
         {
@@ -528,6 +571,32 @@ void IndiciumMainThread(LPVOID Params)
                 auto ret = swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeTarget, chain, pNewTargetParameters);
+
+                return ret;
+            });
+
+            logger.information("Hooking IDXGISwapChain::ResizeBuffers");
+
+            swapChainResizeBuffers11Hook.apply(vtable[DXGIHooking::ResizeBuffers], [](
+                IDXGISwapChain* chain,
+                UINT            BufferCount,
+                UINT            Width,
+                UINT            Height,
+                DXGI_FORMAT     NewFormat,
+                UINT            SwapChainFlags
+                ) -> HRESULT
+            {
+                static std::once_flag flag;
+                std::call_once(flag, []() { Logger::get("HookDX11").information("++ IDXGISwapChain::ResizeBuffers called"); });
+
+                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeBuffers, chain, 
+                    BufferCount, Width, Height, NewFormat, SwapChainFlags);
+
+                auto ret = swapChainResizeBuffers11Hook.callOrig(chain, 
+                    BufferCount, Width, Height, NewFormat, SwapChainFlags);
+
+                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeBuffers, chain, 
+                    BufferCount, Width, Height, NewFormat, SwapChainFlags);
 
                 return ret;
             });
@@ -592,6 +661,32 @@ void IndiciumMainThread(LPVOID Params)
 
                 return ret;
             });
+
+            logger.information("Hooking IDXGISwapChain::ResizeBuffers");
+
+            swapChainResizeBuffers12Hook.apply(vtable[DXGIHooking::ResizeBuffers], [](
+                IDXGISwapChain* chain,
+                UINT            BufferCount,
+                UINT            Width,
+                UINT            Height,
+                DXGI_FORMAT     NewFormat,
+                UINT            SwapChainFlags
+                ) -> HRESULT
+            {
+                static std::once_flag flag;
+                std::call_once(flag, []() { Logger::get("HookDX12").information("++ IDXGISwapChain::ResizeBuffers called"); });
+
+                INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PreResizeBuffers, chain, 
+                    BufferCount, Width, Height, NewFormat, SwapChainFlags);
+
+                auto ret = swapChainResizeBuffers12Hook.callOrig(chain, 
+                    BufferCount, Width, Height, NewFormat, SwapChainFlags);
+
+                INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PostResizeBuffers, chain, 
+                    BufferCount, Width, Height, NewFormat, SwapChainFlags);
+
+                return ret;
+            });
         }
         catch (Poco::Exception& pex)
         {
@@ -645,10 +740,13 @@ void IndiciumMainThread(LPVOID Params)
     reset9ExHook.remove();
     swapChainPresent10Hook.remove();
     swapChainResizeTarget10Hook.remove();
+    swapChainResizeBuffers10Hook.remove();
     swapChainPresent11Hook.remove();
     swapChainResizeTarget11Hook.remove();
+    swapChainResizeBuffers11Hook.remove();
     swapChainPresent12Hook.remove();
     swapChainResizeTarget12Hook.remove();
+    swapChainResizeBuffers12Hook.remove();
 
     logger.information("Hooks disabled");
 
