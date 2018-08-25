@@ -99,14 +99,14 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     INDICIUM_D3D10_EVENT_CALLBACKS d3d10;
     INDICIUM_D3D10_EVENT_CALLBACKS_INIT(&d3d10);
     d3d10.EvtIndiciumD3D10PrePresent = EvtIndiciumD3D10Present;
-    d3d10.EvtIndiciumD3D10PreResizeTarget = EvtIndiciumD3D10PreResizeTarget;
-    d3d10.EvtIndiciumD3D10PostResizeTarget = EvtIndiciumD3D10PostResizeTarget;
+    d3d10.EvtIndiciumD3D10PreResizeBuffers = EvtIndiciumD3D10PreResizeBuffers;
+    d3d10.EvtIndiciumD3D10PostResizeBuffers = EvtIndiciumD3D10PostResizeBuffers;
 
     INDICIUM_D3D11_EVENT_CALLBACKS d3d11;
     INDICIUM_D3D11_EVENT_CALLBACKS_INIT(&d3d11);
     d3d11.EvtIndiciumD3D11PrePresent = EvtIndiciumD3D11Present;
-    d3d11.EvtIndiciumD3D11PreResizeTarget = EvtIndiciumD3D11PreResizeTarget;
-    d3d11.EvtIndiciumD3D11PostResizeTarget = EvtIndiciumD3D11PostResizeTarget;
+    d3d11.EvtIndiciumD3D11PreResizeBuffers = EvtIndiciumD3D11PreResizeBuffers;
+    d3d11.EvtIndiciumD3D11PostResizeBuffers = EvtIndiciumD3D11PostResizeBuffers;
 
     INDICIUM_ERROR err;
 
@@ -392,17 +392,25 @@ void EvtIndiciumD3D10Present(
     }
 }
 
-void EvtIndiciumD3D10PreResizeTarget(
-    IDXGISwapChain          *pSwapChain,
-    const DXGI_MODE_DESC    *pNewTargetParameters
+void EvtIndiciumD3D10PreResizeBuffers(
+    IDXGISwapChain  *pSwapChain,
+    UINT            BufferCount,
+    UINT            Width,
+    UINT            Height,
+    DXGI_FORMAT     NewFormat,
+    UINT            SwapChainFlags
 )
 {
     ImGui_ImplDX10_InvalidateDeviceObjects();
 }
 
-void EvtIndiciumD3D10PostResizeTarget(
-    IDXGISwapChain          *pSwapChain,
-    const DXGI_MODE_DESC    *pNewTargetParameters
+void EvtIndiciumD3D10PostResizeBuffers(
+    IDXGISwapChain  *pSwapChain,
+    UINT            BufferCount,
+    UINT            Width,
+    UINT            Height,
+    DXGI_FORMAT     NewFormat,
+    UINT            SwapChainFlags
 )
 {
     ImGui_ImplDX10_CreateDeviceObjects();
@@ -465,17 +473,25 @@ void EvtIndiciumD3D11Present(
     }
 }
 
-void EvtIndiciumD3D11PreResizeTarget(
-    IDXGISwapChain          *pSwapChain,
-    const DXGI_MODE_DESC    *pNewTargetParameters
+void EvtIndiciumD3D11PreResizeBuffers(
+    IDXGISwapChain  *pSwapChain,
+    UINT            BufferCount,
+    UINT            Width,
+    UINT            Height,
+    DXGI_FORMAT     NewFormat,
+    UINT            SwapChainFlags
 )
 {
     ImGui_ImplDX11_InvalidateDeviceObjects();
 }
 
-void EvtIndiciumD3D11PostResizeTarget(
-    IDXGISwapChain          *pSwapChain,
-    const DXGI_MODE_DESC    *pNewTargetParameters
+void EvtIndiciumD3D11PostResizeBuffers(
+    IDXGISwapChain  *pSwapChain,
+    UINT            BufferCount,
+    UINT            Width,
+    UINT            Height,
+    DXGI_FORMAT     NewFormat,
+    UINT            SwapChainFlags
 )
 {
     ImGui_ImplDX11_CreateDeviceObjects();
