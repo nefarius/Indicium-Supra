@@ -90,19 +90,23 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     INDICIUM_D3D9_EVENT_CALLBACKS d3d9;
     INDICIUM_D3D9_EVENT_CALLBACKS_INIT(&d3d9);
     d3d9.EvtIndiciumD3D9PrePresent = EvtIndiciumD3D9Present;
-    d3d9.EvtIndiciumD3D9PreReset = EvtIndiciumD3D9Reset;
+    d3d9.EvtIndiciumD3D9PreReset = EvtIndiciumD3D9PreReset;
+    d3d9.EvtIndiciumD3D9PostReset = EvtIndiciumD3D9PostReset;
     d3d9.EvtIndiciumD3D9PrePresentEx = EvtIndiciumD3D9PresentEx;
-    d3d9.EvtIndiciumD3D9PreResetEx = EvtIndiciumD3D9ResetEx;
+    d3d9.EvtIndiciumD3D9PreResetEx = EvtIndiciumD3D9PreResetEx;
+    d3d9.EvtIndiciumD3D9PostResetEx = EvtIndiciumD3D9PostResetEx;
 
     INDICIUM_D3D10_EVENT_CALLBACKS d3d10;
     INDICIUM_D3D10_EVENT_CALLBACKS_INIT(&d3d10);
     d3d10.EvtIndiciumD3D10PrePresent = EvtIndiciumD3D10Present;
-    d3d10.EvtIndiciumD3D10PreResizeTarget = EvtIndiciumD3D10ResizeTarget;
+    d3d10.EvtIndiciumD3D10PreResizeTarget = EvtIndiciumD3D10PreResizeTarget;
+    d3d10.EvtIndiciumD3D10PostResizeTarget = EvtIndiciumD3D10PostResizeTarget;
 
     INDICIUM_D3D11_EVENT_CALLBACKS d3d11;
     INDICIUM_D3D11_EVENT_CALLBACKS_INIT(&d3d11);
     d3d11.EvtIndiciumD3D11PrePresent = EvtIndiciumD3D11Present;
-    d3d11.EvtIndiciumD3D11PreResizeTarget = EvtIndiciumD3D11ResizeTarget;
+    d3d11.EvtIndiciumD3D11PreResizeTarget = EvtIndiciumD3D11PreResizeTarget;
+    d3d11.EvtIndiciumD3D11PostResizeTarget = EvtIndiciumD3D11PostResizeTarget;
 
     INDICIUM_ERROR err;
 
@@ -264,15 +268,19 @@ void EvtIndiciumD3D9Present(
     }
 }
 
-void EvtIndiciumD3D9Reset(
+void EvtIndiciumD3D9PreReset(
     LPDIRECT3DDEVICE9       pDevice,
     D3DPRESENT_PARAMETERS   *pPresentationParameters
 )
 {
-    //
-    // TODO: more checks and testing!
-    // 
     ImGui_ImplDX9_InvalidateDeviceObjects();
+}
+
+void EvtIndiciumD3D9PostReset(
+    LPDIRECT3DDEVICE9       pDevice,
+    D3DPRESENT_PARAMETERS   *pPresentationParameters
+)
+{
     ImGui_ImplDX9_CreateDeviceObjects();
 }
 
@@ -318,16 +326,21 @@ void EvtIndiciumD3D9PresentEx(
     }
 }
 
-void EvtIndiciumD3D9ResetEx(
+void EvtIndiciumD3D9PreResetEx(
     LPDIRECT3DDEVICE9EX     pDevice,
     D3DPRESENT_PARAMETERS   *pPresentationParameters,
     D3DDISPLAYMODEEX        *pFullscreenDisplayMode
 )
 {
-    //
-    // TODO: more checks and testing!
-    // 
     ImGui_ImplDX9_InvalidateDeviceObjects();
+}
+
+void EvtIndiciumD3D9PostResetEx(
+    LPDIRECT3DDEVICE9EX     pDevice,
+    D3DPRESENT_PARAMETERS   *pPresentationParameters,
+    D3DDISPLAYMODEEX        *pFullscreenDisplayMode
+)
+{
     ImGui_ImplDX9_CreateDeviceObjects();
 }
 
@@ -379,15 +392,19 @@ void EvtIndiciumD3D10Present(
     }
 }
 
-void EvtIndiciumD3D10ResizeTarget(
+void EvtIndiciumD3D10PreResizeTarget(
     IDXGISwapChain          *pSwapChain,
     const DXGI_MODE_DESC    *pNewTargetParameters
 )
 {
-    //
-    // TODO: more checks and testing!
-    // 
     ImGui_ImplDX10_InvalidateDeviceObjects();
+}
+
+void EvtIndiciumD3D10PostResizeTarget(
+    IDXGISwapChain          *pSwapChain,
+    const DXGI_MODE_DESC    *pNewTargetParameters
+)
+{
     ImGui_ImplDX10_CreateDeviceObjects();
 }
 
@@ -448,15 +465,19 @@ void EvtIndiciumD3D11Present(
     }
 }
 
-void EvtIndiciumD3D11ResizeTarget(
+void EvtIndiciumD3D11PreResizeTarget(
     IDXGISwapChain          *pSwapChain,
     const DXGI_MODE_DESC    *pNewTargetParameters
 )
 {
-    //
-    // TODO: more checks and testing!
-    // 
     ImGui_ImplDX11_InvalidateDeviceObjects();
+}
+
+void EvtIndiciumD3D11PostResizeTarget(
+    IDXGISwapChain          *pSwapChain,
+    const DXGI_MODE_DESC    *pNewTargetParameters
+)
+{
     ImGui_ImplDX11_CreateDeviceObjects();
 }
 
