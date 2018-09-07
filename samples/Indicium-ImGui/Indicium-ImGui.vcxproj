@@ -22,7 +22,7 @@
     <ProjectGuid>{FC86B49A-3A73-4D82-81BA-D72B54C9132D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>IndiciumImGui</RootNamespace>
-	<VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
+    <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
     <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(WindowsTargetPlatformVersion)'==''">
@@ -186,6 +186,7 @@
     <ClInclude Include="imgui\stb_rect_pack.h" />
     <ClInclude Include="imgui\stb_textedit.h" />
     <ClInclude Include="imgui\stb_truetype.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Indicium-ImGui.ini" />
@@ -197,6 +198,9 @@
     <ProjectReference Include="..\..\src\Indicium-Supra\Indicium-Supra.vcxproj">
       <Project>{db383579-da7f-48c0-ab1f-7c4c93544e2c}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Indicium-ImGui.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

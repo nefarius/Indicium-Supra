@@ -69,7 +69,6 @@
     <ClInclude Include="Utils\Misc.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="Game\Hook\Window.h">
       <Filter>Game\Hook</Filter>
     </ClInclude>
@@ -119,6 +118,7 @@
       <Filter>Shared\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />
