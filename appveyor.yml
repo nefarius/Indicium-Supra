@@ -1,5 +1,6 @@
 version: 3.2.{build}.0
 image: Visual Studio 2017
+cache: c:\tools\vcpkg\installed\
 install:
 - cmd: git submodule -q update --init
 - cmd: vcpkg install poco:x64-windows-static
