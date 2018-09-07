@@ -22,6 +22,8 @@
     <ProjectGuid>{FC86B49A-3A73-4D82-81BA-D72B54C9132D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>IndiciumImGui</RootNamespace>
+	<VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
+    <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(WindowsTargetPlatformVersion)'==''">
     <!-- Latest Target Version property -->
@@ -187,7 +189,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Indicium-ImGui.ini" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\3rd\minhook\build\VC15\libMinHook.vcxproj">
@@ -198,13 +199,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets" Condition="Exists('..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\nefarius.poco-basic-windows-v150.1.8.1\build\native\nefarius.poco-basic-windows-v150.targets'))" />
-  </Target>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

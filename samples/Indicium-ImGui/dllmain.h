@@ -77,3 +77,39 @@ EVT_INDICIUM_D3D10_RESIZE_BUFFERS EvtIndiciumD3D10PostResizeBuffers;
 EVT_INDICIUM_D3D11_PRESENT EvtIndiciumD3D11Present;
 EVT_INDICIUM_D3D11_RESIZE_BUFFERS EvtIndiciumD3D11PreResizeBuffers;
 EVT_INDICIUM_D3D11_RESIZE_BUFFERS EvtIndiciumD3D11PostResizeBuffers;
+
+
+/**
+ * \fn	TOGGLE_STATE(int key, bool& toggle)
+ *
+ * \brief	Overly complicated key toggle helper
+ *
+ * \author	Benjamin "Nefarius" Höglinger-Stelzer
+ * \date	7/09/2018
+ *
+ * \param 		  	key   	The key.
+ * \param [in,out]	toggle	The value to toggle.
+ */
+VOID
+FORCEINLINE
+TOGGLE_STATE(int key, bool& toggle)
+{
+	static auto pressedPast = false, pressedNow = false;
+
+	if (GetAsyncKeyState(key) & 0x8000)
+	{
+		pressedNow = true;
+	}
+	else
+	{
+		pressedPast = false;
+		pressedNow = false;
+	}
+
+	if (!pressedPast && pressedNow)
+	{
+		toggle = !toggle;
+
+		pressedPast = true;
+	}
+}

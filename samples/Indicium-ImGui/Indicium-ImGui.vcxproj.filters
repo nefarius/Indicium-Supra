@@ -73,7 +73,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Indicium-ImGui.ini" />
   </ItemGroup>
 </Project>
