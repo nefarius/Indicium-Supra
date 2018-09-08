@@ -22,10 +22,15 @@ API-Hooking and rendering framework for DirectX-based games.
 
 - Visual Studio **2017** ([Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15) is just fine)
 - [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
-- [POCO C++ libraries](https://pocoproject.org/) (referenced by NuGet)
+- [.NET Core SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/2.1) (or greater, required for building only)
+- [Vcpkg](https://github.com/Microsoft/vcpkg) (used to acquire [POCO C++ libraries](https://pocoproject.org/))
+  - [Follow the Quick Start](https://github.com/Microsoft/vcpkg#quick-start)
+  - `.\vcpkg install sfml:x64-windows-static`
+  - `.\vcpkg install sfml:x86-windows-static`
+  - `.\vcpkg.exe integrate install`
 - [MinHook](https://github.com/TsudaKageyu/minhook) (referenced as submodule)
 
- Building should be pretty straight-forward since the POCO libraries get fetched pre-compiled via NuGet on first build automatically. You have multiple choices for getting things done.
+ Building should be pretty straight-forward since the POCO libraries get installed via Vcpkg and MinHook is built within the solution. You have multiple choices for getting things done.
 
 ### Visual Studio
 
