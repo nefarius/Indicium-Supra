@@ -25,8 +25,8 @@ API-Hooking and rendering framework for DirectX-based games.
 - [.NET Core SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/2.1) (or greater, required for building only)
 - [Vcpkg](https://github.com/Microsoft/vcpkg) (used to acquire [POCO C++ libraries](https://pocoproject.org/))
   - [Follow the Quick Start](https://github.com/Microsoft/vcpkg#quick-start)
-  - `.\vcpkg install sfml:x64-windows-static`
-  - `.\vcpkg install sfml:x86-windows-static`
+  - `.\vcpkg install poco:x64-windows-static`
+  - `.\vcpkg install poco:x86-windows-static`
   - `.\vcpkg.exe integrate install`
 - [MinHook](https://github.com/TsudaKageyu/minhook) (referenced as submodule)
 
