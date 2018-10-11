@@ -123,4 +123,7 @@
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>

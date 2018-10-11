@@ -1,5 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="VcpkgTriplets">
+    <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
+    <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
+  </PropertyGroup>
+  <Import Project="..\..\packages\Vcpkg.Nuget.1.4.0\build\Vcpkg.Nuget.props" Condition="Exists('..\..\packages\Vcpkg.Nuget.1.4.0\build\Vcpkg.Nuget.props')" />
+  <ItemGroup Label="VcpkgPackages">
+    <VcpkgPackage Include="poco" />
+  </ItemGroup>
+  
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -190,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Indicium-ImGui.ini" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\3rd\minhook\build\VC15\libMinHook.vcxproj">
@@ -204,4 +214,10 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\Vcpkg.Nuget.1.4.0\build\Vcpkg.Nuget.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Vcpkg.Nuget.1.4.0\build\Vcpkg.Nuget.props'))" />
+  </Target>
 </Project>
