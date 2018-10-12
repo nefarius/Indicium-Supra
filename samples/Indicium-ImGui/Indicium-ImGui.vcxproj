@@ -4,11 +4,13 @@
     <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
     <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>
-  <Import Project="..\..\packages\Vcpkg.Nuget.1.4.0\build\Vcpkg.Nuget.props" Condition="Exists('..\..\packages\Vcpkg.Nuget.1.4.0\build\Vcpkg.Nuget.props')" />
+  <PropertyGroup>
+    <VcpkgTaskTimeout>1200000</VcpkgTaskTimeout>
+  </PropertyGroup>
+  <Import Project="..\..\packages\Vcpkg.Nuget.1.5.0\build\Vcpkg.Nuget.props" Condition="Exists('..\..\packages\Vcpkg.Nuget.1.5.0\build\Vcpkg.Nuget.props')" />
   <ItemGroup Label="VcpkgPackages">
     <VcpkgPackage Include="poco" />
   </ItemGroup>
-  
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -31,8 +33,6 @@
     <ProjectGuid>{FC86B49A-3A73-4D82-81BA-D72B54C9132D}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>IndiciumImGui</RootNamespace>
-    <VcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows-static</VcpkgTriplet>
-    <VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(WindowsTargetPlatformVersion)'==''">
     <!-- Latest Target Version property -->
@@ -218,6 +218,6 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Vcpkg.Nuget.1.4.0\build\Vcpkg.Nuget.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Vcpkg.Nuget.1.4.0\build\Vcpkg.Nuget.props'))" />
+    <Error Condition="!Exists('..\..\packages\Vcpkg.Nuget.1.5.0\build\Vcpkg.Nuget.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Vcpkg.Nuget.1.5.0\build\Vcpkg.Nuget.props'))" />
   </Target>
 </Project>
