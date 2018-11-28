@@ -3,6 +3,7 @@ using System.Linq;
 using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.MSBuild;
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
@@ -13,8 +14,12 @@ class Build : NukeBuild
 {
     public static int Main () => Execute<Build>(x => x.Compile);
 
-    [Solution] readonly Solution Solution;
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+    readonly string Configuration = IsLocalBuild ? "Debug" : "Release";
+
+    [Solution("Indicium-Supra.sln")] readonly Solution Solution;
     [GitRepository] readonly GitRepository GitRepository;
+    [GitVersion] readonly GitVersion GitVersion;
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
@@ -31,7 +36,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             MSBuild(s => s
-                .SetTargetPath(SolutionFile)
+                .SetTargetPath(Solution)
                 .SetTargets("Restore"));
         });
 
@@ -40,7 +45,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             MSBuild(s => s
-                .SetTargetPath(SolutionFile)
+                .SetTargetPath(Solution)
                 .SetTargets("Rebuild")
                 .SetConfiguration(Configuration)
                 .SetMaxCpuCount(Environment.ProcessorCount)
@@ -48,23 +53,11 @@ class Build : NukeBuild
                 .SetTargetPlatform(MSBuildTargetPlatform.x64));
 
             MSBuild(s => s
-                .SetTargetPath(SolutionFile)
+                .SetTargetPath(Solution)
                 .SetTargets("Rebuild")
                 .SetConfiguration(Configuration)
                 .SetMaxCpuCount(Environment.ProcessorCount)
                 .SetNodeReuse(IsLocalBuild)
                 .SetTargetPlatform(MSBuildTargetPlatform.Win32));
-        });
-
-    private Target Pack => _ => _
-        .DependsOn(Compile)
-        .Executes(() =>
-        {
-            MSBuild(s => s
-                .SetTargetPath(SolutionFile)
-                .SetTargets("Restore", "Pack")
-                .SetPackageOutputPath(ArtifactsDirectory)
-                .SetConfiguration(Configuration)
-                .EnableIncludeSymbols());
         });
 }
