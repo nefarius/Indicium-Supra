@@ -267,12 +267,12 @@ public:
         transaction_commit();
     }
 
-    retn callOrig(args ... p)
+    retn call_orig(args ... p)
     {
         return type(orig_)(p...);
     }
 
-    bool isApplied() const
+    bool is_applied() const
     {
         return is_applied_;
     }

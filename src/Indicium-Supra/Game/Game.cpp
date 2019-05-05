@@ -255,7 +255,7 @@ void IndiciumMainThread(LPVOID Params)
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PrePresent, dev, a1, a2, a3, a4);
 
-                auto ret = present9Hook.callOrig(dev, a1, a2, a3, a4);
+                auto ret = present9Hook.call_orig(dev, a1, a2, a3, a4);
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostPresent, dev, a1, a2, a3, a4);
 
@@ -274,7 +274,7 @@ void IndiciumMainThread(LPVOID Params)
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreReset, dev, pp);
 
-                auto ret = reset9Hook.callOrig(dev, pp);
+                auto ret = reset9Hook.call_orig(dev, pp);
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostReset, dev, pp);
 
@@ -292,7 +292,7 @@ void IndiciumMainThread(LPVOID Params)
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreEndScene, dev);
 
-                auto ret = endScene9Hook.callOrig(dev);
+                auto ret = endScene9Hook.call_orig(dev);
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostEndScene, dev);
 
@@ -320,7 +320,7 @@ void IndiciumMainThread(LPVOID Params)
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PrePresentEx, dev, a1, a2, a3, a4, a5);
 
-                auto ret = present9ExHook.callOrig(dev, a1, a2, a3, a4, a5);
+                auto ret = present9ExHook.call_orig(dev, a1, a2, a3, a4, a5);
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostPresentEx, dev, a1, a2, a3, a4, a5);
 
@@ -340,7 +340,7 @@ void IndiciumMainThread(LPVOID Params)
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreResetEx, dev, pp, ppp);
 
-                auto ret = reset9ExHook.callOrig(dev, pp, ppp);
+                auto ret = reset9ExHook.call_orig(dev, pp, ppp);
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PostResetEx, dev, pp, ppp);
 
@@ -413,7 +413,7 @@ void IndiciumMainThread(LPVOID Params)
                     INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PrePresent, chain, SyncInterval, Flags);
                 }
 
-                auto ret = swapChainPresent10Hook.callOrig(chain, SyncInterval, Flags);
+                auto ret = swapChainPresent10Hook.call_orig(chain, SyncInterval, Flags);
 
                 if (deviceVersion == IndiciumDirect3DVersion10) {
                     INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostPresent, chain, SyncInterval, Flags);
@@ -444,7 +444,7 @@ void IndiciumMainThread(LPVOID Params)
                     INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
                 }
 
-                auto ret = swapChainResizeTarget10Hook.callOrig(chain, pNewTargetParameters);
+                auto ret = swapChainResizeTarget10Hook.call_orig(chain, pNewTargetParameters);
 
                 if (deviceVersion == IndiciumDirect3DVersion10) {
                     INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostResizeTarget, chain, pNewTargetParameters);
@@ -481,7 +481,7 @@ void IndiciumMainThread(LPVOID Params)
                         BufferCount, Width, Height, NewFormat, SwapChainFlags);
                 }
 
-                auto ret = swapChainResizeBuffers10Hook.callOrig(chain, 
+                auto ret = swapChainResizeBuffers10Hook.call_orig(chain, 
                     BufferCount, Width, Height, NewFormat, SwapChainFlags);
 
                 if (deviceVersion == IndiciumDirect3DVersion10) {
@@ -532,7 +532,7 @@ void IndiciumMainThread(LPVOID Params)
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PrePresent, chain, SyncInterval, Flags);
 
-                auto ret = swapChainPresent11Hook.callOrig(chain, SyncInterval, Flags);
+                auto ret = swapChainPresent11Hook.call_orig(chain, SyncInterval, Flags);
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostPresent, chain, SyncInterval, Flags);
 
@@ -551,7 +551,7 @@ void IndiciumMainThread(LPVOID Params)
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
 
-                auto ret = swapChainResizeTarget11Hook.callOrig(chain, pNewTargetParameters);
+                auto ret = swapChainResizeTarget11Hook.call_orig(chain, pNewTargetParameters);
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeTarget, chain, pNewTargetParameters);
 
@@ -575,7 +575,7 @@ void IndiciumMainThread(LPVOID Params)
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeBuffers, chain, 
                     BufferCount, Width, Height, NewFormat, SwapChainFlags);
 
-                auto ret = swapChainResizeBuffers11Hook.callOrig(chain, 
+                auto ret = swapChainResizeBuffers11Hook.call_orig(chain, 
                     BufferCount, Width, Height, NewFormat, SwapChainFlags);
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeBuffers, chain, 
@@ -619,7 +619,7 @@ void IndiciumMainThread(LPVOID Params)
 
                 INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PrePresent, chain, SyncInterval, Flags);
 
-                auto ret = swapChainPresent12Hook.callOrig(chain, SyncInterval, Flags);
+                auto ret = swapChainPresent12Hook.call_orig(chain, SyncInterval, Flags);
 
                 INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PostPresent, chain, SyncInterval, Flags);
 
@@ -638,7 +638,7 @@ void IndiciumMainThread(LPVOID Params)
 
                 INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PreResizeTarget, chain, pNewTargetParameters);
 
-                auto ret = swapChainResizeTarget12Hook.callOrig(chain, pNewTargetParameters);
+                auto ret = swapChainResizeTarget12Hook.call_orig(chain, pNewTargetParameters);
 
                 INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PostResizeTarget, chain, pNewTargetParameters);
 
@@ -662,7 +662,7 @@ void IndiciumMainThread(LPVOID Params)
                 INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PreResizeBuffers, chain, 
                     BufferCount, Width, Height, NewFormat, SwapChainFlags);
 
-                auto ret = swapChainResizeBuffers12Hook.callOrig(chain, 
+                auto ret = swapChainResizeBuffers12Hook.call_orig(chain, 
                     BufferCount, Width, Height, NewFormat, SwapChainFlags);
 
                 INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PostResizeBuffers, chain, 
