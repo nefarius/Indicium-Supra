@@ -34,13 +34,13 @@ using Poco::Path;
 
 INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void)
 {
-    auto engine = static_cast<PINDICIUM_ENGINE>(malloc(sizeof(INDICIUM_ENGINE)));
+    const auto engine = static_cast<PINDICIUM_ENGINE>(malloc(sizeof(INDICIUM_ENGINE)));
 
     if (!engine) {
         return nullptr;
     }
 
-    RtlZeroMemory(engine, sizeof(INDICIUM_ENGINE));
+    ZeroMemory(engine, sizeof(INDICIUM_ENGINE));
 
     return engine;
 }
@@ -76,7 +76,12 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     // Set up logging
     // 
     AutoPtr<FileChannel> pFileChannel(new FileChannel);
-    pFileChannel->setProperty("path", Path::expand(Engine->Configuration->getString("global.logFile", "%TEMP%\\Indicium-Supra.log")));
+    pFileChannel->setProperty(
+        "path", 
+        Path::expand(Engine->Configuration->getString(
+            "global.logFile", 
+            "%TEMP%\\Indicium-Supra.log")));
+
     AutoPtr<PatternFormatter> pPF(new PatternFormatter);
     pPF->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i %s [%p]: %t");
     AutoPtr<FormattingChannel> pFC(new FormattingChannel(pPF, pFileChannel));
@@ -90,7 +95,14 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     //
     // Kickstart hooking the rendering pipeline
     // 
-    Engine->EngineThread = CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(IndiciumMainThread), Engine, 0, nullptr);
+    Engine->EngineThread = CreateThread(
+        nullptr, 
+        0, 
+        reinterpret_cast<LPTHREAD_START_ROUTINE>(IndiciumMainThread), 
+        Engine,
+        0, 
+        nullptr
+    );
 
     if (!Engine->EngineThread) {
         logger.fatal("Couldn't create main thread, library unusable");
@@ -108,12 +120,20 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
         return;
     }
 
+    auto& logger = Logger::get(__func__);
+
+    logger.information("Indicium engine shutdown requested, attempting to terminate main thread");
+
     SetEvent(Engine->EngineCancellationEvent);
     WaitForSingleObject(Engine->EngineCancellationCompletedEvent, 1000);
+
+    logger.information("Hooks removed, notifying caller");
 
     if (EvtIndiciumGameUnhooked) {
         EvtIndiciumGameUnhooked();
     }
+
+    logger.information("Engine shutdown complete");
 }
 
 INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)
@@ -121,6 +141,10 @@ INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)
     if (!Engine) {
         return;
     }
+
+    CloseHandle(Engine->EngineCancellationEvent);
+    CloseHandle(Engine->EngineCancellationCompletedEvent);
+    CloseHandle(Engine->EngineThread);
 
     free(Engine);
 }

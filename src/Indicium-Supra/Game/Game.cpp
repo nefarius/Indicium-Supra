@@ -101,7 +101,7 @@ void HookDInput8(UINTX* vtable8);
  *
  * \param   Params  Options for controlling the operation.
  */
-void IndiciumMainThread(LPVOID Params)
+DWORD WINAPI IndiciumMainThread(LPVOID Params)
 {
     static PINDICIUM_ENGINE engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
     auto& logger = Logger::get(__func__);
@@ -744,6 +744,8 @@ void IndiciumMainThread(LPVOID Params)
     // Inform caller that it's safe to continue
     // 
     SetEvent(engine->EngineCancellationCompletedEvent);
+
+    return 0;
 }
 
 #ifdef HOOK_DINPUT8

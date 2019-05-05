@@ -24,7 +24,4 @@ SOFTWARE.
 
 #pragma once
 
-void IndiciumMainThread(LPVOID Params);
-
-
-
+DWORD WINAPI IndiciumMainThread(LPVOID Params);
