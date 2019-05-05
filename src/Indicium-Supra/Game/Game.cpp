@@ -716,20 +716,27 @@ void IndiciumMainThread(LPVOID Params)
 
     logger.information("Shutting down hooks...");
 
-    present9Hook.remove();
-    reset9Hook.remove();
-    endScene9Hook.remove();
-    present9ExHook.remove();
-    reset9ExHook.remove();
-    swapChainPresent10Hook.remove();
-    swapChainResizeTarget10Hook.remove();
-    swapChainResizeBuffers10Hook.remove();
-    swapChainPresent11Hook.remove();
-    swapChainResizeTarget11Hook.remove();
-    swapChainResizeBuffers11Hook.remove();
-    swapChainPresent12Hook.remove();
-    swapChainResizeTarget12Hook.remove();
-    swapChainResizeBuffers12Hook.remove();
+    try 
+    {
+        present9Hook.remove();
+        reset9Hook.remove();
+        endScene9Hook.remove();
+        present9ExHook.remove();
+        reset9ExHook.remove();
+        swapChainPresent10Hook.remove();
+        swapChainResizeTarget10Hook.remove();
+        swapChainResizeBuffers10Hook.remove();
+        swapChainPresent11Hook.remove();
+        swapChainResizeTarget11Hook.remove();
+        swapChainResizeBuffers11Hook.remove();
+        swapChainPresent12Hook.remove();
+        swapChainResizeTarget12Hook.remove();
+        swapChainResizeBuffers12Hook.remove();
+    }
+    catch (Poco::Exception& pex)
+    {
+        logger.error("Unhooking failed: %s", pex.displayText());
+    }
 
     logger.information("Hooks disabled");
 

@@ -55,79 +55,225 @@ class Hook
 {
     typedef typename convention<cc, retn, args...>::type type;
 
-    size_t _orig;
-    type _detour;
+    size_t orig_;
+    type detour_;
 
-    bool _isApplied;
+    bool is_applied_;
+    bool has_open_transaction_;
+
+    void transaction_begin()
+    {
+        const auto result = DetourTransactionBegin();
+
+        if (result != NO_ERROR)
+        {
+            if (result == ERROR_INVALID_OPERATION)
+            {
+                throw Poco::ApplicationException(
+                    "A pending transaction already exists",
+                    result
+                );
+            }
+
+            throw Poco::ApplicationException("Unknown error", result);
+        }
+
+        has_open_transaction_ = true;
+    }
+
+    void transaction_commit()
+    {
+        const auto result = DetourTransactionCommit();
+
+        if (result != NO_ERROR)
+        {
+            switch (result)
+            {
+            case ERROR_INVALID_DATA:
+                throw Poco::ApplicationException(
+                    "Target function was changed by third party between steps of the transaction",
+                    result
+                );
+
+            case ERROR_INVALID_OPERATION:
+                throw Poco::ApplicationException(
+                    "No pending transaction exists",
+                    result
+                );
+
+            case ERROR_INVALID_BLOCK:
+                throw Poco::ApplicationException(
+                    "The function referenced is too small to be detoured",
+                    result
+                );
+
+            case ERROR_INVALID_HANDLE:
+                throw Poco::ApplicationException(
+                    "The ppPointer parameter is null or points to a null pointer",
+                    result
+                );
+
+            case ERROR_NOT_ENOUGH_MEMORY:
+                throw Poco::ApplicationException(
+                    "Not enough memory exists to complete the operation",
+                    result
+                );
+
+            default:
+                throw Poco::ApplicationException(
+                    "Unknown error",
+                    result
+                );
+            }
+        }
+
+        has_open_transaction_ = false;
+    }
+
+    static void update_thread(HANDLE hThread)
+    {
+        const auto result = DetourUpdateThread(hThread);
+
+        if (result != NO_ERROR)
+        {
+            if (result == ERROR_NOT_ENOUGH_MEMORY)
+            {
+                throw Poco::ApplicationException(
+                    "Not enough memory to record identity of thread",
+                    result
+                );
+            }
+
+            throw Poco::ApplicationException(
+                "Unknown error",
+                result
+            );
+        }
+    }
 
 public:
-    Hook() : _orig(0), _detour(0), _isApplied(false)
+    Hook() : orig_(0), detour_(0), is_applied_(false), has_open_transaction_(false)
     {
     }
 
-    ~Hook()
+    ~Hook() noexcept(false)
     {
+        if (has_open_transaction_)
+        {
+            const auto result = DetourTransactionAbort();
+
+            if (result != NO_ERROR)
+            {
+                if (result == ERROR_INVALID_OPERATION)
+                {
+                    throw Poco::ApplicationException(
+                        "No pending transaction exists",
+                        result
+                    );
+                }
+                throw Poco::ApplicationException(
+                    "Unknown error",
+                    result
+                );
+            }
+        }
+
         remove();
     }
 
     template <typename T>
     void apply(T pFunc, type detour)
     {
-        _detour = detour;
-        _orig = static_cast<size_t>(pFunc);
+        detour_ = detour;
+        orig_ = static_cast<size_t>(pFunc);
 
-        DetourTransactionBegin();
-        DetourUpdateThread(GetCurrentThread());
-        const auto result = DetourAttach(reinterpret_cast<void **>(&_orig), reinterpret_cast<void *>(_detour));
-        DetourTransactionCommit();
+        transaction_begin();
+        update_thread(GetCurrentThread());
+        const auto result = DetourAttach(reinterpret_cast<void **>(&orig_), reinterpret_cast<void *>(detour_));
 
         if (result != NO_ERROR)
         {
             switch (result)
             {
             case ERROR_INVALID_BLOCK:
-                throw Poco::ApplicationException("The function referenced is too small to be detoured.", result);
+                throw Poco::ApplicationException(
+                    "The function referenced is too small to be detoured",
+                    result
+                );
 
             case ERROR_INVALID_HANDLE:
-                throw Poco::ApplicationException("The ppPointer parameter is null or points to a null pointer.", result);
+                throw Poco::ApplicationException(
+                    "The ppPointer parameter is null or points to a null pointer",
+                    result
+                );
 
             case ERROR_INVALID_OPERATION:
-                throw Poco::ApplicationException("No pending transaction exists.", result);
+                throw Poco::ApplicationException(
+                    "No pending transaction exists",
+                    result
+                );
 
             case ERROR_NOT_ENOUGH_MEMORY:
-                throw Poco::ApplicationException("Not enough memory exists to complete the operation.", result);
+                throw Poco::ApplicationException(
+                    "Not enough memory exists to complete the operation",
+                    result
+                );
+
+            default:
+                throw Poco::ApplicationException(
+                    "Unknown error",
+                    result
+                );
+            }
+        }
+
+        transaction_commit();
+
+        is_applied_ = true;
+    }
+
+    void remove()
+    {
+        if (!is_applied_)
+            return;
+
+        is_applied_ = false;
+
+        transaction_begin();
+        update_thread(GetCurrentThread());
+        const auto result = DetourDetach(reinterpret_cast<void **>(&orig_), reinterpret_cast<void *>(detour_));
+
+        if (result != NO_ERROR)
+        {
+            switch (result)
+            {
+            case ERROR_INVALID_BLOCK:
+                throw Poco::ApplicationException("The function to be detached was too small to be detoured", result);
+
+            case ERROR_INVALID_HANDLE:
+                throw Poco::ApplicationException("The ppPointer parameter is null or points to a null pointer", result);
+
+            case ERROR_INVALID_OPERATION:
+                throw Poco::ApplicationException("No pending transaction exists", result);
+
+            case ERROR_NOT_ENOUGH_MEMORY:
+                throw Poco::ApplicationException("Not enough memory exists to complete the operation", result);
 
             default:
                 throw Poco::ApplicationException("Unknown error", result);
             }
         }
 
-        _isApplied = true;
-    }
-
-    bool remove()
-    {
-        if (!_isApplied)
-            return false;
-
-        _isApplied = false;
-
-        DetourTransactionBegin();
-        DetourUpdateThread(GetCurrentThread());
-        const auto ret = DetourDetach(reinterpret_cast<void **>(&_orig), reinterpret_cast<void *>(_detour));
-        DetourTransactionCommit();
-
-        return ret == NO_ERROR;
+        transaction_commit();
     }
 
     retn callOrig(args ... p)
     {
-        return type(_orig)(p...);
+        return type(orig_)(p...);
     }
 
     bool isApplied() const
     {
-        return _isApplied;
+        return is_applied_;
     }
 };
-
