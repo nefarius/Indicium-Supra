@@ -63,13 +63,23 @@ typedef struct _INDICIUM_D3D10_EVENT_CALLBACKS
 
 } INDICIUM_D3D10_EVENT_CALLBACKS, *PINDICIUM_D3D10_EVENT_CALLBACKS;
 
-VOID
-FORCEINLINE
-INDICIUM_D3D10_EVENT_CALLBACKS_INIT(
+/**
+ * \fn  VOID FORCEINLINE INDICIUM_D3D10_EVENT_CALLBACKS_INIT( _Out_ PINDICIUM_D3D10_EVENT_CALLBACKS Callbacks )
+ *
+ * \brief   The Direct3D 10 event callback collection to initialize.
+ *
+ * \author  Benjamin Höglinger-Stelzer
+ * \date    06.05.2019
+ *
+ * \param   Callbacks   The callback collection.
+ *
+ * \returns Nothing.
+ */
+VOID FORCEINLINE INDICIUM_D3D10_EVENT_CALLBACKS_INIT(
     _Out_ PINDICIUM_D3D10_EVENT_CALLBACKS Callbacks
 )
 {
-    RtlZeroMemory(Callbacks, sizeof(INDICIUM_D3D10_EVENT_CALLBACKS));
+    ZeroMemory(Callbacks, sizeof(INDICIUM_D3D10_EVENT_CALLBACKS));
 }
 
 #endif // IndiciumDirect3D10_h__
