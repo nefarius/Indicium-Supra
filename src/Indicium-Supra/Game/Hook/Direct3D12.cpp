@@ -122,11 +122,11 @@ Direct3D12Hooking::Direct3D12::Direct3D12() : pd3dDevice(nullptr), pQueue(nullpt
     }
 }
 
-std::vector<UINTX> Direct3D12Hooking::Direct3D12::vtable() const
+std::vector<size_t> Direct3D12Hooking::Direct3D12::vtable() const
 {
-    UINTX vtbl[DXGIHooking::DXGI::SwapChainVTableElements];
-    memcpy(vtbl, *reinterpret_cast<UINTX **>(pSwapChain), DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
-    return std::vector<UINTX>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
+    size_t vtbl[DXGIHooking::DXGI::SwapChainVTableElements];
+    memcpy(vtbl, *reinterpret_cast<size_t **>(pSwapChain), DXGIHooking::DXGI::SwapChainVTableElements * sizeof(size_t));
+    return std::vector<size_t>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
 }
 
 

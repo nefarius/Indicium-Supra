@@ -39,7 +39,7 @@ namespace Direct3D12Hooking
     public:
         Direct3D12();
 
-        std::vector<UINTX> vtable() const override;
+        std::vector<size_t> vtable() const override;
     protected:
         ~Direct3D12();
     };

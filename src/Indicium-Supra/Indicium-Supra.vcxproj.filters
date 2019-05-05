@@ -84,9 +84,6 @@
     <ClInclude Include="Game\Hook\DirectInput8.h">
       <Filter>Game\Hook\DInput8</Filter>
     </ClInclude>
-    <ClInclude Include="intarch.h">
-      <Filter>Shared</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Hook\Direct3DBase.h">
       <Filter>Game\Hook</Filter>
     </ClInclude>

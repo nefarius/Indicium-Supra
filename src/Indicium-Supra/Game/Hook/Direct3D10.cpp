@@ -132,11 +132,11 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), 
     }
 }
 
-std::vector<UINTX> Direct3D10Hooking::Direct3D10::vtable() const
+std::vector<size_t> Direct3D10Hooking::Direct3D10::vtable() const
 {
-    UINTX vtbl[DXGIHooking::DXGI::SwapChainVTableElements];
-    memcpy(vtbl, *reinterpret_cast<UINTX **>(pSwapChain), DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
-    return std::vector<UINTX>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
+    size_t vtbl[DXGIHooking::DXGI::SwapChainVTableElements];
+    memcpy(vtbl, *reinterpret_cast<size_t **>(pSwapChain), DXGIHooking::DXGI::SwapChainVTableElements * sizeof(size_t));
+    return std::vector<size_t>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
 }
 
 Direct3D10Hooking::Direct3D10::~Direct3D10()

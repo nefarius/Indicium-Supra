@@ -107,11 +107,11 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : pd3dDevice(nullptr), pd3dDeviceCon
 }
 
 
-std::vector<UINTX> Direct3D11Hooking::Direct3D11::vtable() const
+std::vector<size_t> Direct3D11Hooking::Direct3D11::vtable() const
 {
-    UINTX vtbl[DXGIHooking::DXGI::SwapChainVTableElements];
-    memcpy(vtbl, *reinterpret_cast<UINTX **>(pSwapChain), DXGIHooking::DXGI::SwapChainVTableElements * sizeof(UINTX));
-    return std::vector<UINTX>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
+    size_t vtbl[DXGIHooking::DXGI::SwapChainVTableElements];
+    memcpy(vtbl, *reinterpret_cast<size_t **>(pSwapChain), DXGIHooking::DXGI::SwapChainVTableElements * sizeof(size_t));
+    return std::vector<size_t>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
 }
 
 Direct3D11Hooking::Direct3D11::~Direct3D11()

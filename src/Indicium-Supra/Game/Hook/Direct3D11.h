@@ -89,7 +89,7 @@ namespace Direct3D11Hooking
         Direct3D11();
         static const int VTableElements = 43;
 
-        std::vector<UINTX> vtable() const override;
+        std::vector<size_t> vtable() const override;
     protected:
         ~Direct3D11();
     };

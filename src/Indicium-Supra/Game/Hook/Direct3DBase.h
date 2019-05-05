@@ -24,7 +24,6 @@ SOFTWARE.
 
 #pragma once
 
-#include "intarch.h"
 #include "Window.h"
 
 #include <Poco/Logger.h>
@@ -46,7 +45,7 @@ namespace Direct3DHooking
     public:
         Direct3DBase() {}
 
-        virtual std::vector<UINTX> vtable() const = 0;
+        virtual std::vector<size_t> vtable() const = 0;
     };
 }
 

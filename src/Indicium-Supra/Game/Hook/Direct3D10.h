@@ -26,7 +26,6 @@ SOFTWARE.
 #include <dxgi.h>
 #include <d3d10_1.h>
 #include <d3d10.h>
-#include <intarch.h>
 #include "Direct3DBase.h"
 
 namespace Direct3D10Hooking
@@ -145,7 +144,7 @@ namespace Direct3D10Hooking
         Direct3D10();
         static const int VTableElements = 98;
 
-        std::vector<UINTX> vtable() const override;
+        std::vector<size_t> vtable() const override;
     protected:
         ~Direct3D10();
     };
