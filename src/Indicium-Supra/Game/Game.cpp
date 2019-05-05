@@ -27,8 +27,6 @@ SOFTWARE.
 
 #include <Utils/Hook.h>
 
-#include <MinHook.h>
-
 #include "Game.h"
 #include "Global.h"
 
@@ -111,21 +109,6 @@ void IndiciumMainThread(LPVOID Params)
     logger.information("Library loaded into %s", GlobalState::instance().processName());
 
     logger.information("Library enabled");
-
-    logger.information("Initializing hook engine...");
-
-    MH_STATUS status = MH_Initialize();
-
-    //
-    // Somebody else might have already initialized MinHook so don't fail
-    // 
-    if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED)
-    {
-        logger.fatal("Couldn't initialize hook engine: %lu", (ULONG)status);
-        return;
-    }
-
-    logger.information("Hook engine initialized");
 
     // 
     // D3D9 Hooks

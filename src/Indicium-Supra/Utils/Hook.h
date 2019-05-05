@@ -25,10 +25,8 @@ SOFTWARE.
 #pragma once
 
 #include "Windows.h"
-#include <MinHook.h>
+#include <detours.h>
 #include <Poco/Exception.h>
-
-#include <type_traits>
 
 
 enum class CallConvention
@@ -52,30 +50,18 @@ struct convention<CallConvention::cdecl_t, retn, args...>
     typedef retn (__cdecl *type)(args ...);
 };
 
-template <typename T>
-inline MH_STATUS MH_CreateHookEx(LPVOID pTarget, LPVOID pDetour, T** ppOriginal)
-{
-    return MH_CreateHook(pTarget, pDetour, reinterpret_cast<LPVOID*>(ppOriginal));
-}
-
 template <CallConvention cc, typename retn, typename ...args>
 class Hook
 {
     typedef typename convention<cc, retn, args...>::type type;
 
     size_t _orig;
-    type _trampoline;
     type _detour;
 
     bool _isApplied;
 
 public:
-    Hook() : _orig(0), _trampoline(0), _detour(0), _isApplied(false)
-    {
-    }
-
-    template <typename T>
-    Hook(T pFunc, type detour) : _orig(0), _isApplied(false), apply<T>(pFunc, detour)
+    Hook() : _orig(0), _detour(0), _isApplied(false)
     {
     }
 
@@ -89,16 +75,31 @@ public:
     {
         _detour = detour;
         _orig = static_cast<size_t>(pFunc);
-        MH_STATUS ret;
 
-        if ((ret = MH_CreateHookEx((PBYTE)pFunc, (PBYTE)_detour, &_trampoline)) != MH_OK)
-        {
-            throw Poco::ApplicationException("Couldn't create hook", ret);
-        }
+        DetourTransactionBegin();
+        DetourUpdateThread(GetCurrentThread());
+        const auto result = DetourAttach(reinterpret_cast<void **>(&_orig), reinterpret_cast<void *>(_detour));
+        DetourTransactionCommit();
 
-        if ((ret = MH_EnableHook((PBYTE)pFunc)) != MH_OK)
+        if (result != NO_ERROR)
         {
-            throw Poco::ApplicationException("Couldn't enable hook", ret);
+            switch (result)
+            {
+            case ERROR_INVALID_BLOCK:
+                throw Poco::ApplicationException("The function referenced is too small to be detoured.", result);
+
+            case ERROR_INVALID_HANDLE:
+                throw Poco::ApplicationException("The ppPointer parameter is null or points to a null pointer.", result);
+
+            case ERROR_INVALID_OPERATION:
+                throw Poco::ApplicationException("No pending transaction exists.", result);
+
+            case ERROR_NOT_ENOUGH_MEMORY:
+                throw Poco::ApplicationException("Not enough memory exists to complete the operation.", result);
+
+            default:
+                throw Poco::ApplicationException("Unknown error", result);
+            }
         }
 
         _isApplied = true;
@@ -110,12 +111,18 @@ public:
             return false;
 
         _isApplied = false;
-        return MH_DisableHook((PBYTE)_orig) == MH_OK;
+
+        DetourTransactionBegin();
+        DetourUpdateThread(GetCurrentThread());
+        const auto ret = DetourDetach(reinterpret_cast<void **>(&_orig), reinterpret_cast<void *>(_detour));
+        DetourTransactionCommit();
+
+        return ret == NO_ERROR;
     }
 
     retn callOrig(args ... p)
     {
-        return _trampoline(p...);
+        return type(_orig)(p...);
     }
 
     bool isApplied() const

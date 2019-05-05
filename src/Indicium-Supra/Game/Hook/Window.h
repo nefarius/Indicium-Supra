@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include <string>
 #include <Poco/RefCountedObject.h>
+#include <Windows.h>
 
 class Window : public Poco::RefCountedObject
 {

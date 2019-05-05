@@ -202,9 +202,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\3rd\minhook\build\VC15\libMinHook.vcxproj">
-      <Project>{f142a341-5ee0-442d-a15f-98ae9b48dbae}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\Indicium-Supra\Indicium-Supra.vcxproj">
       <Project>{db383579-da7f-48c0-ab1f-7c4c93544e2c}</Project>
     </ProjectReference>
