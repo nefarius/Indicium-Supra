@@ -1,6 +1,0 @@
-[submodule "minhook"]
-	path = minhook
-	url = git@github.com:nefarius/minhook.git
-[submodule "3rd/minhook"]
-	path = 3rd/minhook
-	url = https://github.com/TsudaKageyu/minhook.git
