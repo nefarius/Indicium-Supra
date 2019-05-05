@@ -133,6 +133,10 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
         EvtIndiciumGameUnhooked();
     }
 
+    CloseHandle(Engine->EngineCancellationEvent);
+    CloseHandle(Engine->EngineCancellationCompletedEvent);
+    CloseHandle(Engine->EngineThread);
+
     logger.information("Engine shutdown complete");
 }
 
@@ -141,10 +145,6 @@ INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)
     if (!Engine) {
         return;
     }
-
-    CloseHandle(Engine->EngineCancellationEvent);
-    CloseHandle(Engine->EngineCancellationCompletedEvent);
-    CloseHandle(Engine->EngineThread);
 
     free(Engine);
 }
