@@ -192,3 +192,4 @@ FakesAssemblies/
 /bin/test
 /.vs/Indicium-Supra/DesignTimeBuild
 /.vs/Indicium-Supra/v16
+*.DotSettings
