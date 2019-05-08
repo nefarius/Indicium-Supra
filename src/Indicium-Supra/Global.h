@@ -55,10 +55,10 @@ public:
      *
      * \return  The process name.
      */
-    std::string processName() const
+    std::string process_name()
     {
         Poco::Buffer<char> procName(MAX_PATH + 1);
-        GetProcessImageFileName(GetCurrentProcess(), procName.begin(), (DWORD)procName.size());
+        GetProcessImageFileName(GetCurrentProcess(), procName.begin(), static_cast<DWORD>(procName.size()));
 
         return std::string(procName.begin());
     }
@@ -73,7 +73,7 @@ public:
      *
      * \return  Path to core library.
      */
-    std::string rootPath() const
+    std::string root_path()
     {
         Poco::Buffer<char> myPathBuf(MAX_PATH + 1);
         GetModuleFileNameA(

@@ -70,11 +70,11 @@ Direct3D9Hooking::Direct3D9::Direct3D9() : Direct3DBase(), d3d9(nullptr), d3d9_d
     }
 }
 
-std::vector<UINTX> Direct3D9Hooking::Direct3D9::vtable() const
+std::vector<size_t> Direct3D9Hooking::Direct3D9::vtable() const
 {
-    UINTX vtbl[VTableElements];
-    memcpy(vtbl, *reinterpret_cast<UINTX **>(d3d9_device), VTableElements * sizeof(UINTX));
-    return std::vector<UINTX>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
+    size_t vtbl[VTableElements];
+    memcpy(vtbl, *reinterpret_cast<size_t **>(d3d9_device), VTableElements * sizeof(size_t));
+    return std::vector<size_t>(vtbl, vtbl + sizeof vtbl / sizeof vtbl[0]);
 }
 
 Direct3D9Hooking::Direct3D9::~Direct3D9()

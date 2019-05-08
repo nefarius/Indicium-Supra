@@ -22,9 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #pragma once
+
 #include <dxgi.h>
+// ReSharper disable CppUnusedIncludeDirective
 #include <d3d10_1.h>
+// ReSharper restore CppUnusedIncludeDirective
 #include <d3d10.h>
 #include "Direct3DBase.h"
 

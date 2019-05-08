@@ -22,9 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #pragma once
+
 #include <d3d9.h>
-#include <intarch.h>
 #include "Direct3DBase.h"
 
 namespace Direct3D9Hooking
@@ -161,7 +162,7 @@ namespace Direct3D9Hooking
 
         static const int VTableElements = 119;
 
-        std::vector<UINTX> vtable() const override;
+        std::vector<size_t> vtable() const override;
     protected:
         ~Direct3D9();
     };

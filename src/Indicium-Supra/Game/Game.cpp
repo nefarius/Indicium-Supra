@@ -88,7 +88,7 @@ Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEINSTANC
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, DWORD, LPVOID> g_getDeviceState8Hook;
 Hook<CallConvention::stdcall_t, HRESULT, LPDIRECTINPUTDEVICE8, LPDIDEVICEOBJECTINSTANCE, DWORD, DWORD> g_getObjectInfo8Hook;
 
-void HookDInput8(UINTX* vtable8);
+void HookDInput8(size_t* vtable8);
 #endif
 
 /**
@@ -106,7 +106,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     static PINDICIUM_ENGINE engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
     auto& logger = Logger::get(__func__);
 
-    logger.information("Library loaded into %s", GlobalState::instance().processName());
+    logger.information("Library loaded into %s", GlobalState::instance().process_name());
 
     logger.information("Library enabled");
 
@@ -686,7 +686,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     if (engine->Configuration->getBool("DInput8.enabled", false))
     {
         bool dinput8_available;
-        UINTX vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
+        size_t vtable8[DirectInput8Hooking::DirectInput8::VTableElements] = { 0 };
 
         // Dinput8
         {
@@ -749,7 +749,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 }
 
 #ifdef HOOK_DINPUT8
-void HookDInput8(UINTX* vtable8)
+void HookDInput8(size_t* vtable8)
 {
     auto& logger = Logger::get(__func__);
     logger.information("Hooking IDirectInputDevice8::Acquire");
