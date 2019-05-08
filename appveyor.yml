@@ -2,6 +2,11 @@ version: 3.2.{build}.0
 image: Visual Studio 2017
 install:
 - cmd: git submodule -q update --init
+- cmd: |
+    cd "C:\Tools\vcpkg"
+    git pull
+    .\bootstrap-vcpkg.bat
+    cd %appveyor_build_folder%
 before_build:
 - cmd: nuget restore
 - cmd: vcpkg integrate install
