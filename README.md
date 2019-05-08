@@ -2,7 +2,7 @@
 
 API-Hooking and rendering framework for DirectX-based games.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/rt4ybpwrhn22kegm?svg=true)](https://ci.appveyor.com/project/nefarius/indicium-supra) [![Discord](https://img.shields.io/discord/346756263763378176.svg)](https://discord.gg/QTJpBX5) [![Website](https://img.shields.io/website-up-down-green-red/https/vigem.org.svg?label=ViGEm.org)](https://vigem.org/) [![PayPal Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](<https://paypal.me/NefariusMaximus>) [![Support on Patreon](https://img.shields.io/badge/patreon-donate-orange.svg)](<https://www.patreon.com/nefarius>) [![GitHub followers](https://img.shields.io/github/followers/nefarius.svg?style=social&label=Follow)](https://github.com/nefarius) [![Twitter Follow](https://img.shields.io/twitter/follow/nefariusmaximus.svg?style=social&label=Follow)](https://twitter.com/nefariusmaximus)
+[![Build status](https://ci.appveyor.com/api/projects/status/rt4ybpwrhn22kegm?svg=true)](https://ci.appveyor.com/project/nefarius/indicium-supra) [![Discord](https://img.shields.io/discord/346756263763378176.svg)](https://discord.vigem.org) [![Website](https://img.shields.io/website-up-down-green-red/https/vigem.org.svg?label=ViGEm.org)](https://vigem.org/) [![PayPal Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](<https://paypal.me/NefariusMaximus>) [![Support on Patreon](https://img.shields.io/badge/patreon-donate-orange.svg)](<https://www.patreon.com/nefarius>) [![GitHub followers](https://img.shields.io/github/followers/nefarius.svg?style=social&label=Follow)](https://github.com/nefarius) [![Twitter Follow](https://img.shields.io/twitter/follow/nefariusmaximus.svg?style=social&label=Follow)](https://twitter.com/nefariusmaximus)
 
 ## About
 
@@ -22,18 +22,15 @@ API-Hooking and rendering framework for DirectX-based games.
 
 - Visual Studio **2017** ([Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15) is just fine)
 - [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
-- [.NET Core SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/2.1) (or greater, required for building only)
-- [MinHook](https://github.com/TsudaKageyu/minhook) (referenced as submodule)
+- [.NET Core SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/2.1) (or greater, required for building via CLI only)
+- [Follow the Vcpkg Quick Start](https://github.com/Microsoft/vcpkg#quick-start) and install the following packages:
+  - `.\vcpkg.exe install poco:x86-windows-static poco:x64-windows-static detours:x86-windows-static detours:x64-windows-static`
 
- Building should be pretty straight-forward since the POCO libraries get installed via Vcpkg and MinHook is built within the solution. You have multiple choices for getting things done.
+ Building should be pretty straight-forward since the [POCO libraries](https://pocoproject.org/) and [Detours](https://github.com/Microsoft/Detours) get installed via [Vcpkg](https://github.com/Microsoft/vcpkg). You have multiple choices for getting things done.
 
 ### Visual Studio
 
 Just open the solution file `Indicium-Supra.sln` and start the build from there.
-
-If Visual Studio can't load one or more projects the first time you launch it, you might need to restore the NuGet packages. Open the Package Manager Console and hit Restore:
-
-![devenv_2017-08-10_19-15-45.png](https://lh3.googleusercontent.com/-K6g4v1RNMQo/WYyUwkquvZI/AAAAAAAAALQ/G_njXRtZQmwZUmo210vcLN_3pJphOuNigCHMYCw/s0/devenv_2017-08-10_19-15-45.png)
 
 ### Command Line
 
