@@ -120,4 +120,7 @@
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Indicium-Supra.ini" />
+  </ItemGroup>
 </Project>

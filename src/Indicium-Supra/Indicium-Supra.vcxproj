@@ -228,6 +228,9 @@
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Indicium-Supra.ini" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>
