@@ -3,7 +3,9 @@ image: Visual Studio 2017
 install:
 - cmd: git submodule -q update --init
 before_build:
-- nuget restore
+- cmd: nuget restore
+- cmd: vcpkg integrate install
+- cmd: vcpkg install poco:x86-windows-static poco:x64-windows-static detours:x86-windows-static detours:x64-windows-static
 build_script:
 - ps: .\build.ps1
 after_build:
