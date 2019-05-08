@@ -85,7 +85,7 @@ VOID FORCEINLINE INDICIUM_D3D11_EVENT_CALLBACKS_INIT(
     _Out_ PINDICIUM_D3D11_EVENT_CALLBACKS Callbacks
 )
 {
-    RtlZeroMemory(Callbacks, sizeof(INDICIUM_D3D11_EVENT_CALLBACKS));
+    ZeroMemory(Callbacks, sizeof(INDICIUM_D3D11_EVENT_CALLBACKS));
 }
 
 #endif // IndiciumDirect3D11_h__
