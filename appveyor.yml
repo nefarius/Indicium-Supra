@@ -4,8 +4,8 @@ install:
 - cmd: git submodule -q update --init
 - cmd: |
     cd "C:\Tools\vcpkg"
-    git pull
-    .\bootstrap-vcpkg.bat
+    git pull > NUL
+    .\bootstrap-vcpkg.bat > NUL
     cd %appveyor_build_folder%
 before_build:
 - cmd: nuget restore
