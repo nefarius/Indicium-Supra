@@ -104,9 +104,9 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     pFileChannel->setProperty("rotateOnOpen", "true");
     pFileChannel->setProperty("archive", "timestamp");
     pFileChannel->setProperty(
-        "path", 
+        "path",
         Path::expand(Engine->Configuration->getString(
-            "global.logFile", 
+            "global.logFile",
             "%TEMP%\\Indicium-Supra.log")));
 
     AutoPtr<PatternFormatter> pPF(new PatternFormatter);
@@ -123,11 +123,11 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     // Kickstart hooking the rendering pipeline
     // 
     Engine->EngineThread = CreateThread(
-        nullptr, 
-        0, 
-        reinterpret_cast<LPTHREAD_START_ROUTINE>(IndiciumMainThread), 
+        nullptr,
+        0,
+        reinterpret_cast<LPTHREAD_START_ROUTINE>(IndiciumMainThread),
         Engine,
-        0, 
+        0,
         nullptr
     );
 
@@ -152,9 +152,26 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     logger.information("Indicium engine shutdown requested, attempting to terminate main thread");
 
     SetEvent(Engine->EngineCancellationEvent);
-    WaitForSingleObject(Engine->EngineCancellationCompletedEvent, 1000);
+    const auto result = WaitForSingleObject(Engine->EngineCancellationCompletedEvent, 1000);
 
-    logger.information("Hooks removed, notifying caller");
+    switch (result)
+    {
+    case WAIT_ABANDONED:
+        logger.error("Unknown state, host process might crash");
+        break;
+    case WAIT_OBJECT_0:
+        logger.information("Hooks removed, notifying caller");
+        break;
+    case WAIT_TIMEOUT:
+        logger.error("Thread hasn't finished clean-up within expected time");
+        break;
+    case WAIT_FAILED:
+        logger.error("Unknown error, host process might crash");
+        break;
+    default:
+        logger.warning("Unexpected return value");
+        break;
+    }        
 
     if (EvtIndiciumGameUnhooked) {
         EvtIndiciumGameUnhooked();
