@@ -165,6 +165,8 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     CloseHandle(Engine->EngineThread);
 
     logger.information("Engine shutdown complete");
+
+    Logger::shutdown();
 }
 
 INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)
