@@ -732,13 +732,13 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         swapChainPresent12Hook.remove();
         swapChainResizeTarget12Hook.remove();
         swapChainResizeBuffers12Hook.remove();
+
+        logger.information("Hooks disabled");
     }
     catch (Poco::Exception& pex)
     {
         logger.error("Unhooking failed: %s", pex.displayText());
-    }
-
-    logger.information("Hooks disabled");
+    }    
 
     //
     // Inform caller that it's safe to continue
