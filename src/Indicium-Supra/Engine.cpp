@@ -101,6 +101,8 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     // Set up logging
     // 
     AutoPtr<FileChannel> pFileChannel(new FileChannel);
+    pFileChannel->setProperty("rotateOnOpen", "true");
+    pFileChannel->setProperty("archive", "timestamp");
     pFileChannel->setProperty(
         "path", 
         Path::expand(Engine->Configuration->getString(
