@@ -25,9 +25,9 @@ SOFTWARE.
 #include "dllmain.h"
 
 // 
-// MinHook
+// Detours
 // 
-#include <MinHook.h>
+#include <detours.h>
 
 // 
 // STL
@@ -179,17 +179,6 @@ void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
 
 	logger.information("Loading ImGui plugin");
 
-	logger.information("Initializing hook engine...");
-
-	MH_STATUS status = MH_Initialize();
-
-	if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED)
-	{
-		logger.fatal("Couldn't initialize hook engine: %lu", (ULONG)status);
-	}
-
-	logger.information("Hook engine initialized");
-
 	// Setup Dear ImGui binding
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -211,6 +200,7 @@ void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
  */
 void EvtIndiciumGameUnhooked()
 {
+#ifdef WNDPROC_HOOK
 	auto& logger = Logger::get(__func__);
 
 	if (MH_DisableHook(MH_ALL_HOOKS) != MH_OK)
@@ -226,6 +216,7 @@ void EvtIndiciumGameUnhooked()
 		logger.fatal("Couldn't shut down hook engine, host process might crash");
 		return;
 	}
+#endif
 }
 
 #pragma region D3D9(Ex)
@@ -538,6 +529,8 @@ void EvtIndiciumD3D11PostResizeBuffers(
 
 void HookWindowProc(HWND hWnd)
 {
+#ifdef WNDPROC_HOOK
+
 	auto& logger = Logger::get(__func__);
 
 	MH_STATUS ret;
@@ -584,6 +577,7 @@ void HookWindowProc(HWND hWnd)
 	{
 		logger.error("Couldn't enable GWLP_WNDPROC hook");
 	}
+#endif
 }
 
 LRESULT WINAPI DetourDefWindowProc(
