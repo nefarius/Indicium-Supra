@@ -77,7 +77,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Indicium-ImGui.ini" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-ImGui.rc">
