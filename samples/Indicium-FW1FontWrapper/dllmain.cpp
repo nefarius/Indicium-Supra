@@ -39,6 +39,10 @@ SOFTWARE.
 
 
 PINDICIUM_ENGINE engine = nullptr;
+ID3D11DeviceContext* ctx = nullptr;
+ID3D11Device* dev = nullptr;
+IFW1Factory *pFW1Factory = nullptr;
+IFW1FontWrapper *pFontWrapper = nullptr;
 
 EVT_INDICIUM_D3D11_PRESENT EvtIndiciumD3D11Present;
 
@@ -69,8 +73,6 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
     INDICIUM_D3D11_EVENT_CALLBACKS_INIT(&d3d11);
     d3d11.EvtIndiciumD3D11PrePresent = EvtIndiciumD3D11Present;
 
-    INDICIUM_ERROR err;
-
     switch (dwReason)
     {
     case DLL_PROCESS_ATTACH:
@@ -81,7 +83,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
             IndiciumEngineSetD3D11EventCallbacks(engine, &d3d11);
 
-            err = IndiciumEngineInit(engine, NULL);
+            (void) IndiciumEngineInit(engine, nullptr);
         }
 
         break;
@@ -89,8 +91,14 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
         if (engine)
         {
-            IndiciumEngineShutdown(engine, NULL);
+            IndiciumEngineShutdown(engine, nullptr);
             IndiciumEngineFree(engine);
+            engine = nullptr;
+
+            pFontWrapper->Release();
+            pFontWrapper = nullptr;
+            pFW1Factory->Release();
+            pFW1Factory = nullptr;
         }
 
         break;
@@ -107,42 +115,21 @@ void EvtIndiciumD3D11Present(
     UINT            Flags
 )
 {
-    static ID3D11DeviceContext* ctx = nullptr;
-    static ID3D11Device* dev = nullptr;
-
     D3D11_DEVICE_CONTEXT_FROM_SWAPCHAIN(pSwapChain, &dev, &ctx);
 
-    static IFW1Factory *pFW1Factory = nullptr;
-    static HRESULT hResult;
     if (!pFW1Factory)
-        hResult = FW1CreateFactory(FW1_VERSION, &pFW1Factory);
+        (void) FW1CreateFactory(FW1_VERSION, &pFW1Factory);
 
-    static IFW1FontWrapper *pFontWrapper = nullptr;
     if (!pFontWrapper)
-        hResult = pFW1Factory->CreateFontWrapper(dev, L"Arial", &pFontWrapper);
-
-    static auto x = 1280.0f;
-
-    //
-    // Very crude marquee mechanism for demonstration
-    // 
-    if (x <= -1280.0f)x = 1280.0f;
+        (void) pFW1Factory->CreateFontWrapper(dev, L"Arial", &pFontWrapper);
 
     pFontWrapper->DrawString(
         ctx,
         L"Injected via Indicium-Supra by Nefarius",// String
         50.0f,// Font size
-        x--,// X position
+        15.0f,// X position
         30.0f,// Y position
         0xff0099ff,// Text color, 0xAaBbGgRr
         FW1_RESTORESTATE// Flags (for example FW1_RESTORESTATE to keep context states unchanged)
     );
-
-    //
-    // TODO: don't release and re-create per frame as it's expensive
-    // 
-    // pFontWrapper->Release();
-    // pFontWrapper = nullptr;
-    // pFW1Factory->Release();
-    // pFW1Factory = nullptr;
 }
