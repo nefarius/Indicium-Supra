@@ -58,6 +58,9 @@
     <Filter Include="Shared\Engine">
       <UniqueIdentifier>{a26e79e9-e370-42f5-bf95-655d700633c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{943af5e4-f7b5-4a27-994d-d2125a64f920}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -116,6 +119,9 @@
     </ClInclude>
     <ClInclude Include="Engine.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Exceptions.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />

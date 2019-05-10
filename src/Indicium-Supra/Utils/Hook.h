@@ -26,6 +26,8 @@ SOFTWARE.
 
 #include "Windows.h"
 #include <detours.h>
+#include "Exceptions.hpp"
+
 #include <Poco/Exception.h>
 
 
@@ -69,13 +71,12 @@ class Hook
         {
             if (result == ERROR_INVALID_OPERATION)
             {
-                throw Poco::ApplicationException(
-                    "A pending transaction already exists",
-                    result
+                throw DetourException(
+                    "A pending transaction already exists"
                 );
             }
 
-            throw Poco::ApplicationException("Unknown error", result);
+            throw DetourException("Unknown error");
         }
 
         has_open_transaction_ = true;
@@ -90,39 +91,33 @@ class Hook
             switch (result)
             {
             case ERROR_INVALID_DATA:
-                throw Poco::ApplicationException(
-                    "Target function was changed by third party between steps of the transaction",
-                    result
+                throw DetourException(
+                    "Target function was changed by third party between steps of the transaction"
                 );
 
             case ERROR_INVALID_OPERATION:
-                throw Poco::ApplicationException(
-                    "No pending transaction exists",
-                    result
+                throw DetourException(
+                    "No pending transaction exists"
                 );
 
             case ERROR_INVALID_BLOCK:
-                throw Poco::ApplicationException(
-                    "The function referenced is too small to be detoured",
-                    result
+                throw DetourException(
+                    "The function referenced is too small to be detoured"
                 );
 
             case ERROR_INVALID_HANDLE:
-                throw Poco::ApplicationException(
-                    "The ppPointer parameter is null or points to a null pointer",
-                    result
+                throw DetourException(
+                    "The ppPointer parameter is null or points to a null pointer"
                 );
 
             case ERROR_NOT_ENOUGH_MEMORY:
-                throw Poco::ApplicationException(
-                    "Not enough memory exists to complete the operation",
-                    result
+                throw DetourException(
+                    "Not enough memory exists to complete the operation"
                 );
 
             default:
-                throw Poco::ApplicationException(
-                    "Unknown error",
-                    result
+                throw DetourException(
+                    "Unknown error"
                 );
             }
         }
@@ -138,16 +133,10 @@ class Hook
         {
             if (result == ERROR_NOT_ENOUGH_MEMORY)
             {
-                throw Poco::ApplicationException(
-                    "Not enough memory to record identity of thread",
-                    result
-                );
+                throw DetourException("Not enough memory to record identity of thread");
             }
 
-            throw Poco::ApplicationException(
-                "Unknown error",
-                result
-            );
+            throw DetourException("Unknown error");
         }
     }
 
@@ -166,15 +155,9 @@ public:
             {
                 if (result == ERROR_INVALID_OPERATION)
                 {
-                    throw Poco::ApplicationException(
-                        "No pending transaction exists",
-                        result
-                    );
+                    throw DetourException("No pending transaction exists");
                 }
-                throw Poco::ApplicationException(
-                    "Unknown error",
-                    result
-                );
+                throw DetourException("Unknown error");
             }
         }
 
@@ -196,34 +179,19 @@ public:
             switch (result)
             {
             case ERROR_INVALID_BLOCK:
-                throw Poco::ApplicationException(
-                    "The function referenced is too small to be detoured",
-                    result
-                );
+                throw DetourException("The function referenced is too small to be detoured");
 
             case ERROR_INVALID_HANDLE:
-                throw Poco::ApplicationException(
-                    "The ppPointer parameter is null or points to a null pointer",
-                    result
-                );
+                throw DetourException("The ppPointer parameter is null or points to a null pointer");
 
             case ERROR_INVALID_OPERATION:
-                throw Poco::ApplicationException(
-                    "No pending transaction exists",
-                    result
-                );
+                throw DetourException("No pending transaction exists");
 
             case ERROR_NOT_ENOUGH_MEMORY:
-                throw Poco::ApplicationException(
-                    "Not enough memory exists to complete the operation",
-                    result
-                );
+                throw DetourException("Not enough memory exists to complete the operation");
 
             default:
-                throw Poco::ApplicationException(
-                    "Unknown error",
-                    result
-                );
+                throw DetourException("Unknown error");
             }
         }
 
@@ -248,19 +216,19 @@ public:
             switch (result)
             {
             case ERROR_INVALID_BLOCK:
-                throw Poco::ApplicationException("The function to be detached was too small to be detoured", result);
+                throw DetourException("The function to be detached was too small to be detoured");
 
             case ERROR_INVALID_HANDLE:
-                throw Poco::ApplicationException("The ppPointer parameter is null or points to a null pointer", result);
+                throw DetourException("The ppPointer parameter is null or points to a null pointer");
 
             case ERROR_INVALID_OPERATION:
-                throw Poco::ApplicationException("No pending transaction exists", result);
+                throw DetourException("No pending transaction exists");
 
             case ERROR_NOT_ENOUGH_MEMORY:
-                throw Poco::ApplicationException("Not enough memory exists to complete the operation", result);
+                throw DetourException("Not enough memory exists to complete the operation");
 
             default:
-                throw Poco::ApplicationException("Unknown error", result);
+                throw DetourException("Unknown error");
             }
         }
 

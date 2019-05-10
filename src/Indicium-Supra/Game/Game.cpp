@@ -29,6 +29,7 @@ SOFTWARE.
 
 #include "Game.h"
 #include "Global.h"
+#include "Exceptions.hpp"
 
 //
 // Hooking helper sub-systems
@@ -64,7 +65,6 @@ SOFTWARE.
 //
 // POCO
 // 
-#include <Poco/Exception.h>
 #include <Poco/Logger.h>
 #include <Poco/AutoPtr.h>
 #include <Poco/Buffer.h>
@@ -347,9 +347,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 return ret;
             });
         }
-        catch (Poco::Exception& pex)
+        catch (DetourException& pex)
         {
-            logger.error("Hooking D3D9Ex failed: %s", pex.displayText());
+            logger.error("Hooking D3D9Ex failed: %s", pex.what());
         }
     }
 
@@ -497,9 +497,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 return ret;
             });
         }
-        catch (Poco::Exception& pex)
+        catch (DetourException& pex)
         {
-            logger.error(pex.displayText());
+            logger.error(pex.what());
         }
     }
 
@@ -584,9 +584,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 return ret;
             });
         }
-        catch (Poco::Exception& pex)
+        catch (DetourException& pex)
         {
-            logger.error(pex.displayText());
+            logger.error(pex.what());
         }
     }
 
@@ -671,9 +671,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 return ret;
             });
         }
-        catch (Poco::Exception& pex)
+        catch (DetourException& pex)
         {
-            logger.error(pex.displayText());
+            logger.error(pex.what());
         }
     }
 
@@ -735,9 +735,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
         logger.information("Hooks disabled");
     }
-    catch (Poco::Exception& pex)
+    catch (DetourException& pex)
     {
-        logger.error("Unhooking failed: %s", pex.displayText());
+        logger.error("Unhooking failed: %s", pex.what());
     }    
 
     //
