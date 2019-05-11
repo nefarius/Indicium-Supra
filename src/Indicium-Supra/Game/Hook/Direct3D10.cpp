@@ -27,33 +27,34 @@ SOFTWARE.
 #include <vector>
 #include "DXGI.h"
 #include "Utils/Misc.h"
+#include "Exceptions.hpp"
 
 
 Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), pSwapChain(nullptr)
 {
     temp_window = new Window("TempDirect3D10OverlayWindow");
 
-    auto hModDXGI = GetModuleHandle("DXGI.dll");
-    auto hModD3D10 = GetModuleHandle("D3D10.dll");
+    const auto hModDXGI = GetModuleHandle("DXGI.dll");
+    const auto hModD3D10 = GetModuleHandle("D3D10.dll");
 
     if (hModDXGI == nullptr)
     {
-        throw Poco::RuntimeException("Couldn't get handle to DXGI.dll", GetLastError());
+        throw ModuleNotFoundException("Couldn't get handle to DXGI.dll");
     }
 
     if (hModD3D10 == nullptr)
     {
-        throw Poco::RuntimeException("Couldn't get handle to D3D10.dll", GetLastError());
+        throw ModuleNotFoundException("Couldn't get handle to D3D10.dll");
     }
 
-    auto hCreateDXGIFactory = static_cast<LPVOID>(GetProcAddress(hModDXGI, "CreateDXGIFactory"));
+    const auto hCreateDXGIFactory = static_cast<LPVOID>(GetProcAddress(hModDXGI, "CreateDXGIFactory"));
     if (hCreateDXGIFactory == nullptr)
     {
-        throw Poco::RuntimeException("Couldn't get handle to CreateDXGIFactory", GetLastError());
+        throw ProcAddressNotFoundException("Couldn't get handle to CreateDXGIFactory");
     }
 
     IDXGIFactory* pFactory;
-    auto hr = static_cast<HRESULT(WINAPI *)(
+    const auto hr = static_cast<HRESULT(WINAPI *)(
         REFIID, 
         void** ppFactory)>(hCreateDXGIFactory)(
         __uuidof(IDXGIFactory), 
@@ -64,10 +65,12 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), 
         throw Poco::RuntimeException("Couldn't create DXGI factory", hr);
     }
 
-    auto hD3D10CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(hModD3D10, "D3D10CreateDeviceAndSwapChain"));
+    const auto hD3D10CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(
+        hModD3D10, 
+        "D3D10CreateDeviceAndSwapChain"));
     if (hD3D10CreateDeviceAndSwapChain == nullptr)
     {
-        throw Poco::RuntimeException("Couldn't get handle to D3D10CreateDeviceAndSwapChain", GetLastError());
+        throw ProcAddressNotFoundException("Couldn't get handle to D3D10CreateDeviceAndSwapChain");
     }
 
     UINT i = 0;
@@ -108,7 +111,7 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), 
     scDesc.SampleDesc = sampleDesc;
     scDesc.BufferDesc = modeDesc;
 
-    auto hr10 = static_cast<HRESULT(WINAPI *)(
+    const auto hr10 = static_cast<HRESULT(WINAPI *)(
         IDXGIAdapter*, 
         D3D10_DRIVER_TYPE, 
         HMODULE, 
@@ -118,8 +121,8 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), 
         IDXGISwapChain**, 
         ID3D10Device**)>(hD3D10CreateDeviceAndSwapChain)(
         vAdapters[0], 
-        D3D10_DRIVER_TYPE_HARDWARE, 
-        NULL, 
+        D3D10_DRIVER_TYPE_HARDWARE,
+        nullptr, 
         0, 
         D3D10_SDK_VERSION, 
         &scDesc, 

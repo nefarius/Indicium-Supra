@@ -38,6 +38,20 @@ SOFTWARE.
 #include "Game/Game.h"
 #include "Global.h"
 
+//
+// Boost
+//
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/attributes/named_scope.hpp>
+
+namespace logging = boost::log;
+namespace keywords = boost::log::keywords;
+namespace attrs = boost::log::attributes;
+
 #include <Poco/AutoPtr.h>
 #include <Poco/Util/IniFileConfiguration.h>
 #include <Poco/Message.h>
@@ -72,6 +86,8 @@ INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void)
 
 INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked)
 {
+    BOOST_LOG_FUNCTION();
+
     if (!Engine) {
         return INDICIUM_ERROR_INVALID_ENGINE_HANDLE;
     }
@@ -100,24 +116,24 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     //
     // Set up logging
     // 
-    AutoPtr<FileChannel> pFileChannel(new FileChannel);
-    pFileChannel->setProperty("rotateOnOpen", "true");
-    pFileChannel->setProperty("archive", "timestamp");
-    pFileChannel->setProperty(
-        "path",
-        Path::expand(Engine->Configuration->getString(
-            "global.logFile",
-            "%TEMP%\\Indicium-Supra.log")));
+    logging::register_simple_formatter_factory<logging::trivial::severity_level, char>("Severity");
 
-    AutoPtr<PatternFormatter> pPF(new PatternFormatter);
-    pPF->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i %s [%p]: %t");
-    AutoPtr<FormattingChannel> pFC(new FormattingChannel(pPF, pFileChannel));
+    logging::add_file_log(
+        keywords::file_name = GlobalState::instance().expand_environment_variables("%TEMP%\\Indicium-Supra.log"),
+        keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] [%Scope%] %Message%",
+        keywords::auto_flush = true
+    );
 
-    Logger::root().setChannel(pFC);
+    logging::core::get()->set_filter
+    (
+        logging::trivial::severity >= logging::trivial::info
+    );
 
-    auto& logger = Logger::get(__func__);
+    logging::core::get()->add_global_attribute("Scope", attrs::named_scope());
+    logging::add_common_attributes();
 
-    logger.information("Indicium engine initialized, attempting to launch main thread");
+
+    BOOST_LOG_TRIVIAL(info) << "Indicium engine initialized, attempting to launch main thread";
 
     //
     // Kickstart hooking the rendering pipeline
@@ -132,24 +148,24 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     );
 
     if (!Engine->EngineThread) {
-        logger.fatal("Couldn't create main thread, library unusable");
+        BOOST_LOG_TRIVIAL(fatal) << "Couldn't create main thread, library unusable";
         return INDICIUM_ERROR_CREATE_THREAD_FAILED;
     }
 
-    logger.information("Main thread created successfully");
+    BOOST_LOG_TRIVIAL(info) << "Main thread created successfully";
 
     return INDICIUM_ERROR_NONE;
 }
 
 INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked)
 {
+    BOOST_LOG_FUNCTION();
+
     if (!Engine) {
         return;
     }
 
-    auto& logger = Logger::get(__func__);
-
-    logger.information("Indicium engine shutdown requested, attempting to terminate main thread");
+    BOOST_LOG_TRIVIAL(info) << "Indicium engine shutdown requested, attempting to terminate main thread";
 
     SetEvent(Engine->EngineCancellationEvent);
     const auto result = WaitForSingleObject(Engine->EngineCancellationCompletedEvent, 1000);
@@ -157,19 +173,19 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     switch (result)
     {
     case WAIT_ABANDONED:
-        logger.error("Unknown state, host process might crash");
+        BOOST_LOG_TRIVIAL(error) << "Unknown state, host process might crash";
         break;
     case WAIT_OBJECT_0:
-        logger.information("Hooks removed, notifying caller");
+        BOOST_LOG_TRIVIAL(error) << "Hooks removed, notifying caller";
         break;
     case WAIT_TIMEOUT:
-        logger.error("Thread hasn't finished clean-up within expected time");
+        BOOST_LOG_TRIVIAL(error) << "Thread hasn't finished clean-up within expected time";
         break;
     case WAIT_FAILED:
-        logger.error("Unknown error, host process might crash");
+        BOOST_LOG_TRIVIAL(error) << "Unknown error, host process might crash";
         break;
     default:
-        logger.warning("Unexpected return value");
+        BOOST_LOG_TRIVIAL(error) << "Unexpected return value";
         break;
     }        
 
@@ -181,9 +197,7 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     CloseHandle(Engine->EngineCancellationCompletedEvent);
     CloseHandle(Engine->EngineThread);
 
-    logger.information("Engine shutdown complete");
-
-    Logger::shutdown();
+    BOOST_LOG_TRIVIAL(info) << "Engine shutdown complete";
 }
 
 INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)

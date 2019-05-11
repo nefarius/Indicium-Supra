@@ -86,6 +86,26 @@ public:
 
         return myDir.toString();
     }
+
+    std::string expand_environment_variables(const std::string & str)
+    {
+        std::string expandedStr;
+        const DWORD neededSize = ExpandEnvironmentStringsA(str.c_str(),
+            nullptr, 0);
+        if (neededSize)
+        {
+            expandedStr.resize(neededSize);
+            if (0 == ExpandEnvironmentStringsA(str.c_str(),
+                &expandedStr[0],
+                neededSize))
+            {
+                // pathological case requires a copy
+                expandedStr = str;
+            }
+        }
+        // RVO here
+        return expandedStr;
+    }
 protected:
 
 private:
