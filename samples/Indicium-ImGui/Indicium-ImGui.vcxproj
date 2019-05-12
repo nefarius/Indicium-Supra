@@ -84,22 +84,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)3rd\minhook\include;$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)include;$(ProjectDir)imgui;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)bin\$(PlatformShortName)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
