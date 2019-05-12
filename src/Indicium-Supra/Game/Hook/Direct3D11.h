@@ -84,15 +84,14 @@ namespace Direct3D11Hooking
     class Direct3D11 :
         public Direct3DHooking::Direct3DBase
     {
-        ID3D11Device*            pd3dDevice;
-        ID3D11DeviceContext*     pd3dDeviceContext;
-        IDXGISwapChain*          pSwapChain;
+        ID3D11Device* pd3dDevice;
+        ID3D11DeviceContext* pd3dDeviceContext;
+        IDXGISwapChain* pSwapChain;
     public:
         Direct3D11();
+        ~Direct3D11();
         static const int VTableElements = 43;
 
         std::vector<size_t> vtable() const override;
-    protected:
-        ~Direct3D11();
     };
 }

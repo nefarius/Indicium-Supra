@@ -159,11 +159,9 @@ namespace Direct3D9Hooking
         IDirect3DDevice9* d3d9_device;
     public:
         Direct3D9();
-
+        ~Direct3D9();
         static const int VTableElements = 119;
 
         std::vector<size_t> vtable() const override;
-    protected:
-        ~Direct3D9();
     };
 }

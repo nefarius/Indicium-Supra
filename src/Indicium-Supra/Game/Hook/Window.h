@@ -30,7 +30,7 @@ SOFTWARE.
 
 class Window
 {
-    WNDCLASSEX window_class;
+    WNDCLASSEX window_class{};
     HWND temp_window;
     std::string window_class_name;
 public:

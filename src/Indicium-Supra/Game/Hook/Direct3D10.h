@@ -146,10 +146,9 @@ namespace Direct3D10Hooking
 
     public:
         Direct3D10();
+        ~Direct3D10();
         static const int VTableElements = 98;
 
         std::vector<size_t> vtable() const override;
-    protected:
-        ~Direct3D10();
     };
 }

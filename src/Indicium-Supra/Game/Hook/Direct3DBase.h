@@ -25,18 +25,13 @@ SOFTWARE.
 #pragma once
 
 #include "Window.h"
-
-#include <Poco/AutoPtr.h>
-#include <Poco/RefCountedObject.h>
 #include <vector>
 #include <memory>
 
-using Poco::AutoPtr;
-using Poco::RefCountedObject;
 
 namespace Direct3DHooking
 {
-    class Direct3DBase : public RefCountedObject
+    class Direct3DBase
     {
     protected:
         std::unique_ptr<Window> temp_window;
@@ -47,4 +42,3 @@ namespace Direct3DHooking
         virtual std::vector<size_t> vtable() const = 0;
     };
 }
-

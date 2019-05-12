@@ -23,10 +23,10 @@ SOFTWARE.
 */
 
 #include "Window.h"
-
-#include <Poco/Exception.h>
 #include <utility>
+#include "Exceptions.hpp"
 
+using namespace Indicium::Core::Exceptions;
 
 Window::Window(std::string windowClassName) : temp_window(nullptr), window_class_name(std::move(windowClassName))
 {
@@ -40,19 +40,19 @@ Window::Window(std::string windowClassName) : temp_window(nullptr), window_class
     window_class.hInstance = GetModuleHandle(nullptr);
     if (window_class.hInstance == nullptr)
     {
-        throw Poco::RuntimeException("Could not get the instance handle", GetLastError());
+        throw GenericWinAPIException("Could not get the instance handle");
     }
 
     if (!RegisterClassEx(&window_class))
     {
-        throw Poco::RuntimeException("Could not get register the window class", GetLastError());
+        throw GenericWinAPIException("Could not get register the window class");
     }
 
     temp_window = CreateWindow(window_class.lpszClassName, "Temporary DirectX Overlay Window",
         WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, NULL, NULL, window_class.hInstance, NULL);
     if (temp_window == nullptr)
     {
-        throw Poco::RuntimeException("Could not get create the temporary window", GetLastError());
+        throw GenericWinAPIException("Could not get create the temporary window");
     }
 }
 
