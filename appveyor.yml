@@ -38,3 +38,5 @@ deploy:
   name: BUILDBOT
   on:
     appveyor_repo_tag: true
+cache:
+- c:\Tools\vcpkg\installed
