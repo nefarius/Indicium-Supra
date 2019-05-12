@@ -86,7 +86,7 @@ INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void)
 
 INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked)
 {
-    BOOST_LOG_FUNCTION();
+    BOOST_LOG_NAMED_SCOPE(__func__);
 
     if (!Engine) {
         return INDICIUM_ERROR_INVALID_ENGINE_HANDLE;
@@ -159,7 +159,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
 
 INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked)
 {
-    BOOST_LOG_FUNCTION();
+    BOOST_LOG_NAMED_SCOPE(__func__);
 
     if (!Engine) {
         return;
@@ -176,7 +176,7 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
         BOOST_LOG_TRIVIAL(error) << "Unknown state, host process might crash";
         break;
     case WAIT_OBJECT_0:
-        BOOST_LOG_TRIVIAL(error) << "Hooks removed, notifying caller";
+        BOOST_LOG_TRIVIAL(info) << "Hooks removed, notifying caller";
         break;
     case WAIT_TIMEOUT:
         BOOST_LOG_TRIVIAL(error) << "Thread hasn't finished clean-up within expected time";

@@ -108,7 +108,7 @@ void HookDInput8(size_t* vtable8);
  */
 DWORD WINAPI IndiciumMainThread(LPVOID Params)
 {
-    BOOST_LOG_FUNCTION();
+    BOOST_LOG_NAMED_SCOPE(__func__);
 
     static PINDICIUM_ENGINE engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
 
@@ -367,9 +367,17 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 return ret;
             });
         }
-        catch (DetourException& pex)
+        catch (DetourException& ex)
         {
-            BOOST_LOG_TRIVIAL(error) << "Hooking D3D9Ex failed: " << pex.what();
+            BOOST_LOG_TRIVIAL(error) << "Hooking D3D9Ex failed: " << ex.what();
+        }
+        catch(ModuleNotFoundException& ex)
+        {
+            BOOST_LOG_TRIVIAL(warning) << "Module not found: " << ex.what();
+        }
+        catch(RuntimeException& ex)
+        {
+            BOOST_LOG_TRIVIAL(error) << "D3D9(Ex) runtime error: " << ex.what();
         }
     }
 
@@ -524,9 +532,17 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 return ret;
             });
         }
-        catch (DetourException& pex)
+        catch (DetourException& ex)
         {
-            BOOST_LOG_TRIVIAL(error) << "Hooking D3D10 failed: " << pex.what();
+            BOOST_LOG_TRIVIAL(error) << "Hooking D3D10 failed: " << ex.what();
+        }
+        catch (ModuleNotFoundException& ex)
+        {
+            BOOST_LOG_TRIVIAL(warning) << "Module not found: " << ex.what();
+        }
+        catch (RuntimeException& ex)
+        {
+            BOOST_LOG_TRIVIAL(error) << "D3D10 runtime error: " << ex.what();
         }
     }
 
@@ -620,9 +636,17 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 return ret;
             });
         }
-        catch (DetourException& pex)
+        catch (DetourException& ex)
         {
-            BOOST_LOG_TRIVIAL(error) << "Hooking D3D11 failed: " << pex.what();
+            BOOST_LOG_TRIVIAL(error) << "Hooking D3D11 failed: " << ex.what();
+        }
+        catch (ModuleNotFoundException& ex)
+        {
+            BOOST_LOG_TRIVIAL(warning) << "Module not found: " << ex.what();
+        }
+        catch (RuntimeException& ex)
+        {
+            BOOST_LOG_TRIVIAL(error) << "D3D11 runtime error: " << ex.what();
         }
     }
 
@@ -716,9 +740,17 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 return ret;
             });
         }
-        catch (DetourException& pex)
+        catch (DetourException& ex)
         {
-            BOOST_LOG_TRIVIAL(error) << "Hooking D3D12 failed: " << pex.what();
+            BOOST_LOG_TRIVIAL(error) << "Hooking D3D12 failed: " << ex.what();
+        }
+        catch (ModuleNotFoundException& ex)
+        {
+            BOOST_LOG_TRIVIAL(warning) << "Module not found: " << ex.what();
+        }
+        catch (RuntimeException& ex)
+        {
+            BOOST_LOG_TRIVIAL(error) << "D3D12 runtime error: " << ex.what();
         }
     }
 
