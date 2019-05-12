@@ -26,10 +26,9 @@ SOFTWARE.
 #pragma once
 
 #include <string>
-#include <Poco/RefCountedObject.h>
 #include <Windows.h>
 
-class Window : public Poco::RefCountedObject
+class Window
 {
     WNDCLASSEX window_class;
     HWND temp_window;
@@ -37,8 +36,6 @@ class Window : public Poco::RefCountedObject
 public:
     Window(std::string windowClassName);
     HWND windowHandle() const;
-
-protected:
     ~Window();
 };
 

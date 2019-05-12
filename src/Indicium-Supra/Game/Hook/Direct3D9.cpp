@@ -31,7 +31,7 @@ using namespace Indicium::Core::Exceptions;
 Direct3D9Hooking::Direct3D9::Direct3D9() :
     d3d9(nullptr), d3d9_device(nullptr)
 {
-    temp_window = new Window("TempDirect3D9OverlayWindow");
+    temp_window = std::make_unique<Window>("TempDirect3D9OverlayWindow");
 
     const auto hMod = GetModuleHandle("d3d9.dll");
 

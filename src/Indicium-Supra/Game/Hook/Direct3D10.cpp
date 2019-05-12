@@ -33,7 +33,7 @@ using namespace Indicium::Core::Exceptions;
 Direct3D10Hooking::Direct3D10::Direct3D10() :
     pDevice(nullptr), pSwapChain(nullptr)
 {
-    temp_window = new Window("TempDirect3D10OverlayWindow");
+    temp_window = std::make_unique<Window>("TempDirect3D10OverlayWindow");
 
     const auto hModDXGI = GetModuleHandle("DXGI.dll");
     const auto hModD3D10 = GetModuleHandle("D3D10.dll");

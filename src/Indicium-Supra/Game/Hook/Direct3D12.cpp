@@ -34,7 +34,7 @@ using namespace Indicium::Core::Exceptions;
 Direct3D12Hooking::Direct3D12::Direct3D12() :
 pd3dDevice(nullptr), pQueue(nullptr), pSwapChain(nullptr)
 {
-    temp_window = new Window("TempDirect3D12OverlayWindow");
+    temp_window = std::make_unique<Window>("TempDirect3D12OverlayWindow");
 
     const auto hModDXGI = GetModuleHandle("DXGI.dll");
     const auto hModD3D12 = GetModuleHandle("D3D12.dll");
