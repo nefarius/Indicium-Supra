@@ -24,24 +24,26 @@ SOFTWARE.
 
 #include "Direct3D11.h"
 #include "DXGI.h"
-#include <Poco/Exception.h>
+#include "Exceptions.hpp"
 
+using namespace Indicium::Core::Exceptions;
 
-Direct3D11Hooking::Direct3D11::Direct3D11() : pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
+Direct3D11Hooking::Direct3D11::Direct3D11() :
+    pd3dDevice(nullptr), pd3dDeviceContext(nullptr), pSwapChain(nullptr)
 {
     temp_window = new Window("TempDirect3D11OverlayWindow");
 
-    auto hModDXGI = GetModuleHandle("DXGI.dll");
-    auto hModD3D11 = GetModuleHandle("D3D11.dll");
+    const auto hModDXGI = GetModuleHandle("DXGI.dll");
+    const auto hModD3D11 = GetModuleHandle("D3D11.dll");
 
     if (hModDXGI == nullptr)
     {
-        throw Poco::RuntimeException("Couldn't get handle to DXGI.dll");
+        throw ModuleNotFoundException("Couldn't get handle to DXGI.dll");
     }
 
     if (hModD3D11 == nullptr)
     {
-        throw Poco::RuntimeException("Couldn't get handle to D3D11.dll");
+        throw ModuleNotFoundException("Couldn't get handle to D3D11.dll");
     }
 
     // Setup swap chain
@@ -66,15 +68,20 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : pd3dDevice(nullptr), pd3dDeviceCon
     UINT createDeviceFlags = 0;
     D3D_FEATURE_LEVEL featureLevel;
     // Note: requesting lower feature level in case of missing hardware support
-    const D3D_FEATURE_LEVEL featureLevelArray[3] = { D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0 };
+    const D3D_FEATURE_LEVEL featureLevelArray[3] = {
+        D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0
+    };
 
-    auto hD3D11CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(hModD3D11, "D3D11CreateDeviceAndSwapChain"));
+    const auto hD3D11CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(
+        hModD3D11,
+        "D3D11CreateDeviceAndSwapChain"
+    ));
     if (hD3D11CreateDeviceAndSwapChain == nullptr)
     {
-        throw Poco::RuntimeException("Couldn't get handle to D3D11CreateDeviceAndSwapChain");
+        throw ProcAddressNotFoundException("Couldn't get handle to D3D11CreateDeviceAndSwapChain");
     }
 
-    auto hr11 = static_cast<HRESULT(WINAPI *)(
+    const auto hr11 = static_cast<HRESULT(WINAPI *)(
         IDXGIAdapter*,
         D3D_DRIVER_TYPE,
         HMODULE,
@@ -102,10 +109,9 @@ Direct3D11Hooking::Direct3D11::Direct3D11() : pd3dDevice(nullptr), pd3dDeviceCon
 
     if (FAILED(hr11))
     {
-        throw Poco::RuntimeException("Couldn't create D3D11 device");
+        throw DXAPIException("Couldn't create D3D11 device", hr11);
     }
 }
-
 
 std::vector<size_t> Direct3D11Hooking::Direct3D11::vtable() const
 {
