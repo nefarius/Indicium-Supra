@@ -24,6 +24,8 @@ SOFTWARE.
 
 #pragma once
 
+#ifdef HOOK_DINPUT8
+
 #define DIRECTINPUT_VERSION 0x0800
 #define _CRT_SECURE_NO_DEPRECATE
 #ifndef _WIN32_DCOM
@@ -40,8 +42,6 @@ SOFTWARE.
 #define SAFE_DELETE(p)  { if(p) { delete (p);     (p)=nullptr; } }
 #define SAFE_RELEASE(p) { if(p) { (p)->Release(); (p)=nullptr; } }
 
-#include <Poco/Logger.h>
-using Poco::Logger;
 
 namespace DirectInput8Hooking
 {
@@ -113,7 +113,6 @@ namespace DirectInput8Hooking
         LPDIRECTINPUTDEVICE8    pJoystick = nullptr;
         LPDIRECTINPUT8          pDI = nullptr;
 
-        Logger& logger = Logger::get(typeid(this).name());
     public:
         DirectInput8();
         ~DirectInput8();
@@ -126,3 +125,4 @@ namespace DirectInput8Hooking
     };
 }
 
+#endif

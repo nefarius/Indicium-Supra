@@ -99,7 +99,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
     static PINDICIUM_ENGINE engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
 
-    BOOST_LOG_TRIVIAL(info) << "Library loaded into " << GlobalState::instance().process_name();
+    BOOST_LOG_TRIVIAL(info) << "Library loaded into " << Indicium::Core::Util::process_name();
 
     BOOST_LOG_TRIVIAL(info) << "Library enabled";
 

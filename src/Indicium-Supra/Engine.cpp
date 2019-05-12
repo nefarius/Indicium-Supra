@@ -99,7 +99,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     logging::register_simple_formatter_factory<logging::trivial::severity_level, char>("Severity");
 
     logging::add_file_log(
-        keywords::file_name = GlobalState::instance().expand_environment_variables("%TEMP%\\Indicium-Supra.log"),
+        keywords::file_name = Indicium::Core::Util::expand_environment_variables("%TEMP%\\Indicium-Supra.log"),
         keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] [%Scope%] %Message%",
         keywords::auto_flush = true
     );

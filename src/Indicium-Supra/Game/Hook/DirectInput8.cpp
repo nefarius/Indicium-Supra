@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#ifdef HOOK_DINPUT8
+
 #include "DirectInput8.h"
 #include <wbemidl.h>
 
@@ -329,4 +331,6 @@ bool DirectInput8Hooking::DirectInput8::GetVTable(UINT64 *pVTable) const
 
     return false;
 }
+#endif
+
 #endif
