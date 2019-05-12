@@ -25,9 +25,6 @@ SOFTWARE.
 
 #pragma once
 
-#include <Poco/AutoPtr.h>
-#include <Poco/Util/IniFileConfiguration.h>
-
 //
 // Internal engine instance properties
 //
@@ -77,11 +74,6 @@ typedef struct _INDICIUM_ENGINE
     // Signals the caller of the API that shutdown has occurred
     //
     HANDLE EngineCancellationCompletedEvent;
-
-    //
-    // Runtime configuration
-    //
-    Poco::AutoPtr<Poco::Util::IniFileConfiguration> Configuration;
 
 } INDICIUM_ENGINE;
 

@@ -27,6 +27,8 @@ SOFTWARE.
 #include <string>
 #include <Psapi.h>
 
+#define POCO_NO_UNWINDOWS
+
 #include <Poco/SingletonHolder.h>
 #include <Poco/Buffer.h>
 #include <Poco/Path.h>

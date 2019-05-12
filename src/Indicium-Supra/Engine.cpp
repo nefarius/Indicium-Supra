@@ -26,14 +26,18 @@ SOFTWARE.
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+//
+// Public
+// 
 #include "Indicium/Engine/IndiciumCore.h"
 #include "Indicium/Engine/IndiciumDirect3D9.h"
 #include "Indicium/Engine/IndiciumDirect3D10.h"
 #include "Indicium/Engine/IndiciumDirect3D11.h"
 #include "Indicium/Engine/IndiciumDirect3D12.h"
 
-#define POCO_NO_UNWINDOWS
-
+//
+// Internal
+// 
 #include "Engine.h"
 #include "Game/Game.h"
 #include "Global.h"
@@ -51,15 +55,6 @@ SOFTWARE.
 namespace logging = boost::log;
 namespace keywords = boost::log::keywords;
 namespace attrs = boost::log::attributes;
-
-#include <Poco/AutoPtr.h>
-#include <Poco/Util/IniFileConfiguration.h>
-#include <Poco/Message.h>
-#include <Poco/Path.h>
-
-using Poco::AutoPtr;
-using Poco::Util::IniFileConfiguration;
-using Poco::Path;
 
 
 INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void)
@@ -97,12 +92,6 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     // Event to notify shutdown function that the game has been unhooked
     // 
     Engine->EngineCancellationCompletedEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-
-    //
-    // Fetch configuration
-    // 
-    Path cfgFile(GlobalState::instance().root_path(), "Indicium-Supra.ini");
-    Engine->Configuration = new IniFileConfiguration();
 
     //
     // Set up logging
