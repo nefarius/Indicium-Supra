@@ -55,19 +55,10 @@ namespace attrs = boost::log::attributes;
 #include <Poco/AutoPtr.h>
 #include <Poco/Util/IniFileConfiguration.h>
 #include <Poco/Message.h>
-#include <Poco/Logger.h>
-#include <Poco/FileChannel.h>
-#include <Poco/PatternFormatter.h>
-#include <Poco/FormattingChannel.h>
 #include <Poco/Path.h>
 
 using Poco::AutoPtr;
 using Poco::Util::IniFileConfiguration;
-using Poco::Message;
-using Poco::Logger;
-using Poco::FileChannel;
-using Poco::PatternFormatter;
-using Poco::FormattingChannel;
 using Poco::Path;
 
 
