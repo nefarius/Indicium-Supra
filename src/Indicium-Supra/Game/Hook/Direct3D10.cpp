@@ -23,14 +23,16 @@ SOFTWARE.
 */
 
 #include "Direct3D10.h"
-#include <Poco/Exception.h>
 #include <vector>
 #include "DXGI.h"
 #include "Utils/Misc.h"
 #include "Exceptions.hpp"
 
 
-Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), pSwapChain(nullptr)
+using namespace Indicium::Core::Exceptions;
+
+Direct3D10Hooking::Direct3D10::Direct3D10() :
+    pDevice(nullptr), pSwapChain(nullptr)
 {
     temp_window = new Window("TempDirect3D10OverlayWindow");
 
@@ -55,18 +57,18 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), 
 
     IDXGIFactory* pFactory;
     const auto hr = static_cast<HRESULT(WINAPI *)(
-        REFIID, 
+        REFIID,
         void** ppFactory)>(hCreateDXGIFactory)(
-        __uuidof(IDXGIFactory), 
+        __uuidof(IDXGIFactory),
         reinterpret_cast<void**>(&pFactory));
 
     if (FAILED(hr))
     {
-        throw Poco::RuntimeException("Couldn't create DXGI factory", hr);
+        throw DXAPIException("Couldn't create DXGI factory", hr);
     }
 
     const auto hD3D10CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(
-        hModD3D10, 
+        hModD3D10,
         "D3D10CreateDeviceAndSwapChain"));
     if (hD3D10CreateDeviceAndSwapChain == nullptr)
     {
@@ -84,7 +86,7 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), 
 
     if (vAdapters.empty())
     {
-        throw Poco::RuntimeException("No adapters found");
+        throw RuntimeException("No adapters found");
     }
 
     DXGI_RATIONAL rational = {};
@@ -112,26 +114,26 @@ Direct3D10Hooking::Direct3D10::Direct3D10() : Direct3DBase(), pDevice(nullptr), 
     scDesc.BufferDesc = modeDesc;
 
     const auto hr10 = static_cast<HRESULT(WINAPI *)(
-        IDXGIAdapter*, 
-        D3D10_DRIVER_TYPE, 
-        HMODULE, 
-        UINT, 
-        UINT, 
-        DXGI_SWAP_CHAIN_DESC*, 
-        IDXGISwapChain**, 
+        IDXGIAdapter*,
+        D3D10_DRIVER_TYPE,
+        HMODULE,
+        UINT,
+        UINT,
+        DXGI_SWAP_CHAIN_DESC*,
+        IDXGISwapChain**,
         ID3D10Device**)>(hD3D10CreateDeviceAndSwapChain)(
-        vAdapters[0], 
+        vAdapters[0],
         D3D10_DRIVER_TYPE_HARDWARE,
-        nullptr, 
-        0, 
-        D3D10_SDK_VERSION, 
-        &scDesc, 
-        &pSwapChain, 
+        nullptr,
+        0,
+        D3D10_SDK_VERSION,
+        &scDesc,
+        &pSwapChain,
         &pDevice);
 
     if (FAILED(hr10))
     {
-        throw Poco::RuntimeException("Couldn't create D3D10 device");
+        throw DXAPIException("Couldn't create D3D10 device", hr10);
     }
 }
 

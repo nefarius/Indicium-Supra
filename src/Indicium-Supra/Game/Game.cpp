@@ -30,6 +30,7 @@ SOFTWARE.
 #include "Game.h"
 #include "Global.h"
 #include "Exceptions.hpp"
+using namespace Indicium::Core::Exceptions;
 
 //
 // Hooking helper sub-systems
