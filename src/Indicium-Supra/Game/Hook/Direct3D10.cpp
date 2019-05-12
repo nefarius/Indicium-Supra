@@ -28,7 +28,6 @@ SOFTWARE.
 #include "Utils/Misc.h"
 #include "Exceptions.hpp"
 
-
 using namespace Indicium::Core::Exceptions;
 
 Direct3D10Hooking::Direct3D10::Direct3D10() :
