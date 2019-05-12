@@ -28,8 +28,6 @@ SOFTWARE.
 #include <detours.h>
 #include "Exceptions.hpp"
 
-#include <Poco/Exception.h>
-
 
 enum class CallConvention
 {
@@ -71,12 +69,12 @@ class Hook
         {
             if (result == ERROR_INVALID_OPERATION)
             {
-                throw DetourException(
+                throw Indicium::Core::Exceptions::DetourException(
                     "A pending transaction already exists"
                 );
             }
 
-            throw DetourException("Unknown error");
+            throw Indicium::Core::Exceptions::DetourException("Unknown error");
         }
 
         has_open_transaction_ = true;
@@ -91,32 +89,32 @@ class Hook
             switch (result)
             {
             case ERROR_INVALID_DATA:
-                throw DetourException(
+                throw Indicium::Core::Exceptions::DetourException(
                     "Target function was changed by third party between steps of the transaction"
                 );
 
             case ERROR_INVALID_OPERATION:
-                throw DetourException(
+                throw Indicium::Core::Exceptions::DetourException(
                     "No pending transaction exists"
                 );
 
             case ERROR_INVALID_BLOCK:
-                throw DetourException(
+                throw Indicium::Core::Exceptions::DetourException(
                     "The function referenced is too small to be detoured"
                 );
 
             case ERROR_INVALID_HANDLE:
-                throw DetourException(
+                throw Indicium::Core::Exceptions::DetourException(
                     "The ppPointer parameter is null or points to a null pointer"
                 );
 
             case ERROR_NOT_ENOUGH_MEMORY:
-                throw DetourException(
+                throw Indicium::Core::Exceptions::DetourException(
                     "Not enough memory exists to complete the operation"
                 );
 
             default:
-                throw DetourException(
+                throw Indicium::Core::Exceptions::DetourException(
                     "Unknown error"
                 );
             }
@@ -133,10 +131,12 @@ class Hook
         {
             if (result == ERROR_NOT_ENOUGH_MEMORY)
             {
-                throw DetourException("Not enough memory to record identity of thread");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "Not enough memory to record identity of thread"
+                );
             }
 
-            throw DetourException("Unknown error");
+            throw Indicium::Core::Exceptions::DetourException("Unknown error");
         }
     }
 
@@ -155,9 +155,11 @@ public:
             {
                 if (result == ERROR_INVALID_OPERATION)
                 {
-                    throw DetourException("No pending transaction exists");
+                    throw Indicium::Core::Exceptions::DetourException(
+                        "No pending transaction exists"
+                    );
                 }
-                throw DetourException("Unknown error");
+                throw Indicium::Core::Exceptions::DetourException("Unknown error");
             }
         }
 
@@ -179,19 +181,27 @@ public:
             switch (result)
             {
             case ERROR_INVALID_BLOCK:
-                throw DetourException("The function referenced is too small to be detoured");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "The function referenced is too small to be detoured"
+                );
 
             case ERROR_INVALID_HANDLE:
-                throw DetourException("The ppPointer parameter is null or points to a null pointer");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "The ppPointer parameter is null or points to a null pointer"
+                );
 
             case ERROR_INVALID_OPERATION:
-                throw DetourException("No pending transaction exists");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "No pending transaction exists"
+                );
 
             case ERROR_NOT_ENOUGH_MEMORY:
-                throw DetourException("Not enough memory exists to complete the operation");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "Not enough memory exists to complete the operation"
+                );
 
             default:
-                throw DetourException("Unknown error");
+                throw Indicium::Core::Exceptions::DetourException("Unknown error");
             }
         }
 
@@ -216,19 +226,29 @@ public:
             switch (result)
             {
             case ERROR_INVALID_BLOCK:
-                throw DetourException("The function to be detached was too small to be detoured");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "The function to be detached was too small to be detoured"
+                );
 
             case ERROR_INVALID_HANDLE:
-                throw DetourException("The ppPointer parameter is null or points to a null pointer");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "The ppPointer parameter is null or points to a null pointer"
+                );
 
             case ERROR_INVALID_OPERATION:
-                throw DetourException("No pending transaction exists");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "No pending transaction exists"
+                );
 
             case ERROR_NOT_ENOUGH_MEMORY:
-                throw DetourException("Not enough memory exists to complete the operation");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "Not enough memory exists to complete the operation"
+                );
 
             default:
-                throw DetourException("Unknown error");
+                throw Indicium::Core::Exceptions::DetourException(
+                    "Unknown error"
+                );
             }
         }
 
