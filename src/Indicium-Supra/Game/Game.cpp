@@ -68,19 +68,6 @@ using namespace Indicium::Core::Exceptions;
 #include <boost/log/trivial.hpp>
 #include <boost/log/attributes/named_scope.hpp>
 
-//
-// POCO
-// 
-#include <Poco/AutoPtr.h>
-#include <Poco/Buffer.h>
-#include <Poco/Util/IniFileConfiguration.h>
-#include <Poco/Path.h>
-
-using Poco::AutoPtr;
-using Poco::Buffer;
-using Poco::Util::IniFileConfiguration;
-using Poco::Path;
-
 // NOTE: DirectInput hooking is technically implemented but not really useful
 // #define HOOK_DINPUT8
 
