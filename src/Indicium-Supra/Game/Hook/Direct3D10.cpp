@@ -40,18 +40,18 @@ Direct3D10Hooking::Direct3D10::Direct3D10() :
 
     if (hModDXGI == nullptr)
     {
-        throw ModuleNotFoundException("Couldn't get handle to DXGI.dll");
+        throw ModuleNotFoundException("Could not get handle to DXGI.dll");
     }
 
     if (hModD3D10 == nullptr)
     {
-        throw ModuleNotFoundException("Couldn't get handle to D3D10.dll");
+        throw ModuleNotFoundException("Could not get handle to D3D10.dll");
     }
 
     const auto hCreateDXGIFactory = static_cast<LPVOID>(GetProcAddress(hModDXGI, "CreateDXGIFactory"));
     if (hCreateDXGIFactory == nullptr)
     {
-        throw ProcAddressNotFoundException("Couldn't get handle to CreateDXGIFactory");
+        throw ProcAddressNotFoundException("Could not get handle to CreateDXGIFactory");
     }
 
     IDXGIFactory* pFactory;
@@ -63,7 +63,7 @@ Direct3D10Hooking::Direct3D10::Direct3D10() :
 
     if (FAILED(hr))
     {
-        throw DXAPIException("Couldn't create DXGI factory", hr);
+        throw DXAPIException("Could not create DXGI factory", hr);
     }
 
     const auto hD3D10CreateDeviceAndSwapChain = static_cast<LPVOID>(GetProcAddress(
@@ -71,7 +71,7 @@ Direct3D10Hooking::Direct3D10::Direct3D10() :
         "D3D10CreateDeviceAndSwapChain"));
     if (hD3D10CreateDeviceAndSwapChain == nullptr)
     {
-        throw ProcAddressNotFoundException("Couldn't get handle to D3D10CreateDeviceAndSwapChain");
+        throw ProcAddressNotFoundException("Could not get handle to D3D10CreateDeviceAndSwapChain");
     }
 
     UINT i = 0;
@@ -132,7 +132,7 @@ Direct3D10Hooking::Direct3D10::Direct3D10() :
 
     if (FAILED(hr10))
     {
-        throw DXAPIException("Couldn't create D3D10 device", hr10);
+        throw DXAPIException("Could not create D3D10 device", hr10);
     }
 }
 

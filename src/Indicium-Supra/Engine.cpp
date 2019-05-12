@@ -128,7 +128,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     );
 
     if (!Engine->EngineThread) {
-        BOOST_LOG_TRIVIAL(fatal) << "Couldn't create main thread, library unusable";
+        BOOST_LOG_TRIVIAL(fatal) << "Could not create main thread, library unusable";
         return INDICIUM_ERROR_CREATE_THREAD_FAILED;
     }
 

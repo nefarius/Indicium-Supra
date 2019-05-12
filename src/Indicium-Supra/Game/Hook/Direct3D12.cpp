@@ -41,25 +41,25 @@ pd3dDevice(nullptr), pQueue(nullptr), pSwapChain(nullptr)
 
     if (hModDXGI == nullptr)
     {
-        throw ModuleNotFoundException("Couldn't get handle to DXGI.dll");
+        throw ModuleNotFoundException("Could not get handle to DXGI.dll");
     }
 
     if (hModD3D12 == nullptr)
     {
-        throw ModuleNotFoundException("Couldn't get handle to D3D12.dll");
+        throw ModuleNotFoundException("Could not get handle to D3D12.dll");
     }
 
     const auto hD3D12CreateDevice = static_cast<LPVOID>(GetProcAddress(hModD3D12, "D3D12CreateDevice"));
 
     if (hD3D12CreateDevice == nullptr)
     {
-        throw ProcAddressNotFoundException("Couldn't get handle to D3D12CreateDevice");
+        throw ProcAddressNotFoundException("Could not get handle to D3D12CreateDevice");
     }
 
     const auto hCreateDXGIFactory1 = static_cast<LPVOID>(GetProcAddress(hModDXGI, "CreateDXGIFactory1"));
     if (hCreateDXGIFactory1 == nullptr)
     {
-        throw ProcAddressNotFoundException("Couldn't get handle to CreateDXGIFactory1");
+        throw ProcAddressNotFoundException("Could not get handle to CreateDXGIFactory1");
     }
 
     IDXGIFactory4* pFactory;
@@ -69,7 +69,7 @@ pd3dDevice(nullptr), pQueue(nullptr), pSwapChain(nullptr)
 
     if (FAILED(hr))
     {
-        throw DXAPIException("Couldn't create DXGI factory", hr);
+        throw DXAPIException("Could not create DXGI factory", hr);
     }
 
     const auto hr12 = static_cast<HRESULT(WINAPI *)(
@@ -83,7 +83,7 @@ pd3dDevice(nullptr), pQueue(nullptr), pSwapChain(nullptr)
 
     if (FAILED(hr12))
     {
-        throw DXAPIException("Couldn't create D3D12 device", hr12);
+        throw DXAPIException("Could not create D3D12 device", hr12);
     }
 
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};

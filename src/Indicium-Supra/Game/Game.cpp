@@ -411,7 +411,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                     return;
                 }
 
-                BOOST_LOG_TRIVIAL(error) << "Couldn't fetch device pointer";
+                BOOST_LOG_TRIVIAL(error) << "Could not fetch device pointer";
             });
 
             if (deviceVersion == IndiciumDirect3DVersion10) {
@@ -747,7 +747,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
             if (!dinput8_available)
             {
-                logger.warning("Couldn't get VTable for DirectInput8");
+                logger.warning("Could not get VTable for DirectInput8");
             }
         }
 

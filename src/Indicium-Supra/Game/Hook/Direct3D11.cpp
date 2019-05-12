@@ -38,12 +38,12 @@ Direct3D11Hooking::Direct3D11::Direct3D11() :
 
     if (hModDXGI == nullptr)
     {
-        throw ModuleNotFoundException("Couldn't get handle to DXGI.dll");
+        throw ModuleNotFoundException("Could not get handle to DXGI.dll");
     }
 
     if (hModD3D11 == nullptr)
     {
-        throw ModuleNotFoundException("Couldn't get handle to D3D11.dll");
+        throw ModuleNotFoundException("Could not get handle to D3D11.dll");
     }
 
     // Setup swap chain
@@ -78,7 +78,7 @@ Direct3D11Hooking::Direct3D11::Direct3D11() :
     ));
     if (hD3D11CreateDeviceAndSwapChain == nullptr)
     {
-        throw ProcAddressNotFoundException("Couldn't get handle to D3D11CreateDeviceAndSwapChain");
+        throw ProcAddressNotFoundException("Could not get handle to D3D11CreateDeviceAndSwapChain");
     }
 
     const auto hr11 = static_cast<HRESULT(WINAPI *)(
@@ -109,7 +109,7 @@ Direct3D11Hooking::Direct3D11::Direct3D11() :
 
     if (FAILED(hr11))
     {
-        throw DXAPIException("Couldn't create D3D11 device", hr11);
+        throw DXAPIException("Could not create D3D11 device", hr11);
     }
 }
 

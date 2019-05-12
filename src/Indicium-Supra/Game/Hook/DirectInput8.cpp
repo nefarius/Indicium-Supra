@@ -250,7 +250,7 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
     if (FAILED(hr = DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION,
         IID_IDirectInput8, (VOID**)&pDI, nullptr)))
     {
-        logger.error("Couldn't create DirectInput device");
+        logger.error("Could not create DirectInput device");
         return;
     }
 
@@ -265,7 +265,7 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
     IDirectInputJoyConfig8* pJoyConfig = nullptr;
     if (FAILED(hr = pDI->QueryInterface(IID_IDirectInputJoyConfig8, reinterpret_cast<void**>(&pJoyConfig))))
     {
-        logger.error("Couldn't query IID_IDirectInputJoyConfig8 interface");
+        logger.error("Could not query IID_IDirectInputJoyConfig8 interface");
         return;
     }
 
@@ -280,7 +280,7 @@ DirectInput8Hooking::DirectInput8::DirectInput8() : vtable(nullptr)
         StaticEnumJoysticksCallback,
         &enumContext, DIEDFL_ATTACHEDONLY)))
     {
-        logger.error("Couldn't enumerate devices");
+        logger.error("Could not enumerate devices");
         return;
     }
 
