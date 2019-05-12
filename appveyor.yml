@@ -11,7 +11,7 @@ before_build:
 - cmd: nuget restore
 - cmd: vcpkg integrate install
 - cmd: vcpkg update
-- cmd: vcpkg install poco:x86-windows-static poco:x64-windows-static detours:x86-windows-static detours:x64-windows-static
+- cmd: vcpkg install boost-log:x86-windows-static boost-log:x64-windows-static detours:x86-windows-static detours:x64-windows-static
 build_script:
 - ps: .\build.ps1
 after_build:
@@ -20,14 +20,14 @@ after_build:
     Expand-Archive verpatch-1.0.15.1-x86-codeplex.zip -DestinationPath .
     .\verpatch.exe .\bin\x64\Indicium-FW1FontWrapper.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x64\Indicium-FW1FontWrapper.dll /pv "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x64\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x64\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
+    #.\verpatch.exe .\bin\x64\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
+    #.\verpatch.exe .\bin\x64\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x64\Indicium-Supra.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x64\Indicium-Supra.dll /pv "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-FW1FontWrapper.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-FW1FontWrapper.dll /pv "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x86\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x86\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
+    #.\verpatch.exe .\bin\x86\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
+    #.\verpatch.exe .\bin\x86\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-Supra.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-Supra.dll /pv "$env:APPVEYOR_BUILD_VERSION"
 artifacts:
