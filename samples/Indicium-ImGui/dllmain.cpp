@@ -71,9 +71,10 @@ using Poco::Path;
 // ImGui includes
 // 
 #include <imgui.h>
-#include <imgui_impl_dx9.h>
-#include <imgui_impl_dx10.h>
-#include <imgui_impl_dx11.h>
+#include "imgui_impl_dx9.h"
+#include "imgui_impl_dx10.h"
+#include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
 
 t_WindowProc OriginalDefWindowProc = nullptr;
 t_WindowProc OriginalWindowProc = nullptr;
@@ -193,14 +194,15 @@ void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
 
 	logger.information("Loading ImGui plugin");
 
-	// Setup Dear ImGui binding
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
 
-	// Setup style
-	ImGui::StyleColorsDark();
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
 }
 
 /**
@@ -255,14 +257,15 @@ void EvtIndiciumD3D9Present(
 	{
 		D3DDEVICE_CREATION_PARAMETERS params;
 
-		auto hr = pd3dDevice->GetCreationParameters(&params);
+        const auto hr = pd3dDevice->GetCreationParameters(&params);
 		if (FAILED(hr))
 		{
 			logger.error("Couldn't get creation parameters from device");
 			return;
 		}
 
-		ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
+        ImGui_ImplWin32_Init(params.hFocusWindow);
+		ImGui_ImplDX9_Init(pd3dDevice);
 
 		logger.information("ImGui (DX9) initialized");
 
@@ -321,14 +324,15 @@ void EvtIndiciumD3D9PresentEx(
 	{
 		D3DDEVICE_CREATION_PARAMETERS params;
 
-		auto hr = pd3dDevice->GetCreationParameters(&params);
+        const auto hr = pd3dDevice->GetCreationParameters(&params);
 		if (FAILED(hr))
 		{
 			logger.error("Couldn't get creation parameters from device");
 			return;
 		}
 
-		ImGui_ImplDX9_Init(params.hFocusWindow, pd3dDevice);
+        ImGui_ImplWin32_Init(params.hFocusWindow);
+		ImGui_ImplDX9_Init(pd3dDevice);
 
 		logger.information("ImGui (DX9Ex) initialized");
 
@@ -345,8 +349,13 @@ void EvtIndiciumD3D9PresentEx(
 	if (!show_overlay) 
 		return;
 
-	ImGui_ImplDX9_NewFrame();
+    // Start the Dear ImGui frame
+    ImGui_ImplDX9_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
 	RenderScene();
+
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 }
 
@@ -402,7 +411,8 @@ void EvtIndiciumD3D10Present(
 
 		logger.information("Initializing ImGui");
 
-		ImGui_ImplDX10_Init(sd.OutputWindow, pDevice);
+        ImGui_ImplWin32_Init(sd.OutputWindow);
+		ImGui_ImplDX10_Init(pDevice);
 
 		logger.information("ImGui (DX10) initialized");
 
@@ -419,8 +429,14 @@ void EvtIndiciumD3D10Present(
 	if (!show_overlay)
 		return;
 
-	ImGui_ImplDX10_NewFrame();
+	
+    // Start the Dear ImGui frame
+    ImGui_ImplDX10_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
 	RenderScene();
+
 	ImGui_ImplDX10_RenderDrawData(ImGui::GetDrawData());
 }
 
@@ -490,7 +506,8 @@ void EvtIndiciumD3D11Present(
 
 		logger.information("Initializing ImGui");
 
-		ImGui_ImplDX11_Init(sd.OutputWindow, pDevice, pContext);
+        ImGui_ImplWin32_Init(sd.OutputWindow);
+		ImGui_ImplDX11_Init(pDevice, pContext);
 
 		logger.information("ImGui (DX11) initialized");
 
@@ -507,9 +524,15 @@ void EvtIndiciumD3D11Present(
 	if (!show_overlay)
 		return;
 
-	ImGui_ImplDX11_NewFrame();
+    // Start the Dear ImGui frame
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
 	pContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
+
 	RenderScene();
+
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
@@ -742,85 +765,6 @@ bool ImGui_ImplWin32_UpdateMouseCursor()
 		::SetCursor(::LoadCursor(NULL, win32_cursor));
 	}
 	return true;
-}
-
-// Allow compilation with old Windows SDK. MinGW doesn't have default _WIN32_WINNT/WINVER versions.
-#ifndef WM_MOUSEHWHEEL
-#define WM_MOUSEHWHEEL 0x020E
-#endif
-
-// Process Win32 mouse/keyboard inputs. 
-// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-// PS: In this Win32 handler, we use the capture API (GetCapture/SetCapture/ReleaseCapture) to be able to read mouse coordinations when dragging mouse outside of our window bounds.
-// PS: We treat DBLCLK messages as regular mouse down messages, so this code will work on windows classes that have the CS_DBLCLKS flag set. Our own example app code doesn't set this flag.
-IMGUI_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	if (ImGui::GetCurrentContext() == NULL)
-		return 0;
-
-	ImGuiIO& io = ImGui::GetIO();
-	switch (msg)
-	{
-	case WM_LBUTTONDOWN: case WM_LBUTTONDBLCLK:
-	case WM_RBUTTONDOWN: case WM_RBUTTONDBLCLK:
-	case WM_MBUTTONDOWN: case WM_MBUTTONDBLCLK:
-	{
-		int button = 0;
-		if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK) button = 0;
-		if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK) button = 1;
-		if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) button = 2;
-		if (!ImGui::IsAnyMouseDown() && ::GetCapture() == NULL)
-			::SetCapture(hwnd);
-		io.MouseDown[button] = true;
-		return 0;
-	}
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-	case WM_MBUTTONUP:
-	{
-		int button = 0;
-		if (msg == WM_LBUTTONUP) button = 0;
-		if (msg == WM_RBUTTONUP) button = 1;
-		if (msg == WM_MBUTTONUP) button = 2;
-		io.MouseDown[button] = false;
-		if (!ImGui::IsAnyMouseDown() && ::GetCapture() == hwnd)
-			::ReleaseCapture();
-		return 0;
-	}
-	case WM_MOUSEWHEEL:
-		io.MouseWheel += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? +1.0f : -1.0f;
-		return 0;
-	case WM_MOUSEHWHEEL:
-		io.MouseWheelH += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? +1.0f : -1.0f;
-		return 0;
-	case WM_MOUSEMOVE:
-		io.MousePos.x = (signed short)(lParam);
-		io.MousePos.y = (signed short)(lParam >> 16);
-		return 0;
-	case WM_KEYDOWN:
-	case WM_SYSKEYDOWN:
-		if (wParam < 256)
-			io.KeysDown[wParam] = 1;
-		return 0;
-	case WM_KEYUP:
-	case WM_SYSKEYUP:
-		if (wParam < 256)
-			io.KeysDown[wParam] = 0;
-		return 0;
-	case WM_CHAR:
-		// You can also use ToAscii()+GetKeyboardState() to retrieve characters.
-		if (wParam > 0 && wParam < 0x10000)
-			io.AddInputCharacter((unsigned short)wParam);
-		return 0;
-	case WM_SETCURSOR:
-		if (LOWORD(lParam) == HTCLIENT && ImGui_ImplWin32_UpdateMouseCursor())
-			return 1;
-		return 0;
-	}
-	return 0;
 }
 
 #pragma endregion
