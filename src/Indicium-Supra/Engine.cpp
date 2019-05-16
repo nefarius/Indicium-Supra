@@ -91,11 +91,6 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     Engine->EngineCancellationEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
     //
-    // Event to notify shutdown function that the game has been unhooked
-    // 
-    Engine->EngineCancellationCompletedEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-
-    //
     // Set up logging
     // 
     logging::register_simple_formatter_factory<logging::trivial::severity_level, char>("Severity");
@@ -149,8 +144,14 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
 
     BOOST_LOG_TRIVIAL(info) << "Indicium engine shutdown requested, attempting to terminate main thread";
 
-    SetEvent(Engine->EngineCancellationEvent);
-    const auto result = WaitForSingleObject(Engine->EngineCancellationCompletedEvent, 1000);
+    const auto ret = SetEvent(Engine->EngineCancellationEvent);
+
+    if (!ret)
+    {
+        BOOST_LOG_TRIVIAL(error) << "SetEvent failed: " << std::hex << GetLastError();
+    }
+
+    const auto result = WaitForSingleObject(Engine->EngineThread, 3000);
 
     switch (result)
     {
@@ -161,13 +162,15 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
         BOOST_LOG_TRIVIAL(info) << "Hooks removed, notifying caller";
         break;
     case WAIT_TIMEOUT:
-        BOOST_LOG_TRIVIAL(error) << "Thread hasn't finished clean-up within expected time";
+        TerminateThread(Engine->EngineThread, 0);
+        BOOST_LOG_TRIVIAL(error) << "Thread hasn't finished clean-up within expected time, terminating";
         break;
     case WAIT_FAILED:
         BOOST_LOG_TRIVIAL(error) << "Unknown error, host process might crash";
         break;
     default:
-        BOOST_LOG_TRIVIAL(error) << "Unexpected return value";
+        TerminateThread(Engine->EngineThread, 0);
+        BOOST_LOG_TRIVIAL(error) << "Unexpected return value, terminating";
         break;
     }
 
@@ -176,7 +179,6 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     }
 
     CloseHandle(Engine->EngineCancellationEvent);
-    CloseHandle(Engine->EngineCancellationCompletedEvent);
     CloseHandle(Engine->EngineThread);
 
     BOOST_LOG_TRIVIAL(info) << "Engine shutdown complete";
@@ -219,11 +221,9 @@ INDICIUM_API VOID IndiciumEngineSetD3D12EventCallbacks(PINDICIUM_ENGINE Engine, 
     }
 }
 
-INDICIUM_API VOID IndiciumEngineLogDebug(PINDICIUM_ENGINE Engine, LPCSTR Format, ...)
+INDICIUM_API VOID IndiciumEngineLogDebug(LPCSTR Format, ...)
 {
-    if (!Engine) {
-        return;
-    }
+    BOOST_LOG_NAMED_SCOPE(__func__);
 
     va_list args;
     va_start(args, Format);
@@ -233,11 +233,9 @@ INDICIUM_API VOID IndiciumEngineLogDebug(PINDICIUM_ENGINE Engine, LPCSTR Format,
     va_end(args);
 }
 
-INDICIUM_API VOID IndiciumEngineLogInfo(PINDICIUM_ENGINE Engine, LPCSTR Format, ...)
+INDICIUM_API VOID IndiciumEngineLogInfo(LPCSTR Format, ...)
 {
-    if (!Engine) {
-        return;
-    }
+    BOOST_LOG_NAMED_SCOPE(__func__);
 
     va_list args;
     va_start(args, Format);
@@ -247,11 +245,9 @@ INDICIUM_API VOID IndiciumEngineLogInfo(PINDICIUM_ENGINE Engine, LPCSTR Format, 
     va_end(args);
 }
 
-INDICIUM_API VOID IndiciumEngineLogWarning(PINDICIUM_ENGINE Engine, LPCSTR Format, ...)
+INDICIUM_API VOID IndiciumEngineLogWarning(LPCSTR Format, ...)
 {
-    if (!Engine) {
-        return;
-    }
+    BOOST_LOG_NAMED_SCOPE(__func__);
 
     va_list args;
     va_start(args, Format);
@@ -261,11 +257,9 @@ INDICIUM_API VOID IndiciumEngineLogWarning(PINDICIUM_ENGINE Engine, LPCSTR Forma
     va_end(args);
 }
 
-INDICIUM_API VOID IndiciumEngineLogError(PINDICIUM_ENGINE Engine, LPCSTR Format, ...)
+INDICIUM_API VOID IndiciumEngineLogError(LPCSTR Format, ...)
 {
-    if (!Engine) {
-        return;
-    }
+    BOOST_LOG_NAMED_SCOPE(__func__);
 
     va_list args;
     va_start(args, Format);

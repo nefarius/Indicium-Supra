@@ -211,14 +211,13 @@ extern "C" {
     );
 
     /**
-     * \fn  INDICIUM_API VOID IndiciumEngineLogDebug( _In_ PINDICIUM_ENGINE Engine, _In_ LPCSTR Format, _In_opt_ ... );
+     * \fn  INDICIUM_API VOID IndiciumEngineLogDebug( _In_ LPCSTR Format, _In_opt_ ... );
      *
      * \brief   Indicium engine log debug
      *
      * \author  Benjamin Höglinger-Stelzer
      * \date    16.05.2019
      *
-     * \param   Engine  The engine.
      * \param   Format  Describes the format to use.
      * \param   ...     The ...
      *
@@ -226,22 +225,19 @@ extern "C" {
      */
     INDICIUM_API VOID IndiciumEngineLogDebug(
         _In_
-        PINDICIUM_ENGINE Engine,
-        _In_
         LPCSTR Format,
         _In_opt_
         ...
     );
 
     /**
-     * \fn  INDICIUM_API VOID IndiciumEngineLogInfo( _In_ PINDICIUM_ENGINE Engine, _In_ LPCSTR Format, _In_opt_ ... );
+     * \fn  INDICIUM_API VOID IndiciumEngineLogInfo( _In_ LPCSTR Format, _In_opt_ ... );
      *
      * \brief   Indicium engine log information
      *
      * \author  Benjamin Höglinger-Stelzer
      * \date    16.05.2019
      *
-     * \param   Engine  The engine.
      * \param   Format  Describes the format to use.
      * \param   ...     The ...
      *
@@ -249,22 +245,19 @@ extern "C" {
      */
     INDICIUM_API VOID IndiciumEngineLogInfo(
         _In_
-        PINDICIUM_ENGINE Engine,
-        _In_
         LPCSTR Format,
         _In_opt_
         ...
     );
 
     /**
-     * \fn  INDICIUM_API VOID IndiciumEngineLogWarning( _In_ PINDICIUM_ENGINE Engine, _In_ LPCSTR Format, _In_opt_ ... );
+     * \fn  INDICIUM_API VOID IndiciumEngineLogWarning( _In_ LPCSTR Format, _In_opt_ ... );
      *
      * \brief   Indicium engine log warning
      *
      * \author  Benjamin Höglinger-Stelzer
      * \date    16.05.2019
      *
-     * \param   Engine  The engine.
      * \param   Format  Describes the format to use.
      * \param   ...     The ...
      *
@@ -272,30 +265,25 @@ extern "C" {
      */
     INDICIUM_API VOID IndiciumEngineLogWarning(
         _In_
-        PINDICIUM_ENGINE Engine,
-        _In_
         LPCSTR Format,
         _In_opt_
         ...
     );
 
     /**
-     * \fn  INDICIUM_API VOID IndiciumEngineLogError( _In_ PINDICIUM_ENGINE Engine, _In_ LPCSTR Format, _In_opt_ ... );
+     * \fn  INDICIUM_API VOID IndiciumEngineLogError( _In_ LPCSTR Format, _In_opt_ ... );
      *
      * \brief   Indicium engine log error
      *
      * \author  Benjamin Höglinger-Stelzer
      * \date    16.05.2019
      *
-     * \param   Engine  The engine.
      * \param   Format  Describes the format to use.
      * \param   ...     The ...
      *
      * \returns A VOID.
      */
     INDICIUM_API VOID IndiciumEngineLogError(
-        _In_
-        PINDICIUM_ENGINE Engine,
         _In_
         LPCSTR Format,
         _In_opt_

@@ -48,24 +48,6 @@ namespace logging = boost::log;
 namespace keywords = boost::log::keywords;
 namespace attrs = boost::log::attributes;
 
-// 
-// POCO
-// 
-#include <Poco/Message.h>
-#include <Poco/Logger.h>
-#include <Poco/FileChannel.h>
-#include <Poco/AutoPtr.h>
-#include <Poco/PatternFormatter.h>
-#include <Poco/FormattingChannel.h>
-#include <Poco/Path.h>
-
-using Poco::Message;
-using Poco::Logger;
-using Poco::FileChannel;
-using Poco::AutoPtr;
-using Poco::PatternFormatter;
-using Poco::FormattingChannel;
-using Poco::Path;
 
 // 
 // ImGui includes
@@ -180,20 +162,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
  */
 void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
 {
-	std::string logfile("%TEMP%\\Indicium-ImGui.Plugin.log");
-
-	AutoPtr<FileChannel> pFileChannel(new FileChannel);
-	pFileChannel->setProperty("path", Poco::Path::expand(logfile));
-	AutoPtr<PatternFormatter> pPF(new PatternFormatter);
-	pPF->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%i %s [%p]: %t");
-	AutoPtr<FormattingChannel> pFC(new FormattingChannel(pPF, pFileChannel));
-
-	Logger::root().setChannel(pFC);
-
-	auto& logger = Logger::get(__func__);
-
-	logger.information("Loading ImGui plugin");
-    IndiciumEngineLogInfo(engine, "Loading ImGui plugin");
+    IndiciumEngineLogInfo("Loading ImGui plugin");
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -226,7 +195,7 @@ void EvtIndiciumGameUnhooked()
 		return;
 	}
 
-	logger.information("Hooks disabled");
+	IndiciumEngineLogInfo("Hooks disabled");
 
 	if (MH_Uninitialize() != MH_OK)
 	{
@@ -246,7 +215,6 @@ void EvtIndiciumD3D9Present(
 	const RGNDATA       *pDirtyRegion
 )
 {
-	static auto& logger = Logger::get(__func__);
 	static auto initialized = false;
 	static bool show_overlay = true;
 	static std::once_flag init;
@@ -261,14 +229,14 @@ void EvtIndiciumD3D9Present(
         const auto hr = pd3dDevice->GetCreationParameters(&params);
 		if (FAILED(hr))
 		{
-			logger.error("Couldn't get creation parameters from device");
+            IndiciumEngineLogError("Couldn't get creation parameters from device");
 			return;
 		}
 
         ImGui_ImplWin32_Init(params.hFocusWindow);
 		ImGui_ImplDX9_Init(pd3dDevice);
 
-		logger.information("ImGui (DX9) initialized");
+		IndiciumEngineLogInfo("ImGui (DX9) initialized");
 
 		HookWindowProc(params.hFocusWindow);
 
@@ -318,7 +286,6 @@ void EvtIndiciumD3D9PresentEx(
 	DWORD                   dwFlags
 )
 {
-	static auto& logger = Logger::get(__func__);
 	static auto initialized = false;
 	static bool show_overlay = true;
 	static std::once_flag init;
@@ -333,14 +300,14 @@ void EvtIndiciumD3D9PresentEx(
         const auto hr = pd3dDevice->GetCreationParameters(&params);
 		if (FAILED(hr))
 		{
-			logger.error("Couldn't get creation parameters from device");
+			IndiciumEngineLogError("Couldn't get creation parameters from device");
 			return;
 		}
 
         ImGui_ImplWin32_Init(params.hFocusWindow);
 		ImGui_ImplDX9_Init(pd3dDevice);
 
-		logger.information("ImGui (DX9Ex) initialized");
+		IndiciumEngineLogInfo("ImGui (DX9Ex) initialized");
 
 		HookWindowProc(params.hFocusWindow);
 
@@ -393,7 +360,6 @@ void EvtIndiciumD3D10Present(
 	UINT            Flags
 )
 {
-	static auto& logger = Logger::get(__func__);
 	static auto initialized = false;
 	static bool show_overlay = true;
 	static std::once_flag init;
@@ -403,24 +369,24 @@ void EvtIndiciumD3D10Present(
 	// 
 	std::call_once(init, [&](IDXGISwapChain *pChain)
 	{
-		logger.information("Grabbing device and context pointers");
+		IndiciumEngineLogInfo("Grabbing device and context pointers");
 
 		ID3D10Device *pDevice;
 		if (FAILED(D3D10_DEVICE_FROM_SWAPCHAIN(pChain, &pDevice)))
 		{
-			logger.error("Couldn't get device from swapchain");
+			IndiciumEngineLogError("Couldn't get device from swapchain");
 			return;
 		}
 
 		DXGI_SWAP_CHAIN_DESC sd;
 		pChain->GetDesc(&sd);
 
-		logger.information("Initializing ImGui");
+		IndiciumEngineLogInfo("Initializing ImGui");
 
         ImGui_ImplWin32_Init(sd.OutputWindow);
 		ImGui_ImplDX10_Init(pDevice);
 
-		logger.information("ImGui (DX10) initialized");
+		IndiciumEngineLogInfo("ImGui (DX10) initialized");
 
 		HookWindowProc(sd.OutputWindow);
 
@@ -480,7 +446,6 @@ void EvtIndiciumD3D11Present(
 	UINT            Flags
 )
 {
-	static auto& logger = Logger::get(__func__);
 	static auto initialized = false;
 	static bool show_overlay = true;
 	static std::once_flag init;
@@ -493,12 +458,12 @@ void EvtIndiciumD3D11Present(
 	// 
 	std::call_once(init, [&](IDXGISwapChain *pChain)
 	{
-		logger.information("Grabbing device and context pointers");
+		IndiciumEngineLogInfo("Grabbing device and context pointers");
 
 		ID3D11Device *pDevice;
 		if (FAILED(D3D11_DEVICE_CONTEXT_FROM_SWAPCHAIN(pChain, &pDevice, &pContext)))
 		{
-			logger.error("Couldn't get device and context from swapchain");
+			IndiciumEngineLogError("Couldn't get device and context from swapchain");
 			return;
 		}
 
@@ -510,12 +475,12 @@ void EvtIndiciumD3D11Present(
 		DXGI_SWAP_CHAIN_DESC sd;
 		pChain->GetDesc(&sd);
 
-		logger.information("Initializing ImGui");
+		IndiciumEngineLogInfo("Initializing ImGui");
 
         ImGui_ImplWin32_Init(sd.OutputWindow);
 		ImGui_ImplDX11_Init(pDevice, pContext);
 
-		logger.information("ImGui (DX11) initialized");
+		IndiciumEngineLogInfo("ImGui (DX11) initialized");
 
 		HookWindowProc(sd.OutputWindow);
 
@@ -584,13 +549,13 @@ void HookWindowProc(HWND hWnd)
 		reinterpret_cast<LPVOID*>(&OriginalDefWindowProc))
 		) != MH_OK)
 	{
-		logger.error("Couldn't create hook for DefWindowProcW: %lu", static_cast<ULONG>(ret));
+		IndiciumEngineLogError("Couldn't create hook for DefWindowProcW: %lu", static_cast<ULONG>(ret));
 		return;
 	}
 
 	if (ret == MH_OK && MH_EnableHook(&DefWindowProcW) != MH_OK)
 	{
-		logger.error("Couldn't enable DefWindowProcW hook");
+		IndiciumEngineLogError("Couldn't enable DefWindowProcW hook");
 	}
 
 	if ((ret = MH_CreateHook(
@@ -599,13 +564,13 @@ void HookWindowProc(HWND hWnd)
 		reinterpret_cast<LPVOID*>(&OriginalDefWindowProc))
 		) != MH_OK)
 	{
-		logger.error("Couldn't create hook for DefWindowProcA: %lu", static_cast<ULONG>(ret));
+		IndiciumEngineLogError("Couldn't create hook for DefWindowProcA: %lu", static_cast<ULONG>(ret));
 		return;
 	}
 
 	if (ret == MH_OK && MH_EnableHook(&DefWindowProcA) != MH_OK)
 	{
-		logger.error("Couldn't enable DefWindowProcW hook");
+		IndiciumEngineLogError("Couldn't enable DefWindowProcW hook");
 	}
 
 	auto lptrWndProc = reinterpret_cast<t_WindowProc>(GetWindowLongPtr(hWnd, GWLP_WNDPROC));
@@ -618,7 +583,7 @@ void HookWindowProc(HWND hWnd)
 
 	if (MH_EnableHook(lptrWndProc) != MH_OK)
 	{
-		logger.error("Couldn't enable GWLP_WNDPROC hook");
+		IndiciumEngineLogError("Couldn't enable GWLP_WNDPROC hook");
 	}
 #endif
 }
@@ -631,7 +596,7 @@ LRESULT WINAPI DetourDefWindowProc(
 )
 {
 	static std::once_flag flag;
-	std::call_once(flag, []() {Logger::get("DetourDefWindowProc").information("++ DetourDefWindowProc called"); });
+	std::call_once(flag, []() { IndiciumEngineLogInfo("++ DetourDefWindowProc called"); });
 
 	ImGui_ImplWin32_WndProcHandler(hWnd, Msg, wParam, lParam);
 
@@ -646,7 +611,7 @@ LRESULT WINAPI DetourWindowProc(
 )
 {
 	static std::once_flag flag;
-	std::call_once(flag, []() {Logger::get("DetourWindowProc").information("++ DetourWindowProc called"); });
+	std::call_once(flag, []() { IndiciumEngineLogInfo("++ DetourWindowProc called"); });
 
 	ImGui_ImplWin32_WndProcHandler(hWnd, Msg, wParam, lParam);
 
@@ -660,7 +625,7 @@ LRESULT WINAPI DetourWindowProc(
 void RenderScene()
 {
 	static std::once_flag flag;
-	std::call_once(flag, []() {Logger::get("RenderScene").information("++ RenderScene called"); });
+	std::call_once(flag, []() { IndiciumEngineLogInfo("++ RenderScene called"); });
 
 	ImGui::ShowMetricsWindow();
 
@@ -729,7 +694,14 @@ void RenderScene()
 
 		float progress_saturated = (progress < 0.0f) ? 0.0f : (progress > 1.0f) ? 1.0f : progress;
 		char buf[32];
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
 		sprintf(buf, "%d/%d", (int)(progress_saturated * 1753), 1753);
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 		ImGui::ProgressBar(progress, ImVec2(0.f, 0.f), buf);
 
 		ImGui::End();

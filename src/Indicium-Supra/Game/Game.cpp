@@ -792,11 +792,6 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         BOOST_LOG_TRIVIAL(error) << "Unhooking failed: " << pex.what();
     }
 
-    //
-    // Inform caller that it's safe to continue
-    // 
-    SetEvent(engine->EngineCancellationCompletedEvent);
-
     return 0;
 }
 

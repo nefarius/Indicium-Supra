@@ -70,11 +70,6 @@ typedef struct _INDICIUM_ENGINE
     //
     HANDLE EngineCancellationEvent;
 
-    //
-    // Signals the caller of the API that shutdown has occurred
-    //
-    HANDLE EngineCancellationCompletedEvent;
-
 } INDICIUM_ENGINE;
 
 #define INVOKE_INDICIUM_GAME_HOOKED(_engine_, _version_)    \
