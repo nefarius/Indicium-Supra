@@ -25,7 +25,6 @@ SOFTWARE.
 #include "Direct3D10.h"
 #include <vector>
 #include "DXGI.h"
-#include "Utils/Misc.h"
 #include "Exceptions.hpp"
 
 using namespace Indicium::Core::Exceptions;

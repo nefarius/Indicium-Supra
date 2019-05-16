@@ -69,9 +69,6 @@
     <ClInclude Include="Utils\Hook.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\Misc.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Hook\Window.h">
       <Filter>Game\Hook</Filter>
     </ClInclude>
