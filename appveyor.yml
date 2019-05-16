@@ -20,14 +20,14 @@ after_build:
     Expand-Archive verpatch-1.0.15.1-x86-codeplex.zip -DestinationPath .
     .\verpatch.exe .\bin\x64\Indicium-FW1FontWrapper.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x64\Indicium-FW1FontWrapper.dll /pv "$env:APPVEYOR_BUILD_VERSION"
-    #.\verpatch.exe .\bin\x64\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
-    #.\verpatch.exe .\bin\x64\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
+    .\verpatch.exe .\bin\x64\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
+    .\verpatch.exe .\bin\x64\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x64\Indicium-Supra.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x64\Indicium-Supra.dll /pv "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-FW1FontWrapper.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-FW1FontWrapper.dll /pv "$env:APPVEYOR_BUILD_VERSION"
-    #.\verpatch.exe .\bin\x86\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
-    #.\verpatch.exe .\bin\x86\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
+    .\verpatch.exe .\bin\x86\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
+    .\verpatch.exe .\bin\x86\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-Supra.dll "$env:APPVEYOR_BUILD_VERSION"
     .\verpatch.exe .\bin\x86\Indicium-Supra.dll /pv "$env:APPVEYOR_BUILD_VERSION"
 artifacts:
