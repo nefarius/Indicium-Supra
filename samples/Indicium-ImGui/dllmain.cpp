@@ -282,8 +282,13 @@ void EvtIndiciumD3D9Present(
 	if (!show_overlay) 
 		return;
 
-	ImGui_ImplDX9_NewFrame();
+    // Start the Dear ImGui frame
+    ImGui_ImplDX9_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
 	RenderScene();
+
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 }
 
