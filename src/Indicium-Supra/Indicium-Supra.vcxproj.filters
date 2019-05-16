@@ -122,6 +122,9 @@
     <ClInclude Include="Utils\Logging.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumOpenGL2.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />

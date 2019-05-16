@@ -35,6 +35,7 @@ SOFTWARE.
 #include "Indicium/Engine/IndiciumDirect3D10.h"
 #include "Indicium/Engine/IndiciumDirect3D11.h"
 #include "Indicium/Engine/IndiciumDirect3D12.h"
+#include "Indicium/Engine/IndiciumOpenGL2.h"
 
 //
 // Internal
@@ -218,6 +219,13 @@ INDICIUM_API VOID IndiciumEngineSetD3D12EventCallbacks(PINDICIUM_ENGINE Engine, 
 {
     if (Engine) {
         Engine->EventsD3D12 = *Callbacks;
+    }
+}
+
+INDICIUM_API VOID IndiciumEngineSetOGL2EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_OGL2_EVENT_CALLBACKS Callbacks)
+{
+    if (Engine) {
+        Engine->EventsOGL2 = *Callbacks;
     }
 }
 

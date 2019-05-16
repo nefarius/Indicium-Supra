@@ -56,6 +56,7 @@ namespace attrs = boost::log::attributes;
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_dx10.h"
 #include "imgui_impl_dx11.h"
+#include "imgui_impl_opengl2.h"
 #include "imgui_impl_win32.h"
 
 t_WindowProc OriginalDefWindowProc = nullptr;
@@ -105,6 +106,11 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 	d3d11.EvtIndiciumD3D11PreResizeBuffers = EvtIndiciumD3D11PreResizeBuffers;
 	d3d11.EvtIndiciumD3D11PostResizeBuffers = EvtIndiciumD3D11PostResizeBuffers;
 
+    INDICIUM_OGL2_EVENT_CALLBACKS ogl2;
+    INDICIUM_OGL2_EVENT_CALLBACKS_INIT(&ogl2);
+    ogl2.EvtIndiciumOGL2PreSwapBuffers = EvtIndiciumOGL2PreSwapBuffers;
+    ogl2.EvtIndiciumOGL2PostSwapBuffers = EvtIndiciumOGL2PostSwapBuffers;
+
 	INDICIUM_ERROR err;
 
 	switch (dwReason)
@@ -124,6 +130,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 			IndiciumEngineSetD3D9EventCallbacks(engine, &d3d9);
 			IndiciumEngineSetD3D10EventCallbacks(engine, &d3d10);
 			IndiciumEngineSetD3D11EventCallbacks(engine, &d3d11);
+            IndiciumEngineSetOGL2EventCallbacks(engine, &ogl2);
 
 			// 
 			// TODO: cover failure
@@ -529,6 +536,64 @@ void EvtIndiciumD3D11PostResizeBuffers(
 )
 {
 	ImGui_ImplDX11_CreateDeviceObjects();
+}
+
+#pragma endregion
+
+#pragma region OGL2
+
+void EvtIndiciumOGL2PreSwapBuffers(HDC hDC)
+{
+    static auto initialized = false;
+    static bool show_overlay = true;
+    static std::once_flag init;
+
+    //
+    // This section is only called once to initialize ImGui
+    // 
+    std::call_once(init, [&](HDC hDCtx)
+    {        
+        IndiciumEngineLogInfo("Initializing ImGui");
+
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+        HWND hWnd = WindowFromDC(hDCtx);
+
+        ImGui_ImplWin32_Init(hWnd);
+        ImGui_ImplOpenGL2_Init();
+
+        ImGui::StyleColorsDark();
+
+        IndiciumEngineLogInfo("ImGui (OpenGL 2.x) initialized");
+
+        //HookWindowProc(sd.OutputWindow);
+
+        initialized = true;
+
+    }, hDC);
+
+    if (!initialized)
+        return;
+
+    TOGGLE_STATE(VK_F12, show_overlay);
+    if (!show_overlay)
+        return;
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL2_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
+    RenderScene();
+
+    ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+}
+
+void EvtIndiciumOGL2PostSwapBuffers(HDC hDC)
+{
+
 }
 
 #pragma endregion

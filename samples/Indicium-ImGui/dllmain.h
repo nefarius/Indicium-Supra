@@ -32,6 +32,7 @@ SOFTWARE.
 #include <Indicium/Engine/IndiciumDirect3D9.h>
 #include <Indicium/Engine/IndiciumDirect3D10.h>
 #include <Indicium/Engine/IndiciumDirect3D11.h>
+#include <Indicium/Engine/IndiciumOpenGL2.h>
 
 typedef LRESULT(WINAPI *t_WindowProc)(
 	_In_ HWND hWnd,
@@ -77,6 +78,9 @@ EVT_INDICIUM_D3D10_RESIZE_BUFFERS EvtIndiciumD3D10PostResizeBuffers;
 EVT_INDICIUM_D3D11_PRESENT EvtIndiciumD3D11Present;
 EVT_INDICIUM_D3D11_RESIZE_BUFFERS EvtIndiciumD3D11PreResizeBuffers;
 EVT_INDICIUM_D3D11_RESIZE_BUFFERS EvtIndiciumD3D11PostResizeBuffers;
+
+EVT_INDICIUM_OGL2_SWAP_BUFFERS EvtIndiciumOGL2PreSwapBuffers;
+EVT_INDICIUM_OGL2_SWAP_BUFFERS EvtIndiciumOGL2PostSwapBuffers;
 
 
 /**

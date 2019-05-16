@@ -61,6 +61,11 @@ typedef struct _INDICIUM_ENGINE
     INDICIUM_D3D12_EVENT_CALLBACKS EventsD3D12;
 
     //
+    // OpenGL 2.x specific render pipeline callbacks
+    // 
+    INDICIUM_OGL2_EVENT_CALLBACKS EventsOGL2;
+
+    //
     // Handle to main worker thread holding the hooks
     //
     HANDLE EngineThread;
@@ -95,4 +100,9 @@ typedef struct _INDICIUM_ENGINE
 #define INVOKE_D3D12_CALLBACK(_engine_, _callback_, ...)     \
                              (_engine_->EventsD3D12._callback_ ? \
                              _engine_->EventsD3D12._callback_(##__VA_ARGS__) : \
+                             (void)0)
+
+#define INVOKE_OGL2_CALLBACK(_engine_, _callback_, ...)     \
+                             (_engine_->EventsOGL2._callback_ ? \
+                             _engine_->EventsOGL2._callback_(##__VA_ARGS__) : \
                              (void)0)

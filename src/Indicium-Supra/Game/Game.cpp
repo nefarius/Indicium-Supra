@@ -51,6 +51,7 @@ using namespace Indicium::Core::Exceptions;
 #include "Indicium/Engine/IndiciumDirect3D10.h"
 #include "Indicium/Engine/IndiciumDirect3D11.h"
 #include "Indicium/Engine/IndiciumDirect3D12.h"
+#include "Indicium/Engine/IndiciumOpenGL2.h"
 
 //
 // Internal
@@ -68,6 +69,11 @@ using namespace Indicium::Core::Exceptions;
 //
 #include <boost/log/trivial.hpp>
 #include <boost/log/attributes/named_scope.hpp>
+
+// Function prototype
+typedef BOOL(__stdcall * GLSwapBuffers)(HDC);
+// Function pointer
+GLSwapBuffers fnGLSwapBuffers;
 
 // NOTE: DirectInput hooking is technically implemented but not really useful
 // #define HOOK_DINPUT8
@@ -136,6 +142,52 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent12Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget12Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> swapChainResizeBuffers12Hook;
+
+#pragma region Hacky OpenGL 2.x bits
+
+    static Hook<CallConvention::stdcall_t, BOOL, HDC> wglSwapBuffers2Hook;
+
+    HMODULE hOpenGL = GetModuleHandle("opengl32.dll");
+    if (hOpenGL)
+    {
+        fnGLSwapBuffers = (GLSwapBuffers)GetProcAddress(hOpenGL, "wglSwapBuffers");
+        if (!fnGLSwapBuffers)
+        {
+            BOOST_LOG_TRIVIAL(error) << "Could not get address of wglSwapBuffers";
+        }
+        else
+        {
+            BOOST_LOG_TRIVIAL(info) << "Hooking wglSwapBuffers";
+
+            wglSwapBuffers2Hook.apply(reinterpret_cast<size_t>(fnGLSwapBuffers), [](
+                HDC hDC
+                ) -> BOOL
+            {
+                static std::once_flag flag;
+                std::call_once(flag, []()
+                {
+                    BOOST_LOG_NAMED_SCOPE("HookOpenGL2");
+                    BOOST_LOG_TRIVIAL(info) << "++ wglSwapBuffers called";
+
+                    //INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion9);
+                });
+
+                INVOKE_OGL2_CALLBACK(engine, EvtIndiciumOGL2PreSwapBuffers, hDC);
+
+                const auto ret = wglSwapBuffers2Hook.call_orig(hDC);
+
+                INVOKE_OGL2_CALLBACK(engine, EvtIndiciumOGL2PostSwapBuffers, hDC);
+
+                return ret;
+            });
+        }
+    }
+    else
+    {
+        BOOST_LOG_TRIVIAL(error) << "Could not get handle to opengl32.dll";
+    }
+
+#pragma endregion
 
 #pragma region D3D9
 
@@ -784,6 +836,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         swapChainPresent12Hook.remove();
         swapChainResizeTarget12Hook.remove();
         swapChainResizeBuffers12Hook.remove();
+        wglSwapBuffers2Hook.remove();
 
         BOOST_LOG_TRIVIAL(info) << "Hooks disabled";
     }
