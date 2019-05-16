@@ -119,6 +119,9 @@
     <ClInclude Include="Exceptions.hpp">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Logging.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />
