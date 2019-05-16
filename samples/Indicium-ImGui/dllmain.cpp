@@ -193,6 +193,7 @@ void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
 	auto& logger = Logger::get(__func__);
 
 	logger.information("Loading ImGui plugin");
+    IndiciumEngineLogInfo(engine, "Loading ImGui plugin");
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

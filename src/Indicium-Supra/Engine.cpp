@@ -25,6 +25,7 @@ SOFTWARE.
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <stdarg.h>
 
 //
 // Public
@@ -41,6 +42,7 @@ SOFTWARE.
 #include "Engine.h"
 #include "Game/Game.h"
 #include "Global.h"
+#include "Utils/Logging.h"
 
 //
 // Boost
@@ -167,7 +169,7 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     default:
         BOOST_LOG_TRIVIAL(error) << "Unexpected return value";
         break;
-    }        
+    }
 
     if (EvtIndiciumGameUnhooked) {
         EvtIndiciumGameUnhooked();
@@ -215,4 +217,60 @@ INDICIUM_API VOID IndiciumEngineSetD3D12EventCallbacks(PINDICIUM_ENGINE Engine, 
     if (Engine) {
         Engine->EventsD3D12 = *Callbacks;
     }
+}
+
+INDICIUM_API VOID IndiciumEngineLogDebug(PINDICIUM_ENGINE Engine, LPCSTR Format, ...)
+{
+    if (!Engine) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, Format);
+
+    BOOST_LOG_TRIVIAL(debug) << Indicium::Core::Logging::format(Format, args);
+
+    va_end(args);
+}
+
+INDICIUM_API VOID IndiciumEngineLogInfo(PINDICIUM_ENGINE Engine, LPCSTR Format, ...)
+{
+    if (!Engine) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, Format);
+
+    BOOST_LOG_TRIVIAL(info) << Indicium::Core::Logging::format(Format, args);
+
+    va_end(args);
+}
+
+INDICIUM_API VOID IndiciumEngineLogWarning(PINDICIUM_ENGINE Engine, LPCSTR Format, ...)
+{
+    if (!Engine) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, Format);
+
+    BOOST_LOG_TRIVIAL(warning) << Indicium::Core::Logging::format(Format, args);
+
+    va_end(args);
+}
+
+INDICIUM_API VOID IndiciumEngineLogError(PINDICIUM_ENGINE Engine, LPCSTR Format, ...)
+{
+    if (!Engine) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, Format);
+
+    BOOST_LOG_TRIVIAL(error) << Indicium::Core::Logging::format(Format, args);
+
+    va_end(args);
 }
