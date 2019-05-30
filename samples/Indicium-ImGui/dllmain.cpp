@@ -440,6 +440,9 @@ void EvtIndiciumD3D10PostResizeBuffers(
 
 #pragma region D3D11
 
+// TODO: lazy global, improve
+static ID3D11RenderTargetView *g_d3d11_mainRenderTargetView = nullptr;
+
 void EvtIndiciumD3D11Present(
 	IDXGISwapChain  *pSwapChain,
 	UINT            SyncInterval,
@@ -451,7 +454,6 @@ void EvtIndiciumD3D11Present(
 	static std::once_flag init;
 
 	static ID3D11DeviceContext *pContext;
-	static ID3D11RenderTargetView *mainRenderTargetView;
 
 	//
 	// This section is only called once to initialize ImGui
@@ -469,7 +471,7 @@ void EvtIndiciumD3D11Present(
 
 		ID3D11Texture2D* pBackBuffer;
 		pChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-		pDevice->CreateRenderTargetView(pBackBuffer, NULL, &mainRenderTargetView);
+		pDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_d3d11_mainRenderTargetView);
 		pBackBuffer->Release();
 
 		DXGI_SWAP_CHAIN_DESC sd;
@@ -500,13 +502,16 @@ void EvtIndiciumD3D11Present(
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-	pContext->OMSetRenderTargets(1, &mainRenderTargetView, NULL);
+	pContext->OMSetRenderTargets(1, &g_d3d11_mainRenderTargetView, NULL);
 
 	RenderScene();
 
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 }
 
+//
+// Called prior to the original invocation of ResizeBuffers.
+// 
 void EvtIndiciumD3D11PreResizeBuffers(
 	IDXGISwapChain  *pSwapChain,
 	UINT            BufferCount,
@@ -516,9 +521,16 @@ void EvtIndiciumD3D11PreResizeBuffers(
 	UINT            SwapChainFlags
 )
 {
-	ImGui_ImplDX11_InvalidateDeviceObjects();
+    if (g_d3d11_mainRenderTargetView)
+    {
+        g_d3d11_mainRenderTargetView->Release(); 
+        g_d3d11_mainRenderTargetView = nullptr;
+    }
 }
 
+//
+// Called after the original invocation of ResizeBuffers.
+// 
 void EvtIndiciumD3D11PostResizeBuffers(
 	IDXGISwapChain  *pSwapChain,
 	UINT            BufferCount,
@@ -528,7 +540,14 @@ void EvtIndiciumD3D11PostResizeBuffers(
 	UINT            SwapChainFlags
 )
 {
-	ImGui_ImplDX11_CreateDeviceObjects();
+    ID3D11Texture2D* pBackBuffer;
+    ID3D11DeviceContext *pContext;
+    ID3D11Device *pDevice;
+    D3D11_DEVICE_CONTEXT_FROM_SWAPCHAIN(pSwapChain, &pDevice, &pContext);
+
+    pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+    pDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_d3d11_mainRenderTargetView);
+    pBackBuffer->Release();
 }
 
 #pragma endregion
