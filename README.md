@@ -28,7 +28,7 @@ API-Hooking and rendering framework for DirectX-based games.
   - For the ImGui sample to build you'll also need:
     - `.\vcpkg install imgui:x86-windows-static imgui:x64-windows-static`
 
- Building should be pretty straight-forward since the [POCO libraries](https://pocoproject.org/) and [Detours](https://github.com/Microsoft/Detours) get installed via [Vcpkg](https://github.com/Microsoft/vcpkg). You have multiple choices for getting things done.
+ Building should be pretty straight-forward since the dependencies get installed via [Vcpkg](https://github.com/Microsoft/vcpkg). You have multiple choices for getting things done.
 
 ### Visual Studio
 
