@@ -39,7 +39,7 @@ Just open the solution file `Indicium-Supra.sln` and start the build from there.
 Navigate to the solution directory on the command line and invoke:
 
 ```PowerShell
-powershell .\build.ps1 -configuration release
+powershell .\build.ps1
 ```
 
 ### The lazy way
