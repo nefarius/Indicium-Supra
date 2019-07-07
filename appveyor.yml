@@ -11,7 +11,7 @@ before_build:
 - cmd: nuget restore
 - cmd: vcpkg integrate install
 - cmd: vcpkg update
-- cmd: vcpkg install boost-log:x86-windows-static boost-log:x64-windows-static detours:x86-windows-static detours:x64-windows-static
+- cmd: vcpkg install easyloggingpp:x86-windows-static easyloggingpp:x64-windows-static detours:x86-windows-static detours:x64-windows-static
 - cmd: vcpkg install imgui:x86-windows-static imgui:x64-windows-static
 build_script:
 - ps: .\build.ps1

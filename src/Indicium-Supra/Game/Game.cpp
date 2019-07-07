@@ -64,10 +64,9 @@ using namespace Indicium::Core::Exceptions;
 #include <memory>
 
 //
-// Boost
+// Logging
 //
-#include <boost/log/trivial.hpp>
-#include <boost/log/attributes/named_scope.hpp>
+#include <easylogging++.h>
 
 // NOTE: DirectInput hooking is technically implemented but not really useful
 // #define HOOK_DINPUT8
@@ -95,13 +94,12 @@ void HookDInput8(size_t* vtable8);
  */
 DWORD WINAPI IndiciumMainThread(LPVOID Params)
 {
-    BOOST_LOG_NAMED_SCOPE(__func__);
-
+    auto logger = el::Loggers::getLogger("indicium");
     static PINDICIUM_ENGINE engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
 
-    BOOST_LOG_TRIVIAL(info) << "Library loaded into " << Indicium::Core::Util::process_name();
+    logger->info("Library loaded into %v", Indicium::Core::Util::process_name());
 
-    BOOST_LOG_TRIVIAL(info) << "Library enabled";
+    logger->info("Library enabled");
 
     // 
     // D3D9 Hooks
@@ -226,7 +224,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     {
         const std::unique_ptr<Direct3D9Hooking::Direct3D9Ex> d3dEx(new Direct3D9Hooking::Direct3D9Ex);
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::Present";
+        logger->info("Hooking IDirect3DDevice9Ex::Present");
 
         present9Hook.apply(d3dEx->vtable()[Direct3D9Hooking::Present], [](
             LPDIRECT3DDEVICE9 dev,
@@ -239,8 +237,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX9Ex");
-                BOOST_LOG_TRIVIAL(info) << "++ IDirect3DDevice9Ex::Present called";
+                el::Loggers::getLogger("HookDX9Ex")->info("++ IDirect3DDevice9Ex::Present called");
 
                 INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion9);
             });
@@ -254,7 +251,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::Reset";
+        logger->info("Hooking IDirect3DDevice9Ex::Reset");
 
         reset9Hook.apply(d3dEx->vtable()[Direct3D9Hooking::Reset], [](
             LPDIRECT3DDEVICE9 dev,
@@ -264,8 +261,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX9Ex");
-                BOOST_LOG_TRIVIAL(info) << "++ IDirect3DDevice9Ex::Reset called";
+                el::Loggers::getLogger("HookDX9Ex")->info("++ IDirect3DDevice9Ex::Reset called");
             });
 
             INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreReset, dev, pp);
@@ -277,7 +273,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::EndScene";
+        logger->info("Hooking IDirect3DDevice9Ex::EndScene");
 
         endScene9Hook.apply(d3dEx->vtable()[Direct3D9Hooking::EndScene], [](
             LPDIRECT3DDEVICE9 dev
@@ -286,8 +282,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX9Ex");
-                BOOST_LOG_TRIVIAL(info) << "++ IDirect3DDevice9Ex::EndScene called";
+                el::Loggers::getLogger("HookDX9Ex")->info("++ IDirect3DDevice9Ex::EndScene called");
             });
 
             INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreEndScene, dev);
@@ -299,7 +294,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::PresentEx";
+        logger->info("Hooking IDirect3DDevice9Ex::PresentEx");
 
         present9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::PresentEx], [](
             LPDIRECT3DDEVICE9EX dev,
@@ -313,8 +308,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX9Ex");
-                BOOST_LOG_TRIVIAL(info) << "++ IDirect3DDevice9Ex::PresentEx called";
+                el::Loggers::getLogger("HookDX9Ex")->info("++ IDirect3DDevice9Ex::PresentEx called");
 
                 INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion9);
             });
@@ -328,7 +322,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDirect3DDevice9Ex::ResetEx";
+        logger->info("Hooking IDirect3DDevice9Ex::ResetEx");
 
         reset9ExHook.apply(d3dEx->vtable()[Direct3D9Hooking::ResetEx], [](
             LPDIRECT3DDEVICE9EX dev,
@@ -339,8 +333,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX9Ex");
-                BOOST_LOG_TRIVIAL(info) << "++ IDirect3DDevice9Ex::ResetEx called";
+                el::Loggers::getLogger("HookDX9Ex")->info("++ IDirect3DDevice9Ex::ResetEx called");
             });
 
             INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreResetEx, dev, pp, ppp);
@@ -354,15 +347,15 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     }
     catch (DetourException& ex)
     {
-        BOOST_LOG_TRIVIAL(error) << "Hooking D3D9Ex failed: " << ex.what();
+        logger->error("Hooking D3D9Ex failed: %v", ex.what());
     }
     catch (ModuleNotFoundException& ex)
     {
-        BOOST_LOG_TRIVIAL(warning) << "Module not found: " << ex.what();
+        logger->warn("Module not found: %v", ex.what());
     }
     catch (RuntimeException& ex)
     {
-        BOOST_LOG_TRIVIAL(error) << "D3D9(Ex) runtime error: " << ex.what();
+        logger->error("D3D9(Ex) runtime error: %v", ex.what());
     }
 
 #pragma endregion
@@ -376,7 +369,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         const std::unique_ptr<Direct3D10Hooking::Direct3D10> d3d10(new Direct3D10Hooking::Direct3D10);
         auto vtable = d3d10->vtable();
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
+        logger->info("Hooking IDXGISwapChain::Present");
 
         swapChainPresent10Hook.apply(vtable[DXGIHooking::Present], [](
             IDXGISwapChain* chain,
@@ -387,8 +380,8 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, [&pChain = chain]()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX10");
-                BOOST_LOG_TRIVIAL(info) << "++ IDXGISwapChain::Present called";
+                auto l = el::Loggers::getLogger("HookDX10");
+                l->info("++ IDXGISwapChain::Present called");
 
                 ID3D10Device *pp10Device = nullptr;
                 ID3D11Device *pp11Device = nullptr;
@@ -396,7 +389,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 auto ret = pChain->GetDevice(__uuidof(ID3D10Device), reinterpret_cast<PVOID*>(&pp10Device));
 
                 if (SUCCEEDED(ret)) {
-                    BOOST_LOG_TRIVIAL(debug) << "ID3D10Device object acquired";
+                    l->debug("ID3D10Device object acquired");
                     deviceVersion = IndiciumDirect3DVersion10;
                     INVOKE_INDICIUM_GAME_HOOKED(engine, deviceVersion);
                     return;
@@ -405,13 +398,13 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 ret = pChain->GetDevice(__uuidof(ID3D11Device), reinterpret_cast<PVOID*>(&pp11Device));
 
                 if (SUCCEEDED(ret)) {
-                    BOOST_LOG_TRIVIAL(debug) << "ID3D11Device object acquired";
+                    l->debug("ID3D11Device object acquired");
                     deviceVersion = IndiciumDirect3DVersion11;
                     INVOKE_INDICIUM_GAME_HOOKED(engine, deviceVersion);
                     return;
                 }
 
-                BOOST_LOG_TRIVIAL(error) << "Could not fetch device pointer";
+                l->error("Could not fetch device pointer");
             });
 
             if (deviceVersion == IndiciumDirect3DVersion10) {
@@ -435,7 +428,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeTarget";
+        logger->info("Hooking IDXGISwapChain::ResizeTarget");
 
         swapChainResizeTarget10Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
             IDXGISwapChain* chain,
@@ -445,8 +438,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX10");
-                BOOST_LOG_TRIVIAL(info) << "++ IDXGISwapChain::ResizeTarget called";
+                el::Loggers::getLogger("HookDX10")->info("++ IDXGISwapChain::ResizeTarget called");
             });
 
             if (deviceVersion == IndiciumDirect3DVersion10) {
@@ -470,7 +462,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeBuffers";
+        logger->info("Hooking IDXGISwapChain::ResizeBuffers");
 
         swapChainResizeBuffers10Hook.apply(vtable[DXGIHooking::ResizeBuffers], [](
             IDXGISwapChain* chain,
@@ -484,8 +476,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX10");
-                BOOST_LOG_TRIVIAL(info) << "++ IDXGISwapChain::ResizeBuffers called";
+                el::Loggers::getLogger("HookDX10")->info("++ IDXGISwapChain::ResizeBuffers called");
             });
 
             if (deviceVersion == IndiciumDirect3DVersion10) {
@@ -516,15 +507,15 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     }
     catch (DetourException& ex)
     {
-        BOOST_LOG_TRIVIAL(error) << "Hooking D3D10 failed: " << ex.what();
+        logger->error("Hooking D3D10 failed: %v", ex.what());
     }
     catch (ModuleNotFoundException& ex)
     {
-        BOOST_LOG_TRIVIAL(warning) << "Module not found: " << ex.what();
+        logger->warn("Module not found: %v", ex.what());
     }
     catch (RuntimeException& ex)
     {
-        BOOST_LOG_TRIVIAL(error) << "D3D10 runtime error: " << ex.what();
+        logger->error("D3D10 runtime error: %v", ex.what());
     }
 
 #pragma endregion
@@ -536,7 +527,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         const std::unique_ptr<Direct3D11Hooking::Direct3D11> d3d11(new Direct3D11Hooking::Direct3D11);
         auto vtable = d3d11->vtable();
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
+        logger->info("Hooking IDXGISwapChain::Present");
 
         swapChainPresent11Hook.apply(vtable[DXGIHooking::Present], [](
             IDXGISwapChain* chain,
@@ -547,8 +538,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX11");
-                BOOST_LOG_TRIVIAL(info) << "++ IDXGISwapChain::Present called";
+                el::Loggers::getLogger("HookDX11")->info("++ IDXGISwapChain::Present called");
 
                 INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion11);
             });
@@ -562,7 +552,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeTarget";
+        logger->info("Hooking IDXGISwapChain::ResizeTarget");
 
         swapChainResizeTarget11Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
             IDXGISwapChain* chain,
@@ -572,8 +562,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX11");
-                BOOST_LOG_TRIVIAL(info) << "++ IDXGISwapChain::ResizeTarget called";
+                el::Loggers::getLogger("HookDX11")->info("++ IDXGISwapChain::ResizeTarget called");
             });
 
             INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
@@ -585,7 +574,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeBuffers";
+        logger->info("Hooking IDXGISwapChain::ResizeBuffers");
 
         swapChainResizeBuffers11Hook.apply(vtable[DXGIHooking::ResizeBuffers], [](
             IDXGISwapChain* chain,
@@ -599,8 +588,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX11");
-                BOOST_LOG_TRIVIAL(info) << "++ IDXGISwapChain::ResizeBuffers called";
+                el::Loggers::getLogger("HookDX11")->info("++ IDXGISwapChain::ResizeBuffers called");
             });
 
             INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeBuffers, chain,
@@ -617,15 +605,15 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     }
     catch (DetourException& ex)
     {
-        BOOST_LOG_TRIVIAL(error) << "Hooking D3D11 failed: " << ex.what();
+        logger->error("Hooking D3D11 failed: %v", ex.what());
     }
     catch (ModuleNotFoundException& ex)
     {
-        BOOST_LOG_TRIVIAL(warning) << "Module not found: " << ex.what();
+        logger->warn("Module not found: %v", ex.what());
     }
     catch (RuntimeException& ex)
     {
-        BOOST_LOG_TRIVIAL(error) << "D3D11 runtime error: " << ex.what();
+        logger->error("D3D11 runtime error: %v", ex.what());
     }
 
 #pragma endregion
@@ -637,7 +625,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         const std::unique_ptr<Direct3D12Hooking::Direct3D12> d3d12(new Direct3D12Hooking::Direct3D12);
         auto vtable = d3d12->vtable();
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::Present";
+        logger->info("Hooking IDXGISwapChain::Present");
 
         swapChainPresent12Hook.apply(vtable[DXGIHooking::Present], [](
             IDXGISwapChain* chain,
@@ -648,8 +636,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX12");
-                BOOST_LOG_TRIVIAL(info) << "++ IDXGISwapChain::Present called";
+                el::Loggers::getLogger("HookDX12")->info("++ IDXGISwapChain::Present called");
 
                 INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion12);
             });
@@ -663,7 +650,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeTarget";
+        logger->info("Hooking IDXGISwapChain::ResizeTarget");
 
         swapChainResizeTarget12Hook.apply(vtable[DXGIHooking::ResizeTarget], [](
             IDXGISwapChain* chain,
@@ -673,8 +660,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX12");
-                BOOST_LOG_TRIVIAL(info) << "++ IDXGISwapChain::ResizeTarget called";
+                el::Loggers::getLogger("HookDX12")->info("++ IDXGISwapChain::ResizeTarget called");
             });
 
             INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PreResizeTarget, chain, pNewTargetParameters);
@@ -686,7 +672,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             return ret;
         });
 
-        BOOST_LOG_TRIVIAL(info) << "Hooking IDXGISwapChain::ResizeBuffers";
+        logger->info("Hooking IDXGISwapChain::ResizeBuffers");
 
         swapChainResizeBuffers12Hook.apply(vtable[DXGIHooking::ResizeBuffers], [](
             IDXGISwapChain* chain,
@@ -700,8 +686,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
             static std::once_flag flag;
             std::call_once(flag, []()
             {
-                BOOST_LOG_NAMED_SCOPE("HookDX12");
-                BOOST_LOG_TRIVIAL(info) << "++ IDXGISwapChain::ResizeBuffers called";
+                el::Loggers::getLogger("HookDX12")->info("++ IDXGISwapChain::ResizeBuffers called");
             });
 
             INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PreResizeBuffers, chain,
@@ -718,15 +703,15 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     }
     catch (DetourException& ex)
     {
-        BOOST_LOG_TRIVIAL(error) << "Hooking D3D12 failed: " << ex.what();
+        logger->error("Hooking D3D12 failed: %v", ex.what());
     }
     catch (ModuleNotFoundException& ex)
     {
-        BOOST_LOG_TRIVIAL(warning) << "Module not found: " << ex.what();
+        logger->warn("Module not found: %v", ex.what());
     }
     catch (RuntimeException& ex)
     {
-        BOOST_LOG_TRIVIAL(error) << "D3D12 runtime error: " << ex.what();
+        logger->error("D3D12 runtime error: %v", ex.what());
     }
 
 #pragma endregion
@@ -759,14 +744,14 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     }
 #endif
 
-    BOOST_LOG_TRIVIAL(info) << "Library initialized successfully";
+    logger->info("Library initialized successfully");
 
     //
     // Wait until cancellation requested
     // 
     WaitForSingleObject(engine->EngineCancellationEvent, INFINITE);
 
-    BOOST_LOG_TRIVIAL(info) << "Shutting down hooks...";
+    logger->info("Shutting down hooks...");
 
     try
     {
@@ -785,11 +770,11 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         swapChainResizeTarget12Hook.remove();
         swapChainResizeBuffers12Hook.remove();
 
-        BOOST_LOG_TRIVIAL(info) << "Hooks disabled";
+        logger->info("Hooks disabled");
     }
     catch (DetourException& pex)
     {
-        BOOST_LOG_TRIVIAL(error) << "Unhooking failed: " << pex.what();
+        logger->error("Unhooking failed: %v", pex.what());
     }
 
     return 0;

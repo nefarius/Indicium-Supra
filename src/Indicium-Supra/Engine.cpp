@@ -47,6 +47,7 @@ SOFTWARE.
 //
 // Logging
 // 
+#define ELPP_FEATURE_PERFORMANCE_TRACKING
 #include <easylogging++.h>
 
 INITIALIZE_EASYLOGGINGPP
@@ -84,8 +85,13 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     //
     // Set up logging
     //
+    el::Loggers::addFlag(el::LoggingFlag::MultiLoggerSupport);
     el::Loggers::getLogger("indicium");
     el::Loggers::getLogger("host");
+    el::Loggers::getLogger("HookDX9Ex");
+    el::Loggers::getLogger("HookDX10");
+    el::Loggers::getLogger("HookDX11");
+    el::Loggers::getLogger("HookDX12");
     el::Loggers::reconfigureAllLoggers(
         el::ConfigurationType::Filename, 
         Indicium::Core::Util::expand_environment_variables("%TEMP%\\Indicium-Supra.log")
