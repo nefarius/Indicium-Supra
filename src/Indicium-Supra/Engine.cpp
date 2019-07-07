@@ -45,21 +45,14 @@ SOFTWARE.
 #include "Utils/Logging.h"
 
 //
-// Boost
-//
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/attributes/named_scope.hpp>
+// Logging
+// 
+#include <easylogging++.h>
 
-namespace logging = boost::log;
-namespace keywords = boost::log::keywords;
-namespace attrs = boost::log::attributes;
+INITIALIZE_EASYLOGGINGPP
 
 
-INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void)
+INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc()
 {
     const auto engine = static_cast<PINDICIUM_ENGINE>(malloc(sizeof(INDICIUM_ENGINE)));
 
@@ -74,8 +67,6 @@ INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void)
 
 INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked)
 {
-    BOOST_LOG_NAMED_SCOPE(__func__);
-
     if (!Engine) {
         return INDICIUM_ERROR_INVALID_ENGINE_HANDLE;
     }
@@ -92,25 +83,18 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
 
     //
     // Set up logging
-    // 
-    logging::register_simple_formatter_factory<logging::trivial::severity_level, char>("Severity");
-
-    logging::add_file_log(
-        keywords::file_name = Indicium::Core::Util::expand_environment_variables("%TEMP%\\Indicium-Supra.log"),
-        keywords::format = "[%TimeStamp%] [%ThreadID%] [%Severity%] [%Scope%] %Message%",
-        keywords::auto_flush = true
+    //
+    el::Loggers::getLogger("indicium");
+    el::Loggers::getLogger("host");
+    el::Loggers::reconfigureAllLoggers(
+        el::ConfigurationType::Filename, 
+        Indicium::Core::Util::expand_environment_variables("%TEMP%\\Indicium-Supra.log")
     );
 
-    logging::core::get()->set_filter
-    (
-        logging::trivial::severity >= logging::trivial::info
-    );
+    auto logger = el::Loggers::getLogger("indicium");
 
-    logging::core::get()->add_global_attribute("Scope", attrs::named_scope());
-    logging::add_common_attributes();
-
-
-    BOOST_LOG_TRIVIAL(info) << "Indicium engine initialized, attempting to launch main thread";
+    logger->info("Indicium engine initialized, attempting to launch main thread");
+   
 
     //
     // Kickstart hooking the rendering pipeline
@@ -125,30 +109,30 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     );
 
     if (!Engine->EngineThread) {
-        BOOST_LOG_TRIVIAL(fatal) << "Could not create main thread, library unusable";
+        logger->fatal("Could not create main thread, library unusable");
         return INDICIUM_ERROR_CREATE_THREAD_FAILED;
     }
 
-    BOOST_LOG_TRIVIAL(info) << "Main thread created successfully";
+    logger->info("Main thread created successfully");
 
     return INDICIUM_ERROR_NONE;
 }
 
 INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked)
 {
-    BOOST_LOG_NAMED_SCOPE(__func__);
-
     if (!Engine) {
         return;
     }
 
-    BOOST_LOG_TRIVIAL(info) << "Indicium engine shutdown requested, attempting to terminate main thread";
+    auto logger = el::Loggers::getLogger("indicium");
+
+    logger->info("Indicium engine shutdown requested, attempting to terminate main thread");
 
     const auto ret = SetEvent(Engine->EngineCancellationEvent);
 
     if (!ret)
     {
-        BOOST_LOG_TRIVIAL(error) << "SetEvent failed: " << std::hex << GetLastError();
+        logger->error("SetEvent failed: %v", GetLastError());
     }
 
     const auto result = WaitForSingleObject(Engine->EngineThread, 3000);
@@ -156,21 +140,21 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     switch (result)
     {
     case WAIT_ABANDONED:
-        BOOST_LOG_TRIVIAL(error) << "Unknown state, host process might crash";
+        logger->error("Unknown state, host process might crash");
         break;
     case WAIT_OBJECT_0:
-        BOOST_LOG_TRIVIAL(info) << "Hooks removed, notifying caller";
+        logger->info("Hooks removed, notifying caller");
         break;
     case WAIT_TIMEOUT:
         TerminateThread(Engine->EngineThread, 0);
-        BOOST_LOG_TRIVIAL(error) << "Thread hasn't finished clean-up within expected time, terminating";
+        logger->error("Thread hasn't finished clean-up within expected time, terminating");
         break;
     case WAIT_FAILED:
-        BOOST_LOG_TRIVIAL(error) << "Unknown error, host process might crash";
+        logger->error("Unknown error, host process might crash");
         break;
     default:
         TerminateThread(Engine->EngineThread, 0);
-        BOOST_LOG_TRIVIAL(error) << "Unexpected return value, terminating";
+        logger->error("Unexpected return value, terminating");
         break;
     }
 
@@ -181,7 +165,7 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     CloseHandle(Engine->EngineCancellationEvent);
     CloseHandle(Engine->EngineThread);
 
-    BOOST_LOG_TRIVIAL(info) << "Engine shutdown complete";
+    logger->info("Engine shutdown complete");
 }
 
 INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)
@@ -223,48 +207,44 @@ INDICIUM_API VOID IndiciumEngineSetD3D12EventCallbacks(PINDICIUM_ENGINE Engine, 
 
 INDICIUM_API VOID IndiciumEngineLogDebug(LPCSTR Format, ...)
 {
-    BOOST_LOG_NAMED_SCOPE(__func__);
-
     va_list args;
     va_start(args, Format);
 
-    BOOST_LOG_TRIVIAL(debug) << Indicium::Core::Logging::format(Format, args);
+    auto logger = el::Loggers::getLogger("host");
+    logger->debug(Indicium::Core::Logging::format(Format, args));
 
     va_end(args);
 }
 
 INDICIUM_API VOID IndiciumEngineLogInfo(LPCSTR Format, ...)
 {
-    BOOST_LOG_NAMED_SCOPE(__func__);
-
     va_list args;
     va_start(args, Format);
 
-    BOOST_LOG_TRIVIAL(info) << Indicium::Core::Logging::format(Format, args);
+    auto logger = el::Loggers::getLogger("host");
+    logger->info(Indicium::Core::Logging::format(Format, args));
 
     va_end(args);
 }
 
 INDICIUM_API VOID IndiciumEngineLogWarning(LPCSTR Format, ...)
 {
-    BOOST_LOG_NAMED_SCOPE(__func__);
-
     va_list args;
     va_start(args, Format);
 
-    BOOST_LOG_TRIVIAL(warning) << Indicium::Core::Logging::format(Format, args);
+    auto logger = el::Loggers::getLogger("host");
+    logger->warn(Indicium::Core::Logging::format(Format, args));
 
     va_end(args);
 }
 
 INDICIUM_API VOID IndiciumEngineLogError(LPCSTR Format, ...)
 {
-    BOOST_LOG_NAMED_SCOPE(__func__);
-
     va_list args;
     va_start(args, Format);
 
-    BOOST_LOG_TRIVIAL(error) << Indicium::Core::Logging::format(Format, args);
+    auto logger = el::Loggers::getLogger("host");
+    logger->error(Indicium::Core::Logging::format(Format, args));
 
     va_end(args);
 }

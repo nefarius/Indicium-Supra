@@ -24,11 +24,11 @@ API-Hooking and rendering framework for DirectX-based games.
 - [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
 - [.NET Core SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/2.1) (or greater, required for building via CLI only)
 - [Follow the Vcpkg Quick Start](https://github.com/Microsoft/vcpkg#quick-start) and install the following packages:
-  - `.\vcpkg install boost-log:x86-windows-static boost-log:x64-windows-static detours:x86-windows-static detours:x64-windows-static`
+  - `.\vcpkg install easyloggingpp:x86-windows-static easyloggingpp:x64-windows-static detours:x86-windows-static detours:x64-windows-static`
   - For the ImGui sample to build you'll also need:
     - `.\vcpkg install imgui:x86-windows-static imgui:x64-windows-static`
 
- Building should be pretty straight-forward since the dependencies get installed via [Vcpkg](https://github.com/Microsoft/vcpkg). You have multiple choices for getting things done.
+Building should be pretty straight-forward since the dependencies get installed via [Vcpkg](https://github.com/Microsoft/vcpkg). You have multiple choices for getting things done.
 
 ### Visual Studio
 
