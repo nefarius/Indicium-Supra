@@ -48,13 +48,13 @@ Now if you're really in a hurry you can [grab pre-built binaries from the buildb
 
 ## How to use
 
-Inject the resulting `Indicium-Supra.dll` into the target process first using a DLL injection utility of your choice (you can ofc. [use mine as well](https://github.com/nefarius/Injector)). To do anything useful you also need one or more host libraries injected as well. The following example loads the [imgui sample](samples/Indicium-ImGui):
+Inject the resulting host library (e.g. `Indicium-ImGui.dll`) into the target process first using a DLL injection utility of your choice (you can ofc. [use mine as well](https://github.com/nefarius/Injector)). The following example loads the [imgui sample](samples/Indicium-ImGui):
 
 ```PowerShell
-.\Injector -i -n hl2.exe Indicium-Supra.dll Indicium-ImGui.dll
+.\Injector -i -n hl2.exe Indicium-ImGui.dll
 ```
 
-Just make sure to inject `Indicium-Supra.dll` first or you'll get a `LoadLibrary failed` error because of the missing dependency.
+Just make sure your host library doesn't require any external dependencies not present in the process context or you'll get a `LoadLibrary failed` error.
 
 ## Diagnostics
 
