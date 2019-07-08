@@ -7,9 +7,6 @@
   <PropertyGroup>
     <VcpkgTaskTimeout>2400000</VcpkgTaskTimeout>
   </PropertyGroup>
-  <ItemGroup Label="VcpkgPackages">
-    <VcpkgPackage Include="poco" />
-  </ItemGroup>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
