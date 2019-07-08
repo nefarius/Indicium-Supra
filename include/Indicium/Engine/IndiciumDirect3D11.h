@@ -66,6 +66,16 @@ typedef EVT_INDICIUM_D3D11_RESIZE_BUFFERS *PFN_INDICIUM_D3D11_RESIZE_BUFFERS;
 
 HRESULT
 FORCEINLINE
+D3D11_DEVICE_FROM_SWAPCHAIN(
+    IDXGISwapChain          *pSwapChain,
+    ID3D11Device            **ppDevice
+)
+{
+    return pSwapChain->GetDevice(__uuidof(ID3D11Device), (PVOID*)ppDevice);
+}
+
+HRESULT
+FORCEINLINE
 D3D11_DEVICE_CONTEXT_FROM_SWAPCHAIN(
     IDXGISwapChain          *pSwapChain,
     ID3D11Device            **ppDevice,
