@@ -448,7 +448,7 @@ void EvtIndiciumD3D11Present(
 		IndiciumEngineLogInfo("Grabbing device and context pointers");
 
 		ID3D11Device *pDevice;
-		if (FAILED(D3D11_DEVICE_CONTEXT_FROM_SWAPCHAIN(pChain, &pDevice, &pContext)))
+		if (FAILED(D3D11_DEVICE_IMMEDIATE_CONTEXT_FROM_SWAPCHAIN(pChain, &pDevice, &pContext)))
 		{
 			IndiciumEngineLogError("Couldn't get device and context from swapchain");
 			return;
@@ -528,7 +528,7 @@ void EvtIndiciumD3D11PostResizeBuffers(
     ID3D11Texture2D* pBackBuffer;
     ID3D11DeviceContext *pContext;
     ID3D11Device *pDevice;
-    D3D11_DEVICE_CONTEXT_FROM_SWAPCHAIN(pSwapChain, &pDevice, &pContext);
+    D3D11_DEVICE_IMMEDIATE_CONTEXT_FROM_SWAPCHAIN(pSwapChain, &pDevice, &pContext);
 
     pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
     pDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_d3d11_mainRenderTargetView);

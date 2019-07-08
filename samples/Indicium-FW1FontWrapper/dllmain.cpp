@@ -115,7 +115,7 @@ void EvtIndiciumD3D11Present(
     UINT            Flags
 )
 {
-    D3D11_DEVICE_CONTEXT_FROM_SWAPCHAIN(pSwapChain, &dev, &ctx);
+    D3D11_DEVICE_IMMEDIATE_CONTEXT_FROM_SWAPCHAIN(pSwapChain, &dev, &ctx);
 
     if (!pFW1Factory)
         (void) FW1CreateFactory(FW1_VERSION, &pFW1Factory);
