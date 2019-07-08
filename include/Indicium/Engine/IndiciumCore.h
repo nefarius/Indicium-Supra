@@ -27,10 +27,14 @@ SOFTWARE.
 #define IndiciumCore_h__
 
 
+#ifdef INDICIUM_DYNAMIC
 #ifdef INDICIUM_EXPORTS
 #define INDICIUM_API __declspec(dllexport)
 #else
 #define INDICIUM_API __declspec(dllimport)
+#endif
+#else
+#define INDICIUM_API
 #endif
 
 #ifdef __cplusplus

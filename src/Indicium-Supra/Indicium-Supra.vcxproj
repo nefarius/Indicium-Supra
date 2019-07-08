@@ -112,7 +112,7 @@
       </PrecompiledHeader>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>INDICIUM_EXPORTS;WIN32;_DEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>INDICIUM_EXPORTS;INDICIUM_DYNAMIC;WIN32;_DEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <SuppressStartupBanner>false</SuppressStartupBanner>
@@ -131,7 +131,7 @@
       </PrecompiledHeader>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>INDICIUM_EXPORTS;WIN32;_DEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>INDICIUM_EXPORTS;INDICIUM_DYNAMIC;WIN32;_DEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <SuppressStartupBanner>false</SuppressStartupBanner>
@@ -152,7 +152,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>INDICIUM_EXPORTS;WIN32;NDEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>INDICIUM_EXPORTS;INDICIUM_DYNAMIC;WIN32;NDEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -176,7 +176,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>INDICIUM_EXPORTS;WIN32;NDEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>INDICIUM_EXPORTS;INDICIUM_DYNAMIC;WIN32;NDEBUG;_WINDOWS;_USRDLL;IS_INDICIUM_SUPRA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <TreatWarningAsError>true</TreatWarningAsError>
