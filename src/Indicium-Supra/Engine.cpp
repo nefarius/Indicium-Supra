@@ -217,7 +217,7 @@ INDICIUM_API VOID IndiciumEngineLogDebug(LPCSTR Format, ...)
     va_start(args, Format);
 
     auto logger = el::Loggers::getLogger("host");
-    logger->debug(Indicium::Core::Logging::format(Format, args));
+    logger->debug(Format, args);
 
     va_end(args);
 }
@@ -228,7 +228,7 @@ INDICIUM_API VOID IndiciumEngineLogInfo(LPCSTR Format, ...)
     va_start(args, Format);
 
     auto logger = el::Loggers::getLogger("host");
-    logger->info(Indicium::Core::Logging::format(Format, args));
+    logger->info(Format, args);
 
     va_end(args);
 }
@@ -239,7 +239,7 @@ INDICIUM_API VOID IndiciumEngineLogWarning(LPCSTR Format, ...)
     va_start(args, Format);
 
     auto logger = el::Loggers::getLogger("host");
-    logger->warn(Indicium::Core::Logging::format(Format, args));
+    logger->warn(Format, args);
 
     va_end(args);
 }
@@ -250,7 +250,7 @@ INDICIUM_API VOID IndiciumEngineLogError(LPCSTR Format, ...)
     va_start(args, Format);
 
     auto logger = el::Loggers::getLogger("host");
-    logger->error(Indicium::Core::Logging::format(Format, args));
+    logger->error(Format, args);
 
     va_end(args);
 }

@@ -90,6 +90,17 @@ D3D11_DEVICE_IMMEDIATE_CONTEXT_FROM_SWAPCHAIN(
     return ret;
 }
 
+HRESULT
+FORCEINLINE
+D3D11_BACKBUFFER_FROM_SWAPCHAIN(
+    IDXGISwapChain          *pSwapChain,
+    ID3D11Texture2D         **ppBackBuffer,
+    UINT                    uBuffer = 0
+)
+{
+    return pSwapChain->GetBuffer(uBuffer, __uuidof(ID3D11Texture2D), (PVOID*)ppBackBuffer);
+}
+
 
 typedef struct _INDICIUM_D3D11_EVENT_CALLBACKS
 {
