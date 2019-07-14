@@ -386,7 +386,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Utils\Hook.h" />
     <ClInclude Include="Game\Hook\Window.h" />
-    <ClInclude Include="Utils\Logging.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />

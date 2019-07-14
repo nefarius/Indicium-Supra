@@ -42,7 +42,6 @@ SOFTWARE.
 #include "Engine.h"
 #include "Game/Game.h"
 #include "Global.h"
-#include "Utils/Logging.h"
 
 //
 // Logging
