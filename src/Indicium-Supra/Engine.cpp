@@ -173,12 +173,16 @@ INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)
     free(Engine);
 }
 
+#ifndef INDICIUM_NO_D3D9
+
 INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks)
 {
     if (Engine) {
         Engine->EventsD3D9 = *Callbacks;
     }
 }
+
+#endif
 
 INDICIUM_API VOID IndiciumEngineSetD3D10EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D10_EVENT_CALLBACKS Callbacks)
 {

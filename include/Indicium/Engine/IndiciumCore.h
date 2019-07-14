@@ -159,6 +159,8 @@ extern "C" {
         PINDICIUM_ENGINE Engine
     );
 
+#ifndef INDICIUM_NO_D3D9
+
     /**
      * \fn  INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks( _In_ PINDICIUM_ENGINE Engine, _In_ PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks );
      *
@@ -178,6 +180,8 @@ extern "C" {
         _In_
         PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks
     );
+
+#endif
 
     /**
      * \fn  INDICIUM_API VOID IndiciumEngineSetD3D10EventCallbacks( _In_ PINDICIUM_ENGINE Engine, _In_ PINDICIUM_D3D10_EVENT_CALLBACKS Callbacks );

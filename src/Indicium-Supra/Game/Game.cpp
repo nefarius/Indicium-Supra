@@ -104,6 +104,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     // 
     // D3D9 Hooks
     // 
+#ifndef INDICIUM_NO_D3D9
     static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *> present9Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS *> reset9Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9> endScene9Hook;
@@ -113,6 +114,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     // 
     static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> present9ExHook;
     static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> reset9ExHook;
+#endif
 
     // 
     // D3D10 Hooks
@@ -219,6 +221,8 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     }
 
 #endif
+
+#ifndef INDICIUM_NO_D3D9
 
     try
     {
@@ -357,6 +361,8 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     {
         logger->error("D3D9(Ex) runtime error: {}", ex.what());
     }
+
+#endif
 
 #pragma endregion
 
@@ -755,11 +761,13 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
     try
     {
+#ifndef INDICIUM_NO_D3D9
         present9Hook.remove();
         reset9Hook.remove();
         endScene9Hook.remove();
         present9ExHook.remove();
         reset9ExHook.remove();
+#endif
         swapChainPresent10Hook.remove();
         swapChainResizeTarget10Hook.remove();
         swapChainResizeBuffers10Hook.remove();

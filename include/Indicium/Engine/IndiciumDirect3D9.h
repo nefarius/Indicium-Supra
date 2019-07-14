@@ -26,6 +26,8 @@ SOFTWARE.
 #ifndef IndiciumDirect3D9_h__
 #define IndiciumDirect3D9_h__
 
+#ifndef INDICIUM_NO_D3D9
+
 #include <d3d9.h>
 
 typedef
@@ -123,5 +125,7 @@ VOID FORCEINLINE INDICIUM_D3D9_EVENT_CALLBACKS_INIT(
 {
     ZeroMemory(Callbacks, sizeof(INDICIUM_D3D9_EVENT_CALLBACKS));
 }
+
+#endif
 
 #endif // IndiciumDirect3D9_h__
