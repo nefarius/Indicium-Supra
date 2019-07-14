@@ -88,6 +88,8 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
         );
     logger->flush_on(spdlog::level::info);
     spdlog::set_default_logger(logger);
+
+    logger = spdlog::get("indicium")->clone("api");
     
     logger->info("Indicium engine initialized, attempting to launch main thread");
    
@@ -119,7 +121,7 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
         return;
     }
 
-    auto logger = spdlog::get("indicium");
+    auto logger = spdlog::get("indicium")->clone("api");
 
     logger->info("Indicium engine shutdown requested, attempting to terminate main thread");
 
@@ -161,6 +163,7 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
     CloseHandle(Engine->EngineThread);
 
     logger->info("Engine shutdown complete");
+    logger->flush();
 }
 
 INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)

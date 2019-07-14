@@ -94,7 +94,7 @@ void HookDInput8(size_t* vtable8);
  */
 DWORD WINAPI IndiciumMainThread(LPVOID Params)
 {
-    auto logger = spdlog::get("indicium");
+    auto logger = spdlog::get("indicium")->clone("game");
     static PINDICIUM_ENGINE engine = reinterpret_cast<PINDICIUM_ENGINE>(Params);
 
     logger->info("Library loaded into {}", Indicium::Core::Util::process_name());
