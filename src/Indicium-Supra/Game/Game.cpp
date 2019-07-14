@@ -114,28 +114,43 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     // 
     static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, CONST RECT *, CONST RECT *, HWND, CONST RGNDATA *, DWORD> present9ExHook;
     static Hook<CallConvention::stdcall_t, HRESULT, LPDIRECT3DDEVICE9EX, D3DPRESENT_PARAMETERS *, D3DDISPLAYMODEEX *> reset9ExHook;
+#else
+    logger->info("Direct3D 9 hooking disabled at compile time");
 #endif
 
     // 
     // D3D10 Hooks
     // 
+#ifndef INDICIUM_NO_D3D10
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent10Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget10Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> swapChainResizeBuffers10Hook;
+#else
+    logger->info("Direct3D 10 hooking disabled at compile time");
+#endif
 
     // 
     // D3D11 Hooks
     // 
+#ifndef INDICIUM_NO_D3D11
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent11Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget11Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> swapChainResizeBuffers11Hook;
+#else
+    logger->info("Direct3D 11 hooking disabled at compile time");
+#endif
 
     // 
     // D3D12 Hooks
     // 
+#ifndef INDICIUM_NO_D3D12
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT> swapChainPresent12Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, const DXGI_MODE_DESC*> swapChainResizeTarget12Hook;
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> swapChainResizeBuffers12Hook;
+#else
+    logger->info("Direct3D 12 hooking disabled at compile time");
+#endif
+
 
 #pragma region D3D9
 
@@ -370,6 +385,8 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
     static INDICIUM_D3D_VERSION deviceVersion = IndiciumDirect3DVersionUnknown;
 
+#ifndef INDICIUM_NO_D3D10
+
     try
     {
         const std::unique_ptr<Direct3D10Hooking::Direct3D10> d3d10(new Direct3D10Hooking::Direct3D10);
@@ -524,9 +541,13 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         logger->error("D3D10 runtime error: {}", ex.what());
     }
 
+#endif
+
 #pragma endregion
 
 #pragma region D3D11
+
+#ifndef INDICIUM_NO_D3D11
 
     try
     {
@@ -622,9 +643,13 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         logger->error("D3D11 runtime error: {}", ex.what());
     }
 
+#endif
+
 #pragma endregion
 
 #pragma region D3D12
+
+#ifndef INDICIUM_NO_D3D12
 
     try
     {
@@ -720,6 +745,8 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         logger->error("D3D12 runtime error: {}", ex.what());
     }
 
+#endif
+
 #pragma endregion
 
 #ifdef HOOK_DINPUT8
@@ -768,15 +795,24 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         present9ExHook.remove();
         reset9ExHook.remove();
 #endif
+
+#ifndef INDICIUM_NO_D3D10
         swapChainPresent10Hook.remove();
         swapChainResizeTarget10Hook.remove();
         swapChainResizeBuffers10Hook.remove();
+#endif
+
+#ifndef INDICIUM_NO_D3D11
         swapChainPresent11Hook.remove();
         swapChainResizeTarget11Hook.remove();
         swapChainResizeBuffers11Hook.remove();
+#endif
+
+#ifndef INDICIUM_NO_D3D12
         swapChainPresent12Hook.remove();
         swapChainResizeTarget12Hook.remove();
         swapChainResizeBuffers12Hook.remove();
+#endif
 
         logger->info("Hooks disabled");
     }

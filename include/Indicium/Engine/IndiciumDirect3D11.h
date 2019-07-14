@@ -26,6 +26,8 @@ SOFTWARE.
 #ifndef IndiciumDirect3D11_h__
 #define IndiciumDirect3D11_h__
 
+#ifndef INDICIUM_NO_D3D11
+
 #include <dxgi.h>
 #include <d3d11.h>
 
@@ -133,5 +135,7 @@ VOID FORCEINLINE INDICIUM_D3D11_EVENT_CALLBACKS_INIT(
 {
     ZeroMemory(Callbacks, sizeof(INDICIUM_D3D11_EVENT_CALLBACKS));
 }
+
+#endif
 
 #endif // IndiciumDirect3D11_h__

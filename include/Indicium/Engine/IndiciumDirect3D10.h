@@ -26,6 +26,8 @@ SOFTWARE.
 #ifndef IndiciumDirect3D10_h__
 #define IndiciumDirect3D10_h__
 
+#ifndef INDICIUM_NO_D3D10
+
 #include <dxgi.h>
 #include <d3d10_1.h>
 
@@ -106,5 +108,7 @@ VOID FORCEINLINE INDICIUM_D3D10_EVENT_CALLBACKS_INIT(
 {
     ZeroMemory(Callbacks, sizeof(INDICIUM_D3D10_EVENT_CALLBACKS));
 }
+
+#endif
 
 #endif // IndiciumDirect3D10_h__

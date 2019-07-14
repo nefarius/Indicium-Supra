@@ -184,12 +184,18 @@ INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, P
 
 #endif
 
+#ifndef INDICIUM_NO_D3D10
+
 INDICIUM_API VOID IndiciumEngineSetD3D10EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D10_EVENT_CALLBACKS Callbacks)
 {
     if (Engine) {
         Engine->EventsD3D10 = *Callbacks;
     }
 }
+
+#endif
+
+#ifndef INDICIUM_NO_D3D11
 
 INDICIUM_API VOID IndiciumEngineSetD3D11EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D11_EVENT_CALLBACKS Callbacks)
 {
@@ -198,12 +204,18 @@ INDICIUM_API VOID IndiciumEngineSetD3D11EventCallbacks(PINDICIUM_ENGINE Engine, 
     }
 }
 
+#endif
+
+#ifndef INDICIUM_NO_D3D12
+
 INDICIUM_API VOID IndiciumEngineSetD3D12EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D12_EVENT_CALLBACKS Callbacks)
 {
     if (Engine) {
         Engine->EventsD3D12 = *Callbacks;
     }
 }
+
+#endif
 
 INDICIUM_API VOID IndiciumEngineLogDebug(LPCSTR Format, ...)
 {
