@@ -86,7 +86,14 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
         "indicium",
         Indicium::Core::Util::expand_environment_variables("%TEMP%\\Indicium-Supra.log")
         );
+
+#if _DEBUG
+    spdlog::set_level(spdlog::level::debug);
+    logger->flush_on(spdlog::level::debug);
+#else
     logger->flush_on(spdlog::level::info);
+#endif
+
     spdlog::set_default_logger(logger);
 
     logger = spdlog::get("indicium")->clone("api");
@@ -221,44 +228,44 @@ INDICIUM_API VOID IndiciumEngineSetD3D12EventCallbacks(PINDICIUM_ENGINE Engine, 
 
 INDICIUM_API VOID IndiciumEngineLogDebug(LPCSTR Format, ...)
 {
-    va_list args;
-    va_start(args, Format);
-
     auto logger = spdlog::get("indicium")->clone("host");
-    logger->debug(Format, args);
-
+    va_list args;
+    char buf[1000]; // TODO: dumb, make better
+    va_start(args, Format);
+    vsnprintf(buf, sizeof(buf), Format, args);
     va_end(args);
+    logger->debug(buf);
 }
 
 INDICIUM_API VOID IndiciumEngineLogInfo(LPCSTR Format, ...)
 {
-    va_list args;
-    va_start(args, Format);
-
     auto logger = spdlog::get("indicium")->clone("host");
-    logger->info(Format, args);
-
+    va_list args;
+    char buf[1000]; // TODO: dumb, make better
+    va_start(args, Format);
+    vsnprintf(buf, sizeof(buf), Format, args);
     va_end(args);
+    logger->info(buf);
 }
 
 INDICIUM_API VOID IndiciumEngineLogWarning(LPCSTR Format, ...)
 {
-    va_list args;
-    va_start(args, Format);
-
     auto logger = spdlog::get("indicium")->clone("host");
-    logger->warn(Format, args);
-
+    va_list args;
+    char buf[1000]; // TODO: dumb, make better
+    va_start(args, Format);
+    vsnprintf(buf, sizeof(buf), Format, args);
     va_end(args);
+    logger->warn(buf);
 }
 
 INDICIUM_API VOID IndiciumEngineLogError(LPCSTR Format, ...)
 {
-    va_list args;
-    va_start(args, Format);
-
     auto logger = spdlog::get("indicium")->clone("host");
-    logger->error(Format, args);
-
+    va_list args;
+    char buf[1000]; // TODO: dumb, make better
+    va_start(args, Format);
+    vsnprintf(buf, sizeof(buf), Format, args);
     va_end(args);
+    logger->error(buf);
 }
