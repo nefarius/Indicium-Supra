@@ -30,6 +30,8 @@ SOFTWARE.
 //
 typedef struct _INDICIUM_ENGINE
 {
+    HMODULE HostInstance;
+
     //
     // Detected Direct3D version the host process is using to render
     //
@@ -39,11 +41,6 @@ typedef struct _INDICIUM_ENGINE
     // Requested configuration at engine creation
     // 
     INDICIUM_ENGINE_CONFIG EngineConfig;
-
-    //
-    // Callback to be invoked once the render pipeline has been hooked
-    //
-    PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked;
 
     //
     // Direct3D 9(Ex) specific render pipeline callbacks
@@ -78,8 +75,8 @@ typedef struct _INDICIUM_ENGINE
 } INDICIUM_ENGINE;
 
 #define INVOKE_INDICIUM_GAME_HOOKED(_engine_, _version_)    \
-                                    (_engine_->EvtIndiciumGameHooked ? \
-                                    _engine_->EvtIndiciumGameHooked(_version_) : \
+                                    (_engine_->EngineConfig.EvtIndiciumGameHooked ? \
+                                    _engine_->EngineConfig.EvtIndiciumGameHooked(_engine_, _version_) : \
                                     (void)0)
 
 #define INVOKE_D3D9_CALLBACK(_engine_, _callback_, ...)     \

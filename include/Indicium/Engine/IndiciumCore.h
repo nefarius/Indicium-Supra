@@ -45,7 +45,11 @@ extern "C" {
     {
         INDICIUM_ERROR_NONE = 0x20000000,
         INDICIUM_ERROR_INVALID_ENGINE_HANDLE = 0xE0000001,
-        INDICIUM_ERROR_CREATE_THREAD_FAILED = 0xE0000002
+        INDICIUM_ERROR_CREATE_THREAD_FAILED = 0xE0000002,
+        INDICIUM_ERROR_ENGINE_ALLOCATION_FAILED = 0xE0000003,
+        INDICIUM_ERROR_ENGINE_ALREADY_ALLOCATED = 0xE0000004,
+        INDICIUM_ERROR_INVALID_HMODULE_HANDLE = 0xE0000005,
+
     } INDICIUM_ERROR;
 
     typedef enum _INDICIUM_D3D_VERSION {
@@ -73,6 +77,7 @@ extern "C" {
         _Function_class_(EVT_INDICIUM_GAME_HOOKED)
         VOID
         EVT_INDICIUM_GAME_HOOKED(
+            PINDICIUM_ENGINE EngineHandle,
             const INDICIUM_D3D_VERSION GameVersion
         );
 
@@ -81,43 +86,11 @@ extern "C" {
     typedef
         _Function_class_(EVT_INDICIUM_GAME_UNHOOKED)
         VOID
-        EVT_INDICIUM_GAME_UNHOOKED();
+        EVT_INDICIUM_GAME_UNHOOKED(
+            PINDICIUM_ENGINE EngineHandle
+        );
 
     typedef EVT_INDICIUM_GAME_UNHOOKED *PFN_INDICIUM_GAME_UNHOOKED;
-
-    /**
-     * \fn  INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void);
-     *
-     * \brief   Allocates memory for a new Indicium engine instance.
-     *
-     * \author  Benjamin Höglinger-Stelzer
-     * \date    05.05.2019
-     *
-     * \returns A handle to the newly allocated engine.
-     */
-    INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc(void);
-
-    /**
-     * \fn  INDICIUM_API INDICIUM_ERROR IndiciumEngineInit( _In_ PINDICIUM_ENGINE Engine, _In_opt_ PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked );
-     *
-     * \brief   Initializes the Indicium engine. Attempts too hook into the host process's render
-     *          pipeline and optionally notifies the caller once the hooks are in place.
-     *
-     * \author  Benjamin Höglinger-Stelzer
-     * \date    05.05.2019
-     *
-     * \param   Engine                  The previously allocated engine handle.
-     * \param   EvtIndiciumGameHooked   The optional callback invoked once the render pipeline has
-     *                                  been hooked.
-     *
-     * \returns An INDICIUM_ERROR.
-     */
-    INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(
-        _In_
-        PINDICIUM_ENGINE Engine,
-        _In_opt_
-        PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked
-    );
 
     typedef struct _INDICIUM_ENGINE_CONFIG
     {
@@ -184,6 +157,10 @@ extern "C" {
         _In_ HMODULE HostInstance,
         _In_ PINDICIUM_ENGINE_CONFIG EngineConfig,
         _Out_opt_ PINDICIUM_ENGINE* Engine
+    );
+
+    INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy(
+        _In_ HMODULE HostInstance
     );
 
     /**

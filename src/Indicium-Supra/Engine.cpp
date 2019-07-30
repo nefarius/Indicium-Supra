@@ -49,35 +49,37 @@ SOFTWARE.
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+//
+// STL
+// 
+#include <map>
 
-INDICIUM_API PINDICIUM_ENGINE IndiciumEngineAlloc()
+//
+// Keep track of HINSTANCE/HANDLE to engine handle association
+// 
+static std::map<HMODULE, PINDICIUM_ENGINE> g_EngineHostInstances;
+
+
+INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM_ENGINE_CONFIG EngineConfig, PINDICIUM_ENGINE * Engine)
 {
+    if (g_EngineHostInstances.count(HostInstance)) {
+        return INDICIUM_ERROR_ENGINE_ALREADY_ALLOCATED;
+    }
+
     const auto engine = static_cast<PINDICIUM_ENGINE>(malloc(sizeof(INDICIUM_ENGINE)));
 
     if (!engine) {
-        return nullptr;
+        return INDICIUM_ERROR_ENGINE_ALLOCATION_FAILED;
     }
 
     ZeroMemory(engine, sizeof(INDICIUM_ENGINE));
-
-    return engine;
-}
-
-INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked)
-{
-    if (!Engine) {
-        return INDICIUM_ERROR_INVALID_ENGINE_HANDLE;
-    }
-
-    //
-    // Callback invoked when initialization finished
-    // 
-    Engine->EvtIndiciumGameHooked = EvtIndiciumGameHooked;
+    engine->HostInstance = HostInstance;
+    CopyMemory(&engine->EngineConfig, EngineConfig, sizeof(INDICIUM_ENGINE_CONFIG));
 
     //
     // Event to notify engine thread about termination
     // 
-    Engine->EngineCancellationEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    engine->EngineCancellationEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
     //
     // Set up logging
@@ -85,7 +87,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     auto logger = spdlog::basic_logger_mt(
         "indicium",
         Indicium::Core::Util::expand_environment_variables("%TEMP%\\Indicium-Supra.log")
-        );
+    );
 
 #if _DEBUG
     spdlog::set_level(spdlog::level::debug);
@@ -97,34 +99,89 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineInit(PINDICIUM_ENGINE Engine, PFN_INDI
     spdlog::set_default_logger(logger);
 
     logger = spdlog::get("indicium")->clone("api");
-    
+
     logger->info("Indicium engine initialized, attempting to launch main thread");
-   
+
     //
     // Kickstart hooking the rendering pipeline
     // 
-    Engine->EngineThread = CreateThread(
+    engine->EngineThread = CreateThread(
         nullptr,
         0,
         reinterpret_cast<LPTHREAD_START_ROUTINE>(IndiciumMainThread),
-        Engine,
+        engine,
         0,
         nullptr
     );
 
-    if (!Engine->EngineThread) {
+    if (!engine->EngineThread) {
         logger->error("Could not create main thread, library unusable");
         return INDICIUM_ERROR_CREATE_THREAD_FAILED;
     }
 
     logger->info("Main thread created successfully");
 
+    if (Engine)
+    {
+        *Engine = engine;
+    }
+
+    g_EngineHostInstances[HostInstance] = engine;
+
     return INDICIUM_ERROR_NONE;
 }
 
-INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM_ENGINE_CONFIG EngineConfig, PINDICIUM_ENGINE * Engine)
+INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy(HMODULE HostInstance)
 {
-    return INDICIUM_API INDICIUM_ERROR();
+    if (!g_EngineHostInstances.count(HostInstance)) {
+        return INDICIUM_ERROR_INVALID_HMODULE_HANDLE;
+    }
+
+    const auto& engine = g_EngineHostInstances[HostInstance];
+    auto logger = spdlog::get("indicium")->clone("api");
+
+    logger->info("Indicium engine shutdown requested, attempting to terminate main thread");
+
+    const auto ret = SetEvent(engine->EngineCancellationEvent);
+
+    if (!ret)
+    {
+        logger->error("SetEvent failed: {}", GetLastError());
+    }
+
+    const auto result = WaitForSingleObject(engine->EngineThread, 3000);
+
+    switch (result)
+    {
+    case WAIT_ABANDONED:
+        logger->error("Unknown state, host process might crash");
+        break;
+    case WAIT_OBJECT_0:
+        logger->info("Hooks removed, notifying caller");
+        break;
+    case WAIT_TIMEOUT:
+        TerminateThread(engine->EngineThread, 0);
+        logger->error("Thread hasn't finished clean-up within expected time, terminating");
+        break;
+    case WAIT_FAILED:
+        logger->error("Unknown error, host process might crash");
+        break;
+    default:
+        TerminateThread(engine->EngineThread, 0);
+        logger->error("Unexpected return value, terminating");
+        break;
+    }
+
+    CloseHandle(engine->EngineCancellationEvent);
+    CloseHandle(engine->EngineThread);
+
+    logger->info("Engine shutdown complete");
+    logger->flush();
+
+    const auto it = g_EngineHostInstances.find(HostInstance);
+    g_EngineHostInstances.erase(it);
+
+    return INDICIUM_ERROR_NONE;
 }
 
 INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked)
@@ -165,10 +222,6 @@ INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_G
         TerminateThread(Engine->EngineThread, 0);
         logger->error("Unexpected return value, terminating");
         break;
-    }
-
-    if (EvtIndiciumGameUnhooked) {
-        EvtIndiciumGameUnhooked();
     }
 
     CloseHandle(Engine->EngineCancellationEvent);
