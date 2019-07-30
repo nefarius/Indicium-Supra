@@ -174,7 +174,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM
     //
     auto logger = spdlog::basic_logger_mt(
         "indicium",
-        Indicium::Core::Util::expand_environment_variables("%TEMP%\\Indicium-Supra.log")
+        Indicium::Core::Util::expand_environment_variables(EngineConfig->LogFilePath)
     );
 
 #if _DEBUG
@@ -184,7 +184,9 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM
     logger->flush_on(spdlog::level::info);
 #endif
 
-    spdlog::set_default_logger(logger);
+    if (EngineConfig->EnableLogging) {
+        spdlog::set_default_logger(logger);
+    }
 
     logger = spdlog::get("indicium")->clone("api");
 

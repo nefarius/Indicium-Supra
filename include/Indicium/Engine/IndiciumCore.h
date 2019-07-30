@@ -133,6 +133,13 @@ extern "C" {
             BOOL HookDirect3D12;
         };
 
+        struct
+        {
+            BOOL EnableLogging;
+
+            PCSTR LogFilePath;
+        };
+
     } INDICIUM_ENGINE_CONFIG, *PINDICIUM_ENGINE_CONFIG;
 
     /**
@@ -152,6 +159,9 @@ extern "C" {
     )
     {
         ZeroMemory(EngineConfig, sizeof(INDICIUM_ENGINE_CONFIG));
+
+        EngineConfig->EnableLogging = TRUE;
+        EngineConfig->LogFilePath = "%TEMP%\\Indicium-Supra.log";
     }
 
     INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(
