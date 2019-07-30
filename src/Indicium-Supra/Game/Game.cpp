@@ -259,7 +259,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX9Ex")->info("++ IDirect3DDevice9Ex::Present called");
+                    spdlog::get("indicium")->clone("d3d9")->info("++ IDirect3DDevice9Ex::Present called");
 
                     INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion9);
                 });
@@ -283,7 +283,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX9Ex")->info("++ IDirect3DDevice9Ex::Reset called");
+                    spdlog::get("indicium")->clone("d3d9")->info("++ IDirect3DDevice9Ex::Reset called");
                 });
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreReset, dev, pp);
@@ -304,7 +304,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX9Ex")->info("++ IDirect3DDevice9Ex::EndScene called");
+                    spdlog::get("indicium")->clone("d3d9")->info("++ IDirect3DDevice9Ex::EndScene called");
                 });
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreEndScene, dev);
@@ -330,7 +330,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX9Ex")->info("++ IDirect3DDevice9Ex::PresentEx called");
+                    spdlog::get("indicium")->clone("d3d9")->info("++ IDirect3DDevice9Ex::PresentEx called");
 
                     INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion9);
                 });
@@ -355,7 +355,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX9Ex")->info("++ IDirect3DDevice9Ex::ResetEx called");
+                    spdlog::get("indicium")->clone("d3d9")->info("++ IDirect3DDevice9Ex::ResetEx called");
                 });
 
                 INVOKE_D3D9_CALLBACK(engine, EvtIndiciumD3D9PreResetEx, dev, pp, ppp);
@@ -409,7 +409,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, [&pChain = chain]()
                 {
-                    auto l = spdlog::get("indicium")->clone("HookDX10");
+                    auto l = spdlog::get("indicium")->clone("d3d10");
                     l->info("++ IDXGISwapChain::Present called");
 
                     ID3D10Device *pp10Device = nullptr;
@@ -467,7 +467,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX10")->info("++ IDXGISwapChain::ResizeTarget called");
+                    spdlog::get("indicium")->clone("d3d10")->info("++ IDXGISwapChain::ResizeTarget called");
                 });
 
                 if (deviceVersion == IndiciumDirect3DVersion10) {
@@ -505,7 +505,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX10")->info("++ IDXGISwapChain::ResizeBuffers called");
+                    spdlog::get("indicium")->clone("d3d10")->info("++ IDXGISwapChain::ResizeBuffers called");
                 });
 
                 if (deviceVersion == IndiciumDirect3DVersion10) {
@@ -574,7 +574,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX11")->info("++ IDXGISwapChain::Present called");
+                    spdlog::get("indicium")->clone("d3d11")->info("++ IDXGISwapChain::Present called");
 
                     INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion11);
                 });
@@ -598,7 +598,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX11")->info("++ IDXGISwapChain::ResizeTarget called");
+                    spdlog::get("indicium")->clone("d3d11")->info("++ IDXGISwapChain::ResizeTarget called");
                 });
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
@@ -624,7 +624,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX11")->info("++ IDXGISwapChain::ResizeBuffers called");
+                    spdlog::get("indicium")->clone("d3d11")->info("++ IDXGISwapChain::ResizeBuffers called");
                 });
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeBuffers, chain,
@@ -679,7 +679,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX12")->info("++ IDXGISwapChain::Present called");
+                    spdlog::get("indicium")->clone("d3d12")->info("++ IDXGISwapChain::Present called");
 
                     INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion12);
                 });
@@ -703,7 +703,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX12")->info("++ IDXGISwapChain::ResizeTarget called");
+                    spdlog::get("indicium")->clone("d3d12")->info("++ IDXGISwapChain::ResizeTarget called");
                 });
 
                 INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PreResizeTarget, chain, pNewTargetParameters);
@@ -729,7 +729,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, []()
                 {
-                    spdlog::get("indicium")->clone("HookDX12")->info("++ IDXGISwapChain::ResizeBuffers called");
+                    spdlog::get("indicium")->clone("d3d12")->info("++ IDXGISwapChain::ResizeBuffers called");
                 });
 
                 INVOKE_D3D12_CALLBACK(engine, EvtIndiciumD3D12PreResizeBuffers, chain,
