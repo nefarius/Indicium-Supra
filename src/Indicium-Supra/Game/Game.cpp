@@ -799,6 +799,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
     logger->info("Shutting down hooks...");
 
+    //
+    // Notify host that we are about to release all render pipeline hooks
+    // 
     if (engine->EngineConfig.EvtIndiciumGamePreUnhook)
     {
         engine->EngineConfig.EvtIndiciumGamePreUnhook(engine);
@@ -839,6 +842,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         logger->error("Unhooking failed: {}", pex.what());
     }
 
+    //
+    // Notify host that we released all render pipeline hooks
+    // 
     if (engine->EngineConfig.EvtIndiciumGamePostUnhook)
     {
         engine->EngineConfig.EvtIndiciumGamePostUnhook(engine);
@@ -846,7 +852,10 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
     logger->info("Exiting worker thread");
 
-    return 0;
+    //
+    // Decrease host DLL reference count and exit thread
+    // 
+    FreeLibraryAndExitThread(engine->HostInstance, 0);
 }
 
 #ifdef HOOK_DINPUT8

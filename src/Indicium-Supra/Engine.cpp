@@ -53,17 +53,105 @@ SOFTWARE.
 // STL
 // 
 #include <map>
+#include <detours.h>
 
 //
 // Keep track of HINSTANCE/HANDLE to engine handle association
 // 
 static std::map<HMODULE, PINDICIUM_ENGINE> g_EngineHostInstances;
 
+//
+// Pointer to original Windows API ExitProcess()
+// 
+static void (WINAPI * RealExitProcess)(UINT uExitCode) = ExitProcess;
+
+/**
+ * \fn  void WINAPI FakeExitProcess( UINT uExitCode )
+ *
+ * \brief   Fake exit process
+ *
+ * \author  Benjamin Höglinger-Stelzer
+ * \date    31.07.2019
+ *
+ * \param   uExitCode   The exit code.
+ *
+ * \returns A WINAPI.
+ */
+void WINAPI FakeExitProcess(
+    UINT uExitCode
+)
+{
+    auto logger = spdlog::get("indicium")->clone("process");
+
+    logger->info("Host process is terminating, performing pre-DLL-detach clean-up tasks");
+
+    for (const auto& kv : g_EngineHostInstances)
+    {
+        const auto& engine = kv.second;
+
+        const auto ret = SetEvent(engine->EngineCancellationEvent);
+
+        if (!ret)
+        {
+            logger->error("SetEvent failed: {}", GetLastError());
+        }
+
+        const auto result = WaitForSingleObject(engine->EngineThread, 3000);
+
+        switch (result)
+        {
+        case WAIT_ABANDONED:
+            logger->error("Unknown state, host process might crash");
+            break;
+        case WAIT_OBJECT_0:
+            logger->info("Hooks removed, notifying caller");
+            break;
+        case WAIT_TIMEOUT:
+#ifndef _DEBUG
+            TerminateThread(engine->EngineThread, 0);
+            logger->error("Thread hasn't finished clean-up within expected time, terminating");
+#endif
+            break;
+        case WAIT_FAILED:
+            logger->error("Unknown error, host process might crash");
+            break;
+        default:
+            TerminateThread(engine->EngineThread, 0);
+            logger->error("Unexpected return value, terminating");
+            break;
+        }
+    }
+
+    RealExitProcess(uExitCode);
+}
+
 
 INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM_ENGINE_CONFIG EngineConfig, PINDICIUM_ENGINE * Engine)
 {
+    //
+    // Check if we got initialized for this instance before
+    // 
     if (g_EngineHostInstances.count(HostInstance)) {
         return INDICIUM_ERROR_ENGINE_ALREADY_ALLOCATED;
+    }
+
+    //
+    // TODO: error handling!
+    // 
+    DetourRestoreAfterWith();
+    DetourTransactionBegin();
+    DetourUpdateThread(GetCurrentThread());
+    DetourAttach(&(PVOID)RealExitProcess, FakeExitProcess);
+    DetourTransactionCommit();
+
+    //
+    // Increase host DLL reference count
+    // 
+    HMODULE hmod;
+    if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+        reinterpret_cast<LPCTSTR>(HostInstance),
+        &hmod)) {
+        return INDICIUM_ERROR_REFERENCE_INCREMENT_FAILED;
     }
 
     const auto engine = static_cast<PINDICIUM_ENGINE>(malloc(sizeof(INDICIUM_ENGINE)));
@@ -137,49 +225,27 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy(HMODULE HostInstance)
         return INDICIUM_ERROR_INVALID_HMODULE_HANDLE;
     }
 
+    //
+    // TODO: error handling!
+    // 
+    DetourTransactionBegin();
+    DetourUpdateThread(GetCurrentThread());
+    DetourDetach(&(PVOID)RealExitProcess, FakeExitProcess);
+    DetourTransactionCommit();
+
     const auto& engine = g_EngineHostInstances[HostInstance];
     auto logger = spdlog::get("indicium")->clone("api");
 
-    logger->info("Indicium engine shutdown requested, attempting to terminate main thread");
-
-    const auto ret = SetEvent(engine->EngineCancellationEvent);
-
-    if (!ret)
-    {
-        logger->error("SetEvent failed: {}", GetLastError());
-    }
-
-    const auto result = WaitForSingleObject(engine->EngineThread, 3000);
-
-    switch (result)
-    {
-    case WAIT_ABANDONED:
-        logger->error("Unknown state, host process might crash");
-        break;
-    case WAIT_OBJECT_0:
-        logger->info("Hooks removed, notifying caller");
-        break;
-    case WAIT_TIMEOUT:
-        TerminateThread(engine->EngineThread, 0);
-        logger->error("Thread hasn't finished clean-up within expected time, terminating");
-        break;
-    case WAIT_FAILED:
-        logger->error("Unknown error, host process might crash");
-        break;
-    default:
-        TerminateThread(engine->EngineThread, 0);
-        logger->error("Unexpected return value, terminating");
-        break;
-    }
+    logger->info("Freeing remaining resources");
 
     CloseHandle(engine->EngineCancellationEvent);
     CloseHandle(engine->EngineThread);
 
-    logger->info("Engine shutdown complete");
-    logger->flush();
-
     const auto it = g_EngineHostInstances.find(HostInstance);
     g_EngineHostInstances.erase(it);
+
+    logger->info("Engine shutdown complete");
+    logger->flush();
 
     return INDICIUM_ERROR_NONE;
 }
