@@ -252,62 +252,6 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy(HMODULE HostInstance)
     return INDICIUM_ERROR_NONE;
 }
 
-INDICIUM_API VOID IndiciumEngineShutdown(PINDICIUM_ENGINE Engine, PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked)
-{
-    if (!Engine) {
-        return;
-    }
-
-    auto logger = spdlog::get("indicium")->clone("api");
-
-    logger->info("Indicium engine shutdown requested, attempting to terminate main thread");
-
-    const auto ret = SetEvent(Engine->EngineCancellationEvent);
-
-    if (!ret)
-    {
-        logger->error("SetEvent failed: {}", GetLastError());
-    }
-
-    const auto result = WaitForSingleObject(Engine->EngineThread, 3000);
-
-    switch (result)
-    {
-    case WAIT_ABANDONED:
-        logger->error("Unknown state, host process might crash");
-        break;
-    case WAIT_OBJECT_0:
-        logger->info("Hooks removed, notifying caller");
-        break;
-    case WAIT_TIMEOUT:
-        TerminateThread(Engine->EngineThread, 0);
-        logger->error("Thread hasn't finished clean-up within expected time, terminating");
-        break;
-    case WAIT_FAILED:
-        logger->error("Unknown error, host process might crash");
-        break;
-    default:
-        TerminateThread(Engine->EngineThread, 0);
-        logger->error("Unexpected return value, terminating");
-        break;
-    }
-
-    CloseHandle(Engine->EngineCancellationEvent);
-    CloseHandle(Engine->EngineThread);
-
-    logger->info("Engine shutdown complete");
-    logger->flush();
-}
-
-INDICIUM_API VOID IndiciumEngineFree(PINDICIUM_ENGINE Engine)
-{
-    if (!Engine) {
-        return;
-    }
-
-    free(Engine);
-}
-
 #ifndef INDICIUM_NO_D3D9
 
 INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks)

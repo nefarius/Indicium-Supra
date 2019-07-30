@@ -174,46 +174,6 @@ extern "C" {
         _In_ HMODULE HostInstance
     );
 
-    /**
-     * \fn  INDICIUM_API VOID IndiciumEngineShutdown( _In_ PINDICIUM_ENGINE Engine, _In_opt_ PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked );
-     *
-     * \brief   Gracefully shuts down the Indicium engine, unhooking from the render pipeline during
-     *          runtime. After this call, the engine can either be initialized once again or the
-     *          handle must be freed with IndiciumEngineFree.
-     *
-     * \author  Benjamin Höglinger-Stelzer
-     * \date    05.05.2019
-     *
-     * \param   Engine                  The engine handle.
-     * \param   EvtIndiciumGameUnhooked The optional callback invoked once the render pipeline has
-     *                                  been unhooked.
-     *
-     * \returns Nothing.
-     */
-    INDICIUM_API VOID IndiciumEngineShutdown(
-        _In_
-        PINDICIUM_ENGINE Engine,
-        _In_opt_
-        PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked
-    );
-
-    /**
-     * \fn  INDICIUM_API VOID IndiciumEngineFree( _In_ PINDICIUM_ENGINE Engine );
-     *
-     * \brief   Frees memory allocated by an Indicium engine handle.
-     *
-     * \author  Benjamin Höglinger-Stelzer
-     * \date    05.05.2019
-     *
-     * \param   Engine  The engine handle to free.
-     *
-     * \returns Nothing.
-     */
-    INDICIUM_API VOID IndiciumEngineFree(
-        _In_
-        PINDICIUM_ENGINE Engine
-    );
-
 #ifndef INDICIUM_NO_D3D9
 
     /**
