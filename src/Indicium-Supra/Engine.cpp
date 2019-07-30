@@ -104,7 +104,7 @@ void WINAPI FakeExitProcess(
             logger->error("Unknown state, host process might crash");
             break;
         case WAIT_OBJECT_0:
-            logger->info("Hooks removed, notifying caller");
+            logger->info("Thread shutdown complete");
             break;
         case WAIT_TIMEOUT:
 #ifndef _DEBUG
