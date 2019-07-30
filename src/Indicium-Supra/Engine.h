@@ -36,6 +36,11 @@ typedef struct _INDICIUM_ENGINE
     INDICIUM_D3D_VERSION GameVersion;
 
     //
+    // Requested configuration at engine creation
+    // 
+    INDICIUM_ENGINE_CONFIG EngineConfig;
+
+    //
     // Callback to be invoked once the render pipeline has been hooked
     //
     PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked;

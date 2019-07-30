@@ -119,6 +119,73 @@ extern "C" {
         PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked
     );
 
+    typedef struct _INDICIUM_ENGINE_CONFIG
+    {
+        //
+        // Event callback invoked once a requested render API has been hooked successfully
+        // 
+        PFN_INDICIUM_GAME_HOOKED EvtIndiciumGameHooked;
+
+        //
+        // Event callback invoked prior to unhooking the render API
+        // 
+        PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGamePreUnhook;
+
+        //
+        // Event callback invoked after render API has been unhooked
+        // 
+        PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGamePostUnhook;
+
+        struct
+        {
+            //
+            // Enables detection and hooking of Direct3D 9 render pipeline, if used by host process
+            // 
+            BOOL HookDirect3D9;
+
+            //
+            // Enables detection and hooking of Direct3D 10 render pipeline, if used by host process
+            // 
+            BOOL HookDirect3D10;
+
+            //
+            // Enables detection and hooking of Direct3D 11 render pipeline, if used by host process
+            // 
+            BOOL HookDirect3D11;
+
+            //
+            // Enables detection and hooking of Direct3D 12 render pipeline, if used by host process
+            // 
+            BOOL HookDirect3D12;
+        };
+
+    } INDICIUM_ENGINE_CONFIG, *PINDICIUM_ENGINE_CONFIG;
+
+    /**
+     * \fn  VOID FORCEINLINE INDICIUM_ENGINE_CONFIG_INIT( PINDICIUM_ENGINE_CONFIG EngineConfig )
+     *
+     * \brief   Initializes an INDICIUM_ENGINE_CONFIG struct.
+     *
+     * \author  Benjamin Höglinger-Stelzer
+     * \date    30.07.2019
+     *
+     * \param   EngineConfig    The engine configuration.
+     *
+     * \returns Nothing.
+     */
+    VOID FORCEINLINE INDICIUM_ENGINE_CONFIG_INIT(
+        PINDICIUM_ENGINE_CONFIG EngineConfig
+    )
+    {
+        ZeroMemory(EngineConfig, sizeof(INDICIUM_ENGINE_CONFIG));
+    }
+
+    INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(
+        _In_ HMODULE HostInstance,
+        _In_ PINDICIUM_ENGINE_CONFIG EngineConfig,
+        _Out_opt_ PINDICIUM_ENGINE* Engine
+    );
+
     /**
      * \fn  INDICIUM_API VOID IndiciumEngineShutdown( _In_ PINDICIUM_ENGINE Engine, _In_opt_ PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGameUnhooked );
      *
