@@ -20,6 +20,8 @@ API-Hooking and rendering framework for DirectX-based games.
 
 ### Prerequisites
 
+**Samples are currently broken on this branch due to major API redesign!**
+
 - Visual Studio **2017** ([Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15) is just fine)
 - [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
 - [.NET Core SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/2.1) (or greater, required for building via CLI only)
