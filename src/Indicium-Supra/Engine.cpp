@@ -262,6 +262,49 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy(HMODULE HostInstance)
     return INDICIUM_ERROR_NONE;
 }
 
+INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext(PINDICIUM_ENGINE Engine, PVOID Context, size_t ContextSize)
+{
+    if (!Engine) {
+        return INDICIUM_ERROR_INVALID_ENGINE_HANDLE;
+    }
+
+    if (!Engine->CustomContext) {
+        IndiciumEngineFreeCustomContext(Engine);
+    }
+
+    Engine->CustomContext = malloc(ContextSize);
+
+    if (!Engine->CustomContext) {
+        return INDICIUM_ERROR_CONTEXT_ALLOCATION_FAILED;
+    }
+
+    memcpy(Engine->CustomContext, Context, ContextSize);
+
+    return INDICIUM_ERROR_NONE;
+}
+
+INDICIUM_API INDICIUM_ERROR IndiciumEngineFreeCustomContext(PINDICIUM_ENGINE Engine)
+{
+    if (!Engine) {
+        return INDICIUM_ERROR_INVALID_ENGINE_HANDLE;
+    }
+
+    if (Engine->CustomContext) {
+        free(Engine->CustomContext);
+    }
+
+    return INDICIUM_ERROR_NONE;
+}
+
+INDICIUM_API PVOID IndiciumEngineGetCustomContext(PINDICIUM_ENGINE Engine)
+{
+    if (!Engine) {
+        return nullptr;
+    }
+
+    return Engine->CustomContext;
+}
+
 #ifndef INDICIUM_NO_D3D9
 
 INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks)

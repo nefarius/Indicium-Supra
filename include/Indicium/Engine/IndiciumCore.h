@@ -50,6 +50,7 @@ extern "C" {
         INDICIUM_ERROR_ENGINE_ALREADY_ALLOCATED = 0xE0000004,
         INDICIUM_ERROR_INVALID_HMODULE_HANDLE = 0xE0000005,
         INDICIUM_ERROR_REFERENCE_INCREMENT_FAILED = 0xE0000006,
+        INDICIUM_ERROR_CONTEXT_ALLOCATION_FAILED = 0xE0000007,
 
     } INDICIUM_ERROR;
 
@@ -217,6 +218,25 @@ extern "C" {
      */
     INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy(
         _In_ HMODULE HostInstance
+    );
+
+    INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext(
+        _In_
+        PINDICIUM_ENGINE Engine,
+        _In_
+        PVOID Context,
+        _In_
+        size_t ContextSize
+    );
+
+    INDICIUM_API INDICIUM_ERROR IndiciumEngineFreeCustomContext(
+        _In_
+        PINDICIUM_ENGINE Engine
+    );
+
+    INDICIUM_API PVOID IndiciumEngineGetCustomContext(
+        _In_
+        PINDICIUM_ENGINE Engine
     );
 
 #ifndef INDICIUM_NO_D3D9

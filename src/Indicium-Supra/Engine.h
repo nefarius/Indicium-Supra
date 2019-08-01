@@ -30,6 +30,9 @@ SOFTWARE.
 //
 typedef struct _INDICIUM_ENGINE
 {
+    //
+    // Host module instance handle
+    // 
     HMODULE HostInstance;
 
     //
@@ -71,6 +74,11 @@ typedef struct _INDICIUM_ENGINE
     // Signals the main thread to terminate
     //
     HANDLE EngineCancellationEvent;
+
+    //
+    // Custom context data traveling along with this instance
+    // 
+    PVOID CustomContext;
 
 } INDICIUM_ENGINE;
 
