@@ -80,6 +80,11 @@ typedef struct _INDICIUM_ENGINE
     // 
     PVOID CustomContext;
 
+    union
+    {
+        IDXGISwapChain * pSwapChain;
+    } RenderPipeline;
+
 } INDICIUM_ENGINE;
 
 #define INVOKE_INDICIUM_GAME_HOOKED(_engine_, _version_)    \

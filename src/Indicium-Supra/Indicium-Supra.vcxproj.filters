@@ -119,6 +119,9 @@
     <ClInclude Include="Exceptions.hpp">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDXGI.h">
+      <Filter>Shared\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Indicium-Supra.rc" />

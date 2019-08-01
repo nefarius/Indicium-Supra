@@ -305,6 +305,20 @@ INDICIUM_API PVOID IndiciumEngineGetCustomContext(PINDICIUM_ENGINE Engine)
     return Engine->CustomContext;
 }
 
+INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromDXGISwapChain(IDXGISwapChain * pSwapChain)
+{
+    for (const auto& kv : g_EngineHostInstances)
+    {
+        const auto& engine = kv.second;
+
+        if (engine->RenderPipeline.pSwapChain == pSwapChain) {
+            return engine;
+        }
+    }
+
+    return nullptr;
+}
+
 #ifndef INDICIUM_NO_D3D9
 
 INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks)

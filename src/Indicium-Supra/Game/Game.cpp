@@ -572,9 +572,11 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 ) -> HRESULT
             {
                 static std::once_flag flag;
-                std::call_once(flag, []()
+                std::call_once(flag, [&pChain = chain]()
                 {
                     spdlog::get("indicium")->clone("d3d11")->info("++ IDXGISwapChain::Present called");
+
+                    engine->RenderPipeline.pSwapChain = pChain;
 
                     INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion11);
                 });
@@ -605,6 +607,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
                 const auto ret = swapChainResizeTarget11Hook.call_orig(chain, pNewTargetParameters);
 
+                // TODO: necessary?
+                engine->RenderPipeline.pSwapChain = chain;
+
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeTarget, chain, pNewTargetParameters);
 
                 return ret;
@@ -632,6 +637,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
                 const auto ret = swapChainResizeBuffers11Hook.call_orig(chain,
                     BufferCount, Width, Height, NewFormat, SwapChainFlags);
+
+                // TODO: necessary?
+                engine->RenderPipeline.pSwapChain = chain;
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeBuffers, chain,
                     BufferCount, Width, Height, NewFormat, SwapChainFlags);
