@@ -178,12 +178,43 @@ extern "C" {
         EngineConfig->LogFilePath = "%TEMP%\\Indicium-Supra.log";
     }
 
+    /**
+     * \fn  INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate( _In_ HMODULE HostInstance, _In_ PINDICIUM_ENGINE_CONFIG EngineConfig, _Out_opt_ PINDICIUM_ENGINE* Engine );
+     *
+     * \brief   Initializes the Indicium engine. Attempts too hook into the host process's render
+     *          pipeline and optionally notifies the caller about progress via callbacks provided in
+     *          INDICIUM_ENGINE_CONFIG struct. Calling this function is expected to happen in
+     *          DllMain() at DLL_PROCESS_ATTACH.
+     *
+     * \author  Benjamin Höglinger-Stelzer
+     * \date    01.08.2019
+     *
+     * \param           HostInstance    The host instance handle.
+     * \param           EngineConfig    The engine configuration.
+     * \param [in,out]  Engine          If non-null, the newly allocated engine handle.
+     *
+     * \returns An INDICIUM_ERROR.
+     */
     INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(
         _In_ HMODULE HostInstance,
         _In_ PINDICIUM_ENGINE_CONFIG EngineConfig,
         _Out_opt_ PINDICIUM_ENGINE* Engine
     );
 
+    /**
+     * \fn  INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy( _In_ HMODULE HostInstance );
+     *
+     * \brief   Frees all resources internally used by the engine. Reverts all established hooks and
+     *          invokes the shutdown event callbacks. Calling this function is expected to happen in
+     *          DllMain() at DLL_PROCESS_DETACH.
+     *
+     * \author  Benjamin Höglinger-Stelzer
+     * \date    02.08.2019
+     *
+     * \param   HostInstance    The host instance.
+     *
+     * \returns An INDICIUM_ERROR.
+     */
     INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy(
         _In_ HMODULE HostInstance
     );
