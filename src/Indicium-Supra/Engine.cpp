@@ -68,14 +68,14 @@ static void (WINAPI * RealExitProcess)(UINT uExitCode) = ExitProcess;
 /**
  * \fn  void WINAPI FakeExitProcess( UINT uExitCode )
  *
- * \brief   Fake exit process
+ * \brief   Detoured ExitProcess() call.
  *
  * \author  Benjamin Höglinger-Stelzer
  * \date    31.07.2019
  *
  * \param   uExitCode   The exit code.
  *
- * \returns A WINAPI.
+ * \returns Nothing.
  */
 void WINAPI FakeExitProcess(
     UINT uExitCode
@@ -89,6 +89,13 @@ void WINAPI FakeExitProcess(
     {
         const auto& engine = kv.second;
 
+        if (engine->EngineConfig.EvtIndiciumGamePreExit) {
+            engine->EngineConfig.EvtIndiciumGamePreExit(engine);
+        }
+
+        //
+        // This will instruct the main thread to gracefully end
+        // 
         const auto ret = SetEvent(engine->EngineCancellationEvent);
 
         if (!ret)
@@ -96,6 +103,9 @@ void WINAPI FakeExitProcess(
             logger->error("SetEvent failed: {}", GetLastError());
         }
 
+        //
+        // Give the thread a short breather to end gracefully
+        // 
         const auto result = WaitForSingleObject(engine->EngineThread, 3000);
 
         switch (result)

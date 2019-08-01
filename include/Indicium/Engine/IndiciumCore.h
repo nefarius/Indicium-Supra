@@ -93,6 +93,15 @@ extern "C" {
 
     typedef EVT_INDICIUM_GAME_UNHOOKED *PFN_INDICIUM_GAME_UNHOOKED;
 
+    typedef
+        _Function_class_(EVT_INDICIUM_GAME_EXIT)
+        VOID
+        EVT_INDICIUM_GAME_EXIT(
+            PINDICIUM_ENGINE EngineHandle
+        );
+
+    typedef EVT_INDICIUM_GAME_EXIT *PFN_INDICIUM_GAME_EXIT;
+
     typedef struct _INDICIUM_ENGINE_CONFIG
     {
         //
@@ -109,6 +118,11 @@ extern "C" {
         // Event callback invoked after render API has been unhooked
         // 
         PFN_INDICIUM_GAME_UNHOOKED EvtIndiciumGamePostUnhook;
+
+        //
+        // Event callback invoked when host process shutdown has been detected
+        // 
+        PFN_INDICIUM_GAME_EXIT EvtIndiciumGamePreExit;
 
         struct
         {
