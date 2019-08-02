@@ -31,6 +31,7 @@ SOFTWARE.
 // Public
 // 
 #include "Indicium/Engine/IndiciumCore.h"
+#include "Indicium/Engine/IndiciumDXGI.h"
 #include "Indicium/Engine/IndiciumDirect3D9.h"
 #include "Indicium/Engine/IndiciumDirect3D10.h"
 #include "Indicium/Engine/IndiciumDirect3D11.h"
