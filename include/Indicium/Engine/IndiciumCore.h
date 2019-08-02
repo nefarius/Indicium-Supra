@@ -223,8 +223,8 @@ extern "C" {
     INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext(
         _In_
         PINDICIUM_ENGINE Engine,
-        _In_
-        PVOID Context,
+        _Out_
+        PVOID* Context,
         _In_
         size_t ContextSize
     );

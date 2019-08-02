@@ -262,7 +262,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy(HMODULE HostInstance)
     return INDICIUM_ERROR_NONE;
 }
 
-INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext(PINDICIUM_ENGINE Engine, PVOID Context, size_t ContextSize)
+INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext(PINDICIUM_ENGINE Engine, PVOID* Context, size_t ContextSize)
 {
     if (!Engine) {
         return INDICIUM_ERROR_INVALID_ENGINE_HANDLE;
@@ -278,7 +278,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext(PINDICIUM_ENGINE En
         return INDICIUM_ERROR_CONTEXT_ALLOCATION_FAILED;
     }
 
-    memcpy(Engine->CustomContext, Context, ContextSize);
+    *Context = Engine->CustomContext;
 
     return INDICIUM_ERROR_NONE;
 }
@@ -305,7 +305,7 @@ INDICIUM_API PVOID IndiciumEngineGetCustomContext(PINDICIUM_ENGINE Engine)
     return Engine->CustomContext;
 }
 
-INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromDXGISwapChain(IDXGISwapChain * pSwapChain)
+INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromDXGISwapChain(IDXGISwapChain *pSwapChain)
 {
     for (const auto& kv : g_EngineHostInstances)
     {
