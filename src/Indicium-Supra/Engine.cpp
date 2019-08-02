@@ -268,7 +268,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext(PINDICIUM_ENGINE En
         return INDICIUM_ERROR_INVALID_ENGINE_HANDLE;
     }
 
-    if (!Engine->CustomContext) {
+    if (Engine->CustomContext) {
         IndiciumEngineFreeCustomContext(Engine);
     }
 
