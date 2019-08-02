@@ -279,6 +279,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext(PINDICIUM_ENGINE En
         return INDICIUM_ERROR_CONTEXT_ALLOCATION_FAILED;
     }
 
+    ZeroMemory(Engine->CustomContext, ContextSize);
     *Context = Engine->CustomContext;
 
     return INDICIUM_ERROR_NONE;
