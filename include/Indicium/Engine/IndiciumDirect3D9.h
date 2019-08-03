@@ -28,6 +28,7 @@ SOFTWARE.
 
 #ifndef INDICIUM_NO_D3D9
 
+#include "IndiciumCore.h"
 #include <d3d9.h>
 
 typedef
@@ -125,6 +126,24 @@ VOID FORCEINLINE INDICIUM_D3D9_EVENT_CALLBACKS_INIT(
 {
     ZeroMemory(Callbacks, sizeof(INDICIUM_D3D9_EVENT_CALLBACKS));
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromD3D9Device(
+        _In_
+        LPDIRECT3DDEVICE9 Device
+    );
+
+    INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromD3D9ExDevice(
+        _In_
+        LPDIRECT3DDEVICE9EX Device
+    );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

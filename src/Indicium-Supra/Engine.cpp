@@ -330,6 +330,34 @@ INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, P
     }
 }
 
+INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromD3D9Device(LPDIRECT3DDEVICE9 Device)
+{
+    for (const auto& kv : g_EngineHostInstances)
+    {
+        const auto& engine = kv.second;
+
+        if (engine->RenderPipeline.pD3D9Device == Device) {
+            return engine;
+        }
+    }
+
+    return nullptr;
+}
+
+INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromD3D9ExDevice(LPDIRECT3DDEVICE9EX Device)
+{
+    for (const auto& kv : g_EngineHostInstances)
+    {
+        const auto& engine = kv.second;
+
+        if (engine->RenderPipeline.pD3D9ExDevice == Device) {
+            return engine;
+        }
+    }
+
+    return nullptr;
+}
+
 #endif
 
 #ifndef INDICIUM_NO_D3D10

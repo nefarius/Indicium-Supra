@@ -82,7 +82,12 @@ typedef struct _INDICIUM_ENGINE
 
     union
     {
-        IDXGISwapChain * pSwapChain;
+        IDXGISwapChain* pSwapChain;
+
+        LPDIRECT3DDEVICE9 pD3D9Device;
+
+        LPDIRECT3DDEVICE9EX pD3D9ExDevice;
+
     } RenderPipeline;
 
 } INDICIUM_ENGINE;
