@@ -34,6 +34,18 @@ SOFTWARE.
 extern "C" {
 #endif
 
+    /**
+     * \fn  INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromDXGISwapChain( _In_ IDXGISwapChain *pSwapChain );
+     *
+     * \brief   Returns the engine handle associated to a provided IDXGISwapChain pointer.
+     *
+     * \author  Benjamin Höglinger-Stelzer
+     * \date    03.08.2019
+     *
+     * \param [in,out]  pSwapChain  If non-null, the swap chain pointer.
+     *
+     * \returns A PINDICIUM_ENGINE.
+     */
     INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromDXGISwapChain(
         _In_
         IDXGISwapChain *pSwapChain

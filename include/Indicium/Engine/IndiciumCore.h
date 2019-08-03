@@ -220,6 +220,22 @@ extern "C" {
         _In_ HMODULE HostInstance
     );
 
+    /**
+     * \fn  INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext( _In_ PINDICIUM_ENGINE Engine, _Out_ PVOID* Context, _In_ size_t ContextSize );
+     *
+     * \brief   Allocates a custom sized chunk of memory which will be accessible from all event
+     *          callbacks during engine lifetime. Repeatedly calling this function will free
+     *          previously allocated context memory.
+     *
+     * \author  Benjamin Höglinger-Stelzer
+     * \date    03.08.2019
+     *
+     * \param           Engine      The engine handle.
+     * \param [in,out]  Context     If non-null, pointer to the newly allocated context memory.
+     * \param           ContextSize Size of the context memory.
+     *
+     * \returns An INDICIUM_ERROR.
+     */
     INDICIUM_API INDICIUM_ERROR IndiciumEngineAllocCustomContext(
         _In_
         PINDICIUM_ENGINE Engine,
@@ -229,11 +245,36 @@ extern "C" {
         size_t ContextSize
     );
 
+    /**
+     * \fn  INDICIUM_API INDICIUM_ERROR IndiciumEngineFreeCustomContext( _In_ PINDICIUM_ENGINE Engine );
+     *
+     * \brief   Frees custom context memory for the supplied engine handle, if any.
+     *
+     * \author  Benjamin Höglinger-Stelzer
+     * \date    03.08.2019
+     *
+     * \param   Engine  The engine handle.
+     *
+     * \returns An INDICIUM_ERROR.
+     */
     INDICIUM_API INDICIUM_ERROR IndiciumEngineFreeCustomContext(
         _In_
         PINDICIUM_ENGINE Engine
     );
 
+    /**
+     * \fn  INDICIUM_API PVOID IndiciumEngineGetCustomContext( _In_ PINDICIUM_ENGINE Engine );
+     *
+     * \brief   Returns a pointer to previously allocated custom context memory, or NULL if none
+     *          available.
+     *
+     * \author  Benjamin Höglinger-Stelzer
+     * \date    03.08.2019
+     *
+     * \param   Engine  The engine handle.
+     *
+     * \returns A PVOID.
+     */
     INDICIUM_API PVOID IndiciumEngineGetCustomContext(
         _In_
         PINDICIUM_ENGINE Engine
