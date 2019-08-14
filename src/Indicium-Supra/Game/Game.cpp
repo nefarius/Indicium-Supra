@@ -163,6 +163,25 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     logger->info("Core Audio hooking disabled at compile time");
 #endif
 
+    const std::unique_ptr<CoreAudioHooking::AudioRenderClientHook> arc(new CoreAudioHooking::AudioRenderClientHook);
+
+    arcGetBufferHook.apply(arc->vtable()[CoreAudioHooking::GetBuffer], [](
+        IAudioRenderClient* client,
+        UINT32 NumFramesRequested,
+        BYTE   **ppData
+        ) -> HRESULT
+    {
+        return arcGetBufferHook.call_orig(client, NumFramesRequested, ppData);
+    });
+
+    arcReleaseBufferHook.apply(arc->vtable()[CoreAudioHooking::ReleaseBuffer], [](
+        IAudioRenderClient* client,
+        UINT32 NumFramesWritten,
+        DWORD  dwFlags
+        ) -> HRESULT
+    {
+        return arcReleaseBufferHook.call_orig(client, NumFramesWritten, dwFlags);
+    });
 
 #pragma region D3D9
 
