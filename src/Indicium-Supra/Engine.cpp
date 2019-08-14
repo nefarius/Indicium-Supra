@@ -322,6 +322,20 @@ INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromDXGISwapChain(IDXGISwap
     return nullptr;
 }
 
+INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromARC(IAudioRenderClient * client)
+{
+    for (const auto& kv : g_EngineHostInstances)
+    {
+        const auto& engine = kv.second;
+
+        if (engine->CoreAudio.pARC == client) {
+            return engine;
+        }
+    }
+
+    return nullptr;
+}
+
 #ifndef INDICIUM_NO_D3D9
 
 INDICIUM_API VOID IndiciumEngineSetD3D9EventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_D3D9_EVENT_CALLBACKS Callbacks)

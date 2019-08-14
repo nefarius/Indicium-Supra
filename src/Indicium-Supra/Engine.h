@@ -96,6 +96,12 @@ typedef struct _INDICIUM_ENGINE
 
     } RenderPipeline;
 
+    struct
+    {
+        IAudioRenderClient *pARC;
+
+    } CoreAudio;
+
 } INDICIUM_ENGINE;
 
 #define INVOKE_INDICIUM_GAME_HOOKED(_engine_, _version_)    \

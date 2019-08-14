@@ -26,6 +26,7 @@ SOFTWARE.
 #ifndef IndiciumCoreAudio_h__
 #define IndiciumCoreAudio_h__
 
+#include "IndiciumCore.h"
 #include <Audioclient.h>
 
 typedef
@@ -67,5 +68,18 @@ VOID FORCEINLINE INDICIUM_ARC_EVENT_CALLBACKS_INIT(
 {
     ZeroMemory(Callbacks, sizeof(INDICIUM_ARC_EVENT_CALLBACKS));
 }
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromARC(
+        _In_
+        IAudioRenderClient* client
+    );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // IndiciumCoreAudio_h__
