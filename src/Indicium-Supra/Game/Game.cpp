@@ -163,25 +163,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     logger->info("Core Audio hooking disabled at compile time");
 #endif
 
-    const std::unique_ptr<CoreAudioHooking::AudioRenderClientHook> arc(new CoreAudioHooking::AudioRenderClientHook);
 
-    arcGetBufferHook.apply(arc->vtable()[CoreAudioHooking::GetBuffer], [](
-        IAudioRenderClient* client,
-        UINT32 NumFramesRequested,
-        BYTE   **ppData
-        ) -> HRESULT
-    {
-        return arcGetBufferHook.call_orig(client, NumFramesRequested, ppData);
-    });
-
-    arcReleaseBufferHook.apply(arc->vtable()[CoreAudioHooking::ReleaseBuffer], [](
-        IAudioRenderClient* client,
-        UINT32 NumFramesWritten,
-        DWORD  dwFlags
-        ) -> HRESULT
-    {
-        return arcReleaseBufferHook.call_orig(client, NumFramesWritten, dwFlags);
-    });
 
 #pragma region D3D9
 
@@ -270,7 +252,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
 #ifndef INDICIUM_NO_D3D9
 
-    if (config.HookDirect3D9)
+    if (config.Direct3D.HookDirect3D9)
     {
         try
         {
@@ -425,7 +407,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
 #ifndef INDICIUM_NO_D3D10
 
-    if (config.HookDirect3D10)
+    if (config.Direct3D.HookDirect3D10)
     {
         try
         {
@@ -590,7 +572,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
 #ifndef INDICIUM_NO_D3D11
 
-    if (config.HookDirect3D11)
+    if (config.Direct3D.HookDirect3D11)
     {
         try
         {
@@ -697,7 +679,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
 #ifndef INDICIUM_NO_D3D12
 
-    if (config.HookDirect3D12)
+    if (config.Direct3D.HookDirect3D12)
     {
         try
         {
@@ -791,6 +773,44 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         catch (RuntimeException& ex)
         {
             logger->error("D3D12 runtime error: {}", ex.what());
+        }
+    }
+
+#endif
+
+#pragma endregion
+
+#pragma region Core Audio
+
+#ifndef INDICIUM_NO_COREAUDIO
+
+    if (config.CoreAudio.HookCoreAudio)
+    {
+        try
+        {
+            const std::unique_ptr<CoreAudioHooking::AudioRenderClientHook> arc(new CoreAudioHooking::AudioRenderClientHook);
+
+            arcGetBufferHook.apply(arc->vtable()[CoreAudioHooking::GetBuffer], [](
+                IAudioRenderClient* client,
+                UINT32 NumFramesRequested,
+                BYTE   **ppData
+                ) -> HRESULT
+            {
+                return arcGetBufferHook.call_orig(client, NumFramesRequested, ppData);
+            });
+
+            arcReleaseBufferHook.apply(arc->vtable()[CoreAudioHooking::ReleaseBuffer], [](
+                IAudioRenderClient* client,
+                UINT32 NumFramesWritten,
+                DWORD  dwFlags
+                ) -> HRESULT
+            {
+                return arcReleaseBufferHook.call_orig(client, NumFramesWritten, dwFlags);
+            });
+        }
+        catch (RuntimeException& ex)
+        {
+            logger->error("Core Audio runtime error: {}", ex.what());
         }
     }
 
@@ -946,6 +966,6 @@ void HookDInput8(size_t* vtable8)
         std::call_once(flag, []() { Logger::get("HookDInput8").information("++ IDirectInputDevice8::GetObjectInfo called"); });
 
         return g_getObjectInfo8Hook.callOrig(dev, pdidoi, dwObj, dwHow);
-});
+    });
 }
 #endif

@@ -185,7 +185,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM
     //
     auto logger = spdlog::basic_logger_mt(
         "indicium",
-        Indicium::Core::Util::expand_environment_variables(EngineConfig->LogFilePath)
+        Indicium::Core::Util::expand_environment_variables(EngineConfig->Logging.FilePath)
     );
 
 #if _DEBUG
@@ -195,7 +195,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM
     logger->flush_on(spdlog::level::info);
 #endif
 
-    if (EngineConfig->EnableLogging) {
+    if (EngineConfig->Logging.IsEnabled) {
         spdlog::set_default_logger(logger);
     }
 

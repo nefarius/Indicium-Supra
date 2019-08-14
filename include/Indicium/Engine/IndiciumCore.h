@@ -146,14 +146,22 @@ extern "C" {
             // Enables detection and hooking of Direct3D 12 render pipeline, if used by host process
             // 
             BOOL HookDirect3D12;
-        };
+
+        } Direct3D;
 
         struct
         {
-            BOOL EnableLogging;
+            BOOL HookCoreAudio;
 
-            PCSTR LogFilePath;
-        };
+        } CoreAudio;
+
+        struct
+        {
+            BOOL IsEnabled;
+
+            PCSTR FilePath;
+
+        } Logging;
 
     } INDICIUM_ENGINE_CONFIG, *PINDICIUM_ENGINE_CONFIG;
 
@@ -175,8 +183,8 @@ extern "C" {
     {
         ZeroMemory(EngineConfig, sizeof(INDICIUM_ENGINE_CONFIG));
 
-        EngineConfig->EnableLogging = TRUE;
-        EngineConfig->LogFilePath = "%TEMP%\\Indicium-Supra.log";
+        EngineConfig->Logging.IsEnabled = TRUE;
+        EngineConfig->Logging.FilePath = "%TEMP%\\Indicium-Supra.log";
     }
 
     /**
