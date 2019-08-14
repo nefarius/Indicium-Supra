@@ -42,6 +42,7 @@ using namespace Indicium::Core::Exceptions;
 #include <Game/Hook/Direct3D11.h>
 #include <Game/Hook/Direct3D12.h>
 #include <Game/Hook/DirectInput8.h>
+#include <Game/Hook/AudioRenderClientHook.h>
 
 //
 // Public
@@ -150,6 +151,16 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     static Hook<CallConvention::stdcall_t, HRESULT, IDXGISwapChain*, UINT, UINT, UINT, DXGI_FORMAT, UINT> swapChainResizeBuffers12Hook;
 #else
     logger->info("Direct3D 12 hooking disabled at compile time");
+#endif
+
+    // 
+    // Core Audio Hooks
+    // 
+#ifndef INDICIUM_NO_COREAUDIO
+    static Hook<CallConvention::stdcall_t, HRESULT, IAudioRenderClient*, UINT32, BYTE**> arcGetBufferHook;
+    static Hook<CallConvention::stdcall_t, HRESULT, IAudioRenderClient*, UINT32, DWORD> arcReleaseBufferHook;
+#else
+    logger->info("Core Audio hooking disabled at compile time");
 #endif
 
 
