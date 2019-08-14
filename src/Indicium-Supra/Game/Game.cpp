@@ -797,6 +797,14 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 BYTE   **ppData
                 ) -> HRESULT
             {
+                static std::once_flag flag;
+                std::call_once(flag, [&pClient = client]()
+                {
+                    //spdlog::get("indicium")->clone("d3d11")->info("++ IDXGISwapChain::Present called");
+
+                    engine->CoreAudio.pARC = pClient;
+                });
+
                 INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPreGetBuffer, client, NumFramesRequested, ppData);
 
                 const auto ret = arcGetBufferHook.call_orig(client, NumFramesRequested, ppData);
