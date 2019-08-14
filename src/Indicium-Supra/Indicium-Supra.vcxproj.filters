@@ -26,6 +26,9 @@
       <Filter>Game\Hook\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Game\Hook\AudioRenderClientHook.cpp">
+      <Filter>Game\Hook\CoreAudio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Game">
@@ -60,6 +63,9 @@
     </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{943af5e4-f7b5-4a27-994d-d2125a64f920}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Hook\CoreAudio">
+      <UniqueIdentifier>{d071e5d9-c250-43de-ad32-82cb0b3827d3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDXGI.h">
       <Filter>Shared\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Hook\AudioRenderClientHook.h">
+      <Filter>Game\Hook\CoreAudio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

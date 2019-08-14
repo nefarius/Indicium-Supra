@@ -362,6 +362,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Game\Hook\AudioRenderClientHook.cpp" />
     <ClCompile Include="Game\Hook\Direct3D11.cpp" />
     <ClCompile Include="Game\Hook\Direct3D12.cpp" />
     <ClCompile Include="Game\Hook\DirectInput8.cpp" />
@@ -380,6 +381,7 @@
     <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDXGI.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Exceptions.hpp" />
+    <ClInclude Include="Game\Hook\AudioRenderClientHook.h" />
     <ClInclude Include="Game\Hook\Direct3D12.h" />
     <ClInclude Include="Game\Hook\DXGI.h" />
     <ClInclude Include="Game\Hook\Direct3D11.h" />
