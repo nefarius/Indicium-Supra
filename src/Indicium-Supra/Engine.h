@@ -25,6 +25,7 @@ SOFTWARE.
 
 #pragma once
 
+
 //
 // Internal engine instance properties
 //
@@ -64,6 +65,11 @@ typedef struct _INDICIUM_ENGINE
     // Direct3D 12 specific render pipeline callbacks
     //
     INDICIUM_D3D12_EVENT_CALLBACKS EventsD3D12;
+
+    //
+    // Core Audio (Audio Render Client) specific callbacks
+    // 
+    INDICIUM_ARC_EVENT_CALLBACKS EventsARC;
 
     //
     // Handle to main worker thread holding the hooks
@@ -115,4 +121,9 @@ typedef struct _INDICIUM_ENGINE
 #define INVOKE_D3D12_CALLBACK(_engine_, _callback_, ...)     \
                              (_engine_->EventsD3D12._callback_ ? \
                              _engine_->EventsD3D12._callback_(##__VA_ARGS__) : \
+                             (void)0)
+
+#define INVOKE_ARC_CALLBACK(_engine_, _callback_, ...)     \
+                             (_engine_->EventsARC._callback_ ? \
+                             _engine_->EventsARC._callback_(##__VA_ARGS__) : \
                              (void)0)

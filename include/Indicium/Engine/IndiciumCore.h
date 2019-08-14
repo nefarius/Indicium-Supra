@@ -74,6 +74,7 @@ extern "C" {
     typedef struct _INDICIUM_D3D10_EVENT_CALLBACKS *PINDICIUM_D3D10_EVENT_CALLBACKS;
     typedef struct _INDICIUM_D3D11_EVENT_CALLBACKS *PINDICIUM_D3D11_EVENT_CALLBACKS;
     typedef struct _INDICIUM_D3D12_EVENT_CALLBACKS *PINDICIUM_D3D12_EVENT_CALLBACKS;
+    typedef struct _INDICIUM_ARC_EVENT_CALLBACKS *PINDICIUM_ARC_EVENT_CALLBACKS;
 
     typedef
         _Function_class_(EVT_INDICIUM_GAME_HOOKED)
@@ -380,6 +381,17 @@ extern "C" {
         PINDICIUM_ENGINE Engine,
         _In_
         PINDICIUM_D3D12_EVENT_CALLBACKS Callbacks
+    );
+
+#endif
+
+#ifndef INDICIUM_NO_COREAUDIO
+
+    INDICIUM_API VOID IndiciumEngineSetARCEventCallbacks(
+        _In_
+        PINDICIUM_ENGINE Engine,
+        _In_
+        PINDICIUM_ARC_EVENT_CALLBACKS Callbacks
     );
 
 #endif

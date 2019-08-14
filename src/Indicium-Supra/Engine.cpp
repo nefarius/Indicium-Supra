@@ -36,6 +36,7 @@ SOFTWARE.
 #include "Indicium/Engine/IndiciumDirect3D10.h"
 #include "Indicium/Engine/IndiciumDirect3D11.h"
 #include "Indicium/Engine/IndiciumDirect3D12.h"
+#include "Indicium/Engine/IndiciumCoreAudio.h"
 
 //
 // Internal
@@ -388,6 +389,17 @@ INDICIUM_API VOID IndiciumEngineSetD3D12EventCallbacks(PINDICIUM_ENGINE Engine, 
 {
     if (Engine) {
         Engine->EventsD3D12 = *Callbacks;
+    }
+}
+
+#endif
+
+#ifndef INDICIUM_NO_COREAUDIO
+
+INDICIUM_API VOID IndiciumEngineSetARCEventCallbacks(PINDICIUM_ENGINE Engine, PINDICIUM_ARC_EVENT_CALLBACKS Callbacks)
+{
+    if (Engine) {
+        Engine->EventsARC = *Callbacks;
     }
 }
 

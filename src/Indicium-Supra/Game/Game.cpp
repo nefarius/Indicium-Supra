@@ -52,6 +52,7 @@ using namespace Indicium::Core::Exceptions;
 #include "Indicium/Engine/IndiciumDirect3D10.h"
 #include "Indicium/Engine/IndiciumDirect3D11.h"
 #include "Indicium/Engine/IndiciumDirect3D12.h"
+#include "Indicium/Engine/IndiciumCoreAudio.h"
 
 //
 // Internal
@@ -796,7 +797,13 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 BYTE   **ppData
                 ) -> HRESULT
             {
-                return arcGetBufferHook.call_orig(client, NumFramesRequested, ppData);
+                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPreGetBuffer, client, NumFramesRequested, ppData);
+
+                const auto ret = arcGetBufferHook.call_orig(client, NumFramesRequested, ppData);
+
+                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPostGetBuffer, client, NumFramesRequested, ppData);
+
+                return ret;
             });
 
             arcReleaseBufferHook.apply(arc->vtable()[CoreAudioHooking::ReleaseBuffer], [](
@@ -805,7 +812,13 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 DWORD  dwFlags
                 ) -> HRESULT
             {
-                return arcReleaseBufferHook.call_orig(client, NumFramesWritten, dwFlags);
+                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPreReleaseBuffer, client, NumFramesWritten, dwFlags);
+
+                const auto ret = arcReleaseBufferHook.call_orig(client, NumFramesWritten, dwFlags);
+
+                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPostReleaseBuffer, client, NumFramesWritten, dwFlags);
+
+                return ret;
             });
         }
         catch (RuntimeException& ex)
