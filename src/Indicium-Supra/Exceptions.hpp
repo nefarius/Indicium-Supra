@@ -76,16 +76,16 @@ namespace Indicium
                 { }
             };
 
-            class DXAPIException : public RuntimeException
+            class COMInterfaceException : public RuntimeException
             {
                 HRESULT hresult_;
 
             public:
-                explicit DXAPIException(const std::string &msg, HRESULT result) :
+                explicit COMInterfaceException(const std::string &msg, HRESULT result) :
                     RuntimeException(msg), hresult_(result)
                 { }
 
-                explicit DXAPIException(const char *msg, HRESULT result) :
+                explicit COMInterfaceException(const char *msg, HRESULT result) :
                     RuntimeException(msg), hresult_(result)
                 { }
 
@@ -93,6 +93,30 @@ namespace Indicium
                 {
                     return hresult_;
                 }
+            };
+
+            class DXAPIException : public COMInterfaceException
+            {
+            public:
+                explicit DXAPIException(const std::string &msg, HRESULT result) :
+                    COMInterfaceException(msg, result)
+                { }
+
+                explicit DXAPIException(const char *msg, HRESULT result) :
+                    COMInterfaceException(msg, result)
+                { }
+            };
+
+            class ARCException : public COMInterfaceException
+            {
+            public:
+                explicit ARCException(const std::string &msg, HRESULT result) :
+                    COMInterfaceException(msg, result)
+                { }
+
+                explicit ARCException(const char *msg, HRESULT result) :
+                    COMInterfaceException(msg, result)
+                { }
             };
         };
     };
