@@ -32,7 +32,8 @@ CoreAudioHooking::AudioRenderClientHook::AudioRenderClientHook()
 {
     HRESULT hr = CoCreateInstance(
         __uuidof(MMDeviceEnumerator),
-        NULL, CLSCTX_ALL,
+        NULL, 
+        CLSCTX_ALL,
         __uuidof(IMMDeviceEnumerator),
         reinterpret_cast<void**>(&enumerator)
     );
