@@ -930,6 +930,11 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         swapChainResizeBuffers12Hook.remove();
 #endif
 
+#ifndef INDICIUM_NO_COREAUDIO
+        arcGetBufferHook.remove();
+        arcReleaseBufferHook.remove();
+#endif
+
         logger->info("Hooks disabled");
     }
     catch (DetourException& pex)
