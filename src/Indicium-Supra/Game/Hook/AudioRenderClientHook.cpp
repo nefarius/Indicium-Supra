@@ -1,4 +1,7 @@
 ﻿#include "AudioRenderClientHook.h"
+#include "Exceptions.hpp"
+
+using namespace Indicium::Core::Exceptions;
 
 CoreAudioHooking::AudioRenderClientHook::AudioRenderClientHook()
 {
@@ -8,8 +11,14 @@ CoreAudioHooking::AudioRenderClientHook::AudioRenderClientHook()
         __uuidof(IMMDeviceEnumerator),
         reinterpret_cast<void**>(&enumerator)
     );
+    if (FAILED(hr)) {
+        throw ARCException("CoCreateInstance failed", hr);
+    }
 
     hr = enumerator->GetDefaultAudioEndpoint(eRender, eConsole, &device);
+    if (FAILED(hr)) {
+        throw ARCException("Failed to get default audio endpoint", hr);
+    }
 
     hr = device->Activate(
         __uuidof(IAudioClient),
@@ -17,6 +26,9 @@ CoreAudioHooking::AudioRenderClientHook::AudioRenderClientHook()
         NULL,
         reinterpret_cast<void**>(&client)
     );
+    if (FAILED(hr)) {
+        throw ARCException("Failed to activate IAudioClient instance", hr);
+    }
 
     client->GetMixFormat(&pwfx);
 
@@ -52,11 +64,17 @@ CoreAudioHooking::AudioRenderClientHook::AudioRenderClientHook()
             NULL
         );
     }
+    if (FAILED(hr)) {
+        throw ARCException("Failed to initialize IAudioClient instance", hr);
+    }
 
     hr = client->GetService(
-        __uuidof(IAudioRenderClient), 
+        __uuidof(IAudioRenderClient),
         reinterpret_cast<void**>(&arc)
     );
+    if (FAILED(hr)) {
+        throw ARCException("Failed to request IAudioRenderClient service", hr);
+    }
 }
 
 CoreAudioHooking::AudioRenderClientHook::~AudioRenderClientHook()

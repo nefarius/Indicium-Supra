@@ -825,7 +825,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 ) -> HRESULT
             {
                 static std::once_flag flag;
-                std::call_once(flag, [&pClient = client]()
+                std::call_once(flag, []()
                 {
                     spdlog::get("indicium")->clone("arc")->info("++ IAudioRenderClient::ReleaseBuffer called");
                 });
@@ -843,9 +843,13 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         {
             logger->error("Hooking Core Audio (ARC) failed: {}", ex.what());
         }
+        catch (ARCException& ex)
+        {
+            logger->error("Initializing Core Audio (ARC) failed: {}", ex.what());
+        }
         catch (RuntimeException& ex)
         {
-            logger->error("Core Audio runtime error: {}", ex.what());
+            logger->error("Core Audio (ARC) runtime error: {}", ex.what());
         }
     }
 
@@ -877,7 +881,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         {
             BOOST_LOG_TRIVIAL(info) << "Game uses DirectInput8");
             HookDInput8(vtable8);
-        }
+}
     }
 #endif
 
