@@ -791,6 +791,8 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         {
             const std::unique_ptr<CoreAudioHooking::AudioRenderClientHook> arc(new CoreAudioHooking::AudioRenderClientHook);
 
+            logger->info("Hooking IAudioRenderClient::GetBuffer");
+
             arcGetBufferHook.apply(arc->vtable()[CoreAudioHooking::GetBuffer], [](
                 IAudioRenderClient* client,
                 UINT32 NumFramesRequested,
@@ -800,7 +802,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 static std::once_flag flag;
                 std::call_once(flag, [&pClient = client]()
                 {
-                    //spdlog::get("indicium")->clone("d3d11")->info("++ IDXGISwapChain::Present called");
+                    spdlog::get("indicium")->clone("arc")->info("++ IAudioRenderClient::GetBuffer called");
 
                     engine->CoreAudio.pARC = pClient;
                 });
@@ -814,12 +816,20 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 return ret;
             });
 
+            logger->info("Hooking IAudioRenderClient::ReleaseBuffer");
+
             arcReleaseBufferHook.apply(arc->vtable()[CoreAudioHooking::ReleaseBuffer], [](
                 IAudioRenderClient* client,
                 UINT32 NumFramesWritten,
                 DWORD  dwFlags
                 ) -> HRESULT
             {
+                static std::once_flag flag;
+                std::call_once(flag, [&pClient = client]()
+                {
+                    spdlog::get("indicium")->clone("arc")->info("++ IAudioRenderClient::ReleaseBuffer called");
+                });
+
                 INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPreReleaseBuffer, client, NumFramesWritten, dwFlags);
 
                 const auto ret = arcReleaseBufferHook.call_orig(client, NumFramesWritten, dwFlags);
@@ -828,6 +838,10 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
                 return ret;
             });
+        }
+        catch (DetourException& ex)
+        {
+            logger->error("Hooking Core Audio (ARC) failed: {}", ex.what());
         }
         catch (RuntimeException& ex)
         {
