@@ -30,9 +30,12 @@ using namespace Indicium::Core::Exceptions;
 
 CoreAudioHooking::AudioRenderClientHook::AudioRenderClientHook()
 {
+    // Note: may fail if already called by host
+    (void)CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
     HRESULT hr = CoCreateInstance(
         __uuidof(MMDeviceEnumerator),
-        NULL, 
+        NULL,
         CLSCTX_ALL,
         __uuidof(IMMDeviceEnumerator),
         reinterpret_cast<void**>(&enumerator)
