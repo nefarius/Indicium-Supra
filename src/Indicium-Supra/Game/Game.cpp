@@ -845,7 +845,8 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         }
         catch (ARCException& ex)
         {
-            logger->error("Initializing Core Audio (ARC) failed: {}", ex.what());
+            logger->error("Initializing Core Audio (ARC) failed: {} (HRESULT {})", 
+                ex.what(), ex.hresult());
         }
         catch (RuntimeException& ex)
         {
