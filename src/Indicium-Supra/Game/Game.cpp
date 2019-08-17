@@ -164,6 +164,71 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     logger->info("Core Audio hooking disabled at compile time");
 #endif
 
+    //
+    // Internal flow-control hooks
+    // 
+    static Hook<CallConvention::stdcall_t, VOID, UINT> exitProcessHook;
+
+    /*
+     * This is a bit of a gamble but ExitProcess is expected to be implicitly called
+     * _before_ the injected DLL gets unloaded (without proper call to FreeLibrary)
+     * and by hooking it we get a chance to gracefully shutdown and free resources
+     * which might otherwise become victim to a termination race condition and DLL
+     * loader-lock restrictions.
+     */
+    exitProcessHook.apply((size_t)ExitProcess, [](
+        UINT uExitCode
+        )
+    {
+        auto logger = spdlog::get("indicium")->clone("process");
+
+        logger->info("Host process is terminating, performing pre-DLL-detach clean-up tasks");
+
+        if (engine->EngineConfig.EvtIndiciumGamePreExit) {
+            engine->EngineConfig.EvtIndiciumGamePreExit(engine);
+        }
+
+        //
+        // This will instruct the main thread to gracefully end
+        // 
+        const auto ret = SetEvent(engine->EngineCancellationEvent);
+
+        if (!ret)
+        {
+            logger->error("SetEvent failed: {}", GetLastError());
+        }
+
+        //
+        // Give the thread a short breather to end gracefully
+        // 
+        const auto result = WaitForSingleObject(engine->EngineThread, 3000);
+
+        switch (result)
+        {
+        case WAIT_ABANDONED:
+            logger->error("Unknown state, host process might crash");
+            break;
+        case WAIT_OBJECT_0:
+            logger->info("Thread shutdown complete");
+            break;
+        case WAIT_TIMEOUT:
+#ifndef _DEBUG
+            TerminateThread(engine->EngineThread, 0);
+            logger->error("Thread hasn't finished clean-up within expected time, terminating");
+#endif
+            break;
+        case WAIT_FAILED:
+            logger->error("Unknown error, host process might crash");
+            break;
+        default:
+            TerminateThread(engine->EngineThread, 0);
+            logger->error("Unexpected return value, terminating");
+            break;
+        }
+
+        // Call native API. After this it becomes unsafe to use any remaining library resources!
+        exitProcessHook.call_orig(uExitCode);
+    });
 
 
 #pragma region D3D9
@@ -845,7 +910,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         }
         catch (ARCException& ex)
         {
-            logger->error("Initializing Core Audio (ARC) failed: {} (HRESULT {})", 
+            logger->error("Initializing Core Audio (ARC) failed: {} (HRESULT {})",
                 ex.what(), ex.hresult());
         }
         catch (RuntimeException& ex)
@@ -882,7 +947,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         {
             BOOST_LOG_TRIVIAL(info) << "Game uses DirectInput8");
             HookDInput8(vtable8);
-}
+        }
     }
 #endif
 
@@ -957,7 +1022,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     // Decrease host DLL reference count and exit thread
     // 
     FreeLibraryAndExitThread(engine->HostInstance, 0);
-}
+    }
 
 #ifdef HOOK_DINPUT8
 void HookDInput8(size_t* vtable8)

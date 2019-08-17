@@ -55,87 +55,11 @@ SOFTWARE.
 // STL
 // 
 #include <map>
-#include <detours.h>
 
 //
 // Keep track of HINSTANCE/HANDLE to engine handle association
 // 
 static std::map<HMODULE, PINDICIUM_ENGINE> g_EngineHostInstances;
-
-//
-// Pointer to original Windows API ExitProcess()
-// 
-static void (WINAPI * RealExitProcess)(UINT uExitCode) = ExitProcess;
-
-/**
- * \fn  void WINAPI FakeExitProcess( UINT uExitCode )
- *
- * \brief   Detoured ExitProcess() call.
- *
- * \author  Benjamin Höglinger-Stelzer
- * \date    31.07.2019
- *
- * \param   uExitCode   The exit code.
- *
- * \returns Nothing.
- */
-void WINAPI FakeExitProcess(
-    UINT uExitCode
-)
-{
-    auto logger = spdlog::get("indicium")->clone("process");
-
-    logger->info("Host process is terminating, performing pre-DLL-detach clean-up tasks");
-
-    for (const auto& kv : g_EngineHostInstances)
-    {
-        const auto& engine = kv.second;
-
-        if (engine->EngineConfig.EvtIndiciumGamePreExit) {
-            engine->EngineConfig.EvtIndiciumGamePreExit(engine);
-        }
-
-        //
-        // This will instruct the main thread to gracefully end
-        // 
-        const auto ret = SetEvent(engine->EngineCancellationEvent);
-
-        if (!ret)
-        {
-            logger->error("SetEvent failed: {}", GetLastError());
-        }
-
-        //
-        // Give the thread a short breather to end gracefully
-        // 
-        const auto result = WaitForSingleObject(engine->EngineThread, 3000);
-
-        switch (result)
-        {
-        case WAIT_ABANDONED:
-            logger->error("Unknown state, host process might crash");
-            break;
-        case WAIT_OBJECT_0:
-            logger->info("Thread shutdown complete");
-            break;
-        case WAIT_TIMEOUT:
-#ifndef _DEBUG
-            TerminateThread(engine->EngineThread, 0);
-            logger->error("Thread hasn't finished clean-up within expected time, terminating");
-#endif
-            break;
-        case WAIT_FAILED:
-            logger->error("Unknown error, host process might crash");
-            break;
-        default:
-            TerminateThread(engine->EngineThread, 0);
-            logger->error("Unexpected return value, terminating");
-            break;
-        }
-    }
-
-    RealExitProcess(uExitCode);
-}
 
 
 INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM_ENGINE_CONFIG EngineConfig, PINDICIUM_ENGINE * Engine)
@@ -146,15 +70,6 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM
     if (g_EngineHostInstances.count(HostInstance)) {
         return INDICIUM_ERROR_ENGINE_ALREADY_ALLOCATED;
     }
-
-    //
-    // TODO: error handling!
-    // 
-    DetourRestoreAfterWith();
-    DetourTransactionBegin();
-    DetourUpdateThread(GetCurrentThread());
-    DetourAttach(&(PVOID)RealExitProcess, FakeExitProcess);
-    DetourTransactionCommit();
 
     //
     // Increase host DLL reference count
@@ -238,14 +153,6 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineDestroy(HMODULE HostInstance)
     if (!g_EngineHostInstances.count(HostInstance)) {
         return INDICIUM_ERROR_INVALID_HMODULE_HANDLE;
     }
-
-    //
-    // TODO: error handling!
-    // 
-    DetourTransactionBegin();
-    DetourUpdateThread(GetCurrentThread());
-    DetourDetach(&(PVOID)RealExitProcess, FakeExitProcess);
-    DetourTransactionCommit();
 
     const auto& engine = g_EngineHostInstances[HostInstance];
     auto logger = spdlog::get("indicium")->clone("api");
