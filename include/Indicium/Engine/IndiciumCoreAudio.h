@@ -30,35 +30,61 @@ SOFTWARE.
 #include <Audioclient.h>
 
 typedef
-_Function_class_(EVT_INDICIUM_ARC_GET_BUFFER)
+_Function_class_(EVT_INDICIUM_ARC_PRE_GET_BUFFER)
 VOID
-EVT_INDICIUM_ARC_GET_BUFFER(
-    IAudioRenderClient* client,
-    UINT32              NumFramesRequested,
-    BYTE                **ppData
+EVT_INDICIUM_ARC_PRE_GET_BUFFER(
+    IAudioRenderClient*             client,
+    UINT32                          NumFramesRequested,
+    BYTE                            **ppData,
+    PINDICIUM_EVT_PRE_EXTENSION     Extension
 );
 
-typedef EVT_INDICIUM_ARC_GET_BUFFER *PFN_INDICIUM_ARC_GET_BUFFER;
+typedef EVT_INDICIUM_ARC_PRE_GET_BUFFER *PFN_INDICIUM_ARC_PRE_GET_BUFFER;
 
 typedef
-_Function_class_(EVT_INDICIUM_ARC_RELEASE_BUFFER)
+_Function_class_(EVT_INDICIUM_ARC_POST_GET_BUFFER)
 VOID
-EVT_INDICIUM_ARC_RELEASE_BUFFER(
-    IAudioRenderClient* client,
-    UINT32              NumFramesWritten,
-    DWORD               dwFlags
+EVT_INDICIUM_ARC_POST_GET_BUFFER(
+    IAudioRenderClient*             client,
+    UINT32                          NumFramesRequested,
+    BYTE                            **ppData,
+    PINDICIUM_EVT_POST_EXTENSION    Extension
 );
 
-typedef EVT_INDICIUM_ARC_RELEASE_BUFFER *PFN_INDICIUM_ARC_RELEASE_BUFFER;
+typedef EVT_INDICIUM_ARC_POST_GET_BUFFER *PFN_INDICIUM_ARC_POST_GET_BUFFER;
+
+typedef
+_Function_class_(EVT_INDICIUM_ARC_PRE_RELEASE_BUFFER)
+VOID
+EVT_INDICIUM_ARC_PRE_RELEASE_BUFFER(
+    IAudioRenderClient*             client,
+    UINT32                          NumFramesWritten,
+    DWORD                           dwFlags,
+    PINDICIUM_EVT_PRE_EXTENSION     Extension
+);
+
+typedef EVT_INDICIUM_ARC_PRE_RELEASE_BUFFER *PFN_INDICIUM_ARC_PRE_RELEASE_BUFFER;
+
+typedef
+_Function_class_(EVT_INDICIUM_ARC_POST_RELEASE_BUFFER)
+VOID
+EVT_INDICIUM_ARC_POST_RELEASE_BUFFER(
+    IAudioRenderClient*             client,
+    UINT32                          NumFramesWritten,
+    DWORD                           dwFlags,
+    PINDICIUM_EVT_POST_EXTENSION    Extension
+);
+
+typedef EVT_INDICIUM_ARC_POST_RELEASE_BUFFER *PFN_INDICIUM_ARC_POST_RELEASE_BUFFER;
 
 
 typedef struct _INDICIUM_ARC_EVENT_CALLBACKS
 {
-    PFN_INDICIUM_ARC_GET_BUFFER         EvtIndiciumARCPreGetBuffer;
-    PFN_INDICIUM_ARC_GET_BUFFER         EvtIndiciumARCPostGetBuffer;
+    PFN_INDICIUM_ARC_PRE_GET_BUFFER         EvtIndiciumARCPreGetBuffer;
+    PFN_INDICIUM_ARC_POST_GET_BUFFER        EvtIndiciumARCPostGetBuffer;
     
-    PFN_INDICIUM_ARC_RELEASE_BUFFER     EvtIndiciumARCPreReleaseBuffer;
-    PFN_INDICIUM_ARC_RELEASE_BUFFER     EvtIndiciumARCPostReleaseBuffer;
+    PFN_INDICIUM_ARC_PRE_RELEASE_BUFFER     EvtIndiciumARCPreReleaseBuffer;
+    PFN_INDICIUM_ARC_POST_RELEASE_BUFFER    EvtIndiciumARCPostReleaseBuffer;
 
 } INDICIUM_ARC_EVENT_CALLBACKS, *PINDICIUM_ARC_EVENT_CALLBACKS;
 
@@ -68,18 +94,5 @@ VOID FORCEINLINE INDICIUM_ARC_EVENT_CALLBACKS_INIT(
 {
     ZeroMemory(Callbacks, sizeof(INDICIUM_ARC_EVENT_CALLBACKS));
 }
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-    INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromARC(
-        _In_
-        IAudioRenderClient* client
-    );
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // IndiciumCoreAudio_h__

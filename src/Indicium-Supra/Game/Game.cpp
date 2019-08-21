@@ -518,12 +518,18 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                     l->error("Could not fetch device pointer");
                 });
 
+                INDICIUM_EVT_PRE_EXTENSION pre;
+                INDICIUM_EVT_PRE_EXTENSION_INIT(&pre, engine, engine->CustomContext);
+                INDICIUM_EVT_POST_EXTENSION post;
+                INDICIUM_EVT_POST_EXTENSION_INIT(&post, engine, engine->CustomContext);
+
                 if (deviceVersion == IndiciumDirect3DVersion10) {
                     INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PrePresent, chain, SyncInterval, Flags);
                 }
 
                 if (deviceVersion == IndiciumDirect3DVersion11) {
-                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PrePresent, chain, SyncInterval, Flags);
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PrePresent, chain,
+                        SyncInterval, Flags, &pre);
                 }
 
                 const auto ret = swapChainPresent10Hook.call_orig(chain, SyncInterval, Flags);
@@ -533,7 +539,8 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                 }
 
                 if (deviceVersion == IndiciumDirect3DVersion11) {
-                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostPresent, chain, SyncInterval, Flags);
+                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostPresent, chain,
+                        SyncInterval, Flags, &post);
                 }
 
                 return ret;
@@ -552,22 +559,41 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                     spdlog::get("indicium")->clone("d3d10")->info("++ IDXGISwapChain::ResizeTarget called");
                 });
 
+                INDICIUM_EVT_PRE_EXTENSION pre;
+                INDICIUM_EVT_PRE_EXTENSION_INIT(&pre, engine, engine->CustomContext);
+                INDICIUM_EVT_POST_EXTENSION post;
+                INDICIUM_EVT_POST_EXTENSION_INIT(&post, engine, engine->CustomContext);
+
                 if (deviceVersion == IndiciumDirect3DVersion10) {
-                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PreResizeTarget, chain, pNewTargetParameters);
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PreResizeTarget, chain,
+                        pNewTargetParameters);
                 }
 
                 if (deviceVersion == IndiciumDirect3DVersion11) {
-                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
+                    INVOKE_D3D11_CALLBACK(
+                        engine,
+                        EvtIndiciumD3D11PreResizeTarget,
+                        chain,
+                        pNewTargetParameters,
+                        &pre
+                    );
                 }
 
                 const auto ret = swapChainResizeTarget10Hook.call_orig(chain, pNewTargetParameters);
 
                 if (deviceVersion == IndiciumDirect3DVersion10) {
-                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostResizeTarget, chain, pNewTargetParameters);
+                    INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PostResizeTarget, chain,
+                        pNewTargetParameters);
                 }
 
                 if (deviceVersion == IndiciumDirect3DVersion11) {
-                    INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeTarget, chain, pNewTargetParameters);
+                    INVOKE_D3D11_CALLBACK(
+                        engine,
+                        EvtIndiciumD3D11PostResizeTarget,
+                        chain,
+                        pNewTargetParameters,
+                        &post
+                    );
                 }
 
                 return ret;
@@ -590,6 +616,11 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                     spdlog::get("indicium")->clone("d3d10")->info("++ IDXGISwapChain::ResizeBuffers called");
                 });
 
+                INDICIUM_EVT_PRE_EXTENSION pre;
+                INDICIUM_EVT_PRE_EXTENSION_INIT(&pre, engine, engine->CustomContext);
+                INDICIUM_EVT_POST_EXTENSION post;
+                INDICIUM_EVT_POST_EXTENSION_INIT(&post, engine, engine->CustomContext);
+
                 if (deviceVersion == IndiciumDirect3DVersion10) {
                     INVOKE_D3D10_CALLBACK(engine, EvtIndiciumD3D10PreResizeBuffers, chain,
                         BufferCount, Width, Height, NewFormat, SwapChainFlags);
@@ -597,7 +628,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
                 if (deviceVersion == IndiciumDirect3DVersion11) {
                     INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeBuffers, chain,
-                        BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                        BufferCount, Width, Height, NewFormat, SwapChainFlags, &pre);
                 }
 
                 const auto ret = swapChainResizeBuffers10Hook.call_orig(chain,
@@ -610,7 +641,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
 
                 if (deviceVersion == IndiciumDirect3DVersion11) {
                     INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeBuffers, chain,
-                        BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                        BufferCount, Width, Height, NewFormat, SwapChainFlags, &post);
                 }
 
                 return ret;
@@ -663,11 +694,30 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                     INVOKE_INDICIUM_GAME_HOOKED(engine, IndiciumDirect3DVersion11);
                 });
 
-                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PrePresent, chain, SyncInterval, Flags);
+                INDICIUM_EVT_PRE_EXTENSION pre;
+                INDICIUM_EVT_PRE_EXTENSION_INIT(&pre, engine, engine->CustomContext);
+                INDICIUM_EVT_POST_EXTENSION post;
+                INDICIUM_EVT_POST_EXTENSION_INIT(&post, engine, engine->CustomContext);
+
+                INVOKE_D3D11_CALLBACK(
+                    engine,
+                    EvtIndiciumD3D11PrePresent,
+                    chain,
+                    SyncInterval,
+                    Flags,
+                    &pre
+                );
 
                 const auto ret = swapChainPresent11Hook.call_orig(chain, SyncInterval, Flags);
 
-                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostPresent, chain, SyncInterval, Flags);
+                INVOKE_D3D11_CALLBACK(
+                    engine,
+                    EvtIndiciumD3D11PostPresent,
+                    chain,
+                    SyncInterval,
+                    Flags,
+                    &post
+                );
 
                 return ret;
             });
@@ -685,11 +735,28 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                     spdlog::get("indicium")->clone("d3d11")->info("++ IDXGISwapChain::ResizeTarget called");
                 });
 
-                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeTarget, chain, pNewTargetParameters);
+                INDICIUM_EVT_PRE_EXTENSION pre;
+                INDICIUM_EVT_PRE_EXTENSION_INIT(&pre, engine, engine->CustomContext);
+                INDICIUM_EVT_POST_EXTENSION post;
+                INDICIUM_EVT_POST_EXTENSION_INIT(&post, engine, engine->CustomContext);
+
+                INVOKE_D3D11_CALLBACK(
+                    engine,
+                    EvtIndiciumD3D11PreResizeTarget,
+                    chain,
+                    pNewTargetParameters,
+                    &pre
+                );
 
                 const auto ret = swapChainResizeTarget11Hook.call_orig(chain, pNewTargetParameters);
 
-                INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeTarget, chain, pNewTargetParameters);
+                INVOKE_D3D11_CALLBACK(
+                    engine,
+                    EvtIndiciumD3D11PostResizeTarget,
+                    chain,
+                    pNewTargetParameters,
+                    &post
+                );
 
                 return ret;
             });
@@ -711,14 +778,19 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                     spdlog::get("indicium")->clone("d3d11")->info("++ IDXGISwapChain::ResizeBuffers called");
                 });
 
+                INDICIUM_EVT_PRE_EXTENSION pre;
+                INDICIUM_EVT_PRE_EXTENSION_INIT(&pre, engine, engine->CustomContext);
+                INDICIUM_EVT_POST_EXTENSION post;
+                INDICIUM_EVT_POST_EXTENSION_INIT(&post, engine, engine->CustomContext);
+
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PreResizeBuffers, chain,
-                    BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                    BufferCount, Width, Height, NewFormat, SwapChainFlags, &pre);
 
                 const auto ret = swapChainResizeBuffers11Hook.call_orig(chain,
                     BufferCount, Width, Height, NewFormat, SwapChainFlags);
 
                 INVOKE_D3D11_CALLBACK(engine, EvtIndiciumD3D11PostResizeBuffers, chain,
-                    BufferCount, Width, Height, NewFormat, SwapChainFlags);
+                    BufferCount, Width, Height, NewFormat, SwapChainFlags, &post);
 
                 return ret;
             });
@@ -872,11 +944,18 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                     engine->CoreAudio.pARC = pClient;
                 });
 
-                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPreGetBuffer, client, NumFramesRequested, ppData);
+                INDICIUM_EVT_PRE_EXTENSION pre;
+                INDICIUM_EVT_PRE_EXTENSION_INIT(&pre, engine, engine->CustomContext);
+                INDICIUM_EVT_POST_EXTENSION post;
+                INDICIUM_EVT_POST_EXTENSION_INIT(&post, engine, engine->CustomContext);
+
+                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPreGetBuffer, client, 
+                    NumFramesRequested, ppData, &pre);
 
                 const auto ret = arcGetBufferHook.call_orig(client, NumFramesRequested, ppData);
 
-                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPostGetBuffer, client, NumFramesRequested, ppData);
+                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPostGetBuffer, client, 
+                    NumFramesRequested, ppData, &post);
 
                 return ret;
             });
@@ -895,11 +974,18 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
                     spdlog::get("indicium")->clone("arc")->info("++ IAudioRenderClient::ReleaseBuffer called");
                 });
 
-                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPreReleaseBuffer, client, NumFramesWritten, dwFlags);
+                INDICIUM_EVT_PRE_EXTENSION pre;
+                INDICIUM_EVT_PRE_EXTENSION_INIT(&pre, engine, engine->CustomContext);
+                INDICIUM_EVT_POST_EXTENSION post;
+                INDICIUM_EVT_POST_EXTENSION_INIT(&post, engine, engine->CustomContext);
+
+                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPreReleaseBuffer, client, 
+                    NumFramesWritten, dwFlags, &pre);
 
                 const auto ret = arcReleaseBufferHook.call_orig(client, NumFramesWritten, dwFlags);
 
-                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPostReleaseBuffer, client, NumFramesWritten, dwFlags);
+                INVOKE_ARC_CALLBACK(engine, EvtIndiciumARCPostReleaseBuffer, client, 
+                    NumFramesWritten, dwFlags, &post);
 
                 return ret;
             });

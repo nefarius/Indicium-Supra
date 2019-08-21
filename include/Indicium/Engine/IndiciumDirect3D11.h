@@ -28,43 +28,85 @@ SOFTWARE.
 
 #ifndef INDICIUM_NO_D3D11
 
+#include "IndiciumCore.h"
 #include <dxgi.h>
 #include <d3d11.h>
 
 typedef
-_Function_class_(EVT_INDICIUM_D3D11_PRESENT)
+_Function_class_(EVT_INDICIUM_D3D11_PRE_PRESENT)
 VOID
-EVT_INDICIUM_D3D11_PRESENT(
-    IDXGISwapChain  *pSwapChain,
-    UINT            SyncInterval,
-    UINT            Flags
+EVT_INDICIUM_D3D11_PRE_PRESENT(
+    IDXGISwapChain                  *pSwapChain,
+    UINT                            SyncInterval,
+    UINT                            Flags,
+    PINDICIUM_EVT_PRE_EXTENSION     Extension
 );
 
-typedef EVT_INDICIUM_D3D11_PRESENT *PFN_INDICIUM_D3D11_PRESENT;
+typedef EVT_INDICIUM_D3D11_PRE_PRESENT *PFN_INDICIUM_D3D11_PRE_PRESENT;
+
+typedef
+_Function_class_(EVT_INDICIUM_D3D11_POST_PRESENT)
+VOID
+EVT_INDICIUM_D3D11_POST_PRESENT(
+    IDXGISwapChain                  *pSwapChain,
+    UINT                            SyncInterval,
+    UINT                            Flags,
+    PINDICIUM_EVT_POST_EXTENSION    Extension
+);
+
+typedef EVT_INDICIUM_D3D11_POST_PRESENT *PFN_INDICIUM_D3D11_POST_PRESENT;
 
 typedef
 _Function_class_(EVT_INDICIUM_D3D11_RESIZE_TARGET)
 VOID
-EVT_INDICIUM_D3D11_RESIZE_TARGET(
-    IDXGISwapChain          *pSwapChain,
-    const DXGI_MODE_DESC    *pNewTargetParameters
+EVT_INDICIUM_D3D11_PRE_RESIZE_TARGET(
+    IDXGISwapChain                  *pSwapChain,
+    const DXGI_MODE_DESC            *pNewTargetParameters,
+    PINDICIUM_EVT_PRE_EXTENSION     Extension
 );
 
-typedef EVT_INDICIUM_D3D11_RESIZE_TARGET *PFN_INDICIUM_D3D11_RESIZE_TARGET;
+typedef EVT_INDICIUM_D3D11_PRE_RESIZE_TARGET *PFN_INDICIUM_D3D11_PRE_RESIZE_TARGET;
 
 typedef
-_Function_class_(EVT_INDICIUM_D3D11_RESIZE_BUFFERS)
+_Function_class_(EVT_INDICIUM_D3D11_POST_RESIZE_TARGET)
 VOID
-EVT_INDICIUM_D3D11_RESIZE_BUFFERS(
-    IDXGISwapChain  *pSwapChain,
-    UINT            BufferCount,
-    UINT            Width,
-    UINT            Height,
-    DXGI_FORMAT     NewFormat,
-    UINT            SwapChainFlags
+EVT_INDICIUM_D3D11_POST_RESIZE_TARGET(
+    IDXGISwapChain                  *pSwapChain,
+    const DXGI_MODE_DESC            *pNewTargetParameters,
+    PINDICIUM_EVT_POST_EXTENSION    Extension
 );
 
-typedef EVT_INDICIUM_D3D11_RESIZE_BUFFERS *PFN_INDICIUM_D3D11_RESIZE_BUFFERS;
+typedef EVT_INDICIUM_D3D11_POST_RESIZE_TARGET *PFN_INDICIUM_D3D11_POST_RESIZE_TARGET;
+
+typedef
+_Function_class_(EVT_INDICIUM_D3D11_PRE_RESIZE_BUFFERS)
+VOID
+EVT_INDICIUM_D3D11_PRE_RESIZE_BUFFERS(
+    IDXGISwapChain                  *pSwapChain,
+    UINT                            BufferCount,
+    UINT                            Width,
+    UINT                            Height,
+    DXGI_FORMAT                     NewFormat,
+    UINT                            SwapChainFlags,
+    PINDICIUM_EVT_PRE_EXTENSION     Extension
+);
+
+typedef EVT_INDICIUM_D3D11_PRE_RESIZE_BUFFERS *PFN_INDICIUM_D3D11_PRE_RESIZE_BUFFERS;
+
+typedef
+_Function_class_(EVT_INDICIUM_D3D11_POST_RESIZE_BUFFERS)
+VOID
+EVT_INDICIUM_D3D11_POST_RESIZE_BUFFERS(
+    IDXGISwapChain                  *pSwapChain,
+    UINT                            BufferCount,
+    UINT                            Width,
+    UINT                            Height,
+    DXGI_FORMAT                     NewFormat,
+    UINT                            SwapChainFlags,
+    PINDICIUM_EVT_POST_EXTENSION    Extension
+);
+
+typedef EVT_INDICIUM_D3D11_POST_RESIZE_BUFFERS *PFN_INDICIUM_D3D11_POST_RESIZE_BUFFERS;
 
 HRESULT
 FORCEINLINE
@@ -106,14 +148,14 @@ D3D11_BACKBUFFER_FROM_SWAPCHAIN(
 
 typedef struct _INDICIUM_D3D11_EVENT_CALLBACKS
 {
-    PFN_INDICIUM_D3D11_PRESENT          EvtIndiciumD3D11PrePresent;
-    PFN_INDICIUM_D3D11_PRESENT          EvtIndiciumD3D11PostPresent;
+    PFN_INDICIUM_D3D11_PRE_PRESENT          EvtIndiciumD3D11PrePresent;
+    PFN_INDICIUM_D3D11_POST_PRESENT         EvtIndiciumD3D11PostPresent;
 
-    PFN_INDICIUM_D3D11_RESIZE_TARGET    EvtIndiciumD3D11PreResizeTarget;
-    PFN_INDICIUM_D3D11_RESIZE_TARGET    EvtIndiciumD3D11PostResizeTarget;
+    PFN_INDICIUM_D3D11_PRE_RESIZE_TARGET    EvtIndiciumD3D11PreResizeTarget;
+    PFN_INDICIUM_D3D11_POST_RESIZE_TARGET   EvtIndiciumD3D11PostResizeTarget;
 
-    PFN_INDICIUM_D3D11_RESIZE_BUFFERS   EvtIndiciumD3D11PreResizeBuffers;
-    PFN_INDICIUM_D3D11_RESIZE_BUFFERS   EvtIndiciumD3D11PostResizeBuffers;
+    PFN_INDICIUM_D3D11_PRE_RESIZE_BUFFERS   EvtIndiciumD3D11PreResizeBuffers;
+    PFN_INDICIUM_D3D11_POST_RESIZE_BUFFERS  EvtIndiciumD3D11PostResizeBuffers;
 
 } INDICIUM_D3D11_EVENT_CALLBACKS, *PINDICIUM_D3D11_EVENT_CALLBACKS;
 

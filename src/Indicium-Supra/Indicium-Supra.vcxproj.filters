@@ -125,9 +125,6 @@
     <ClInclude Include="Exceptions.hpp">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Indicium\Engine\IndiciumDXGI.h">
-      <Filter>Shared\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Hook\AudioRenderClientHook.h">
       <Filter>Game\Hook\CoreAudio</Filter>
     </ClInclude>

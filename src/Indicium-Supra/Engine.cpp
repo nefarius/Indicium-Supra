@@ -31,7 +31,6 @@ SOFTWARE.
 // Public
 // 
 #include "Indicium/Engine/IndiciumCore.h"
-#include "Indicium/Engine/IndiciumDXGI.h"
 #include "Indicium/Engine/IndiciumDirect3D9.h"
 #include "Indicium/Engine/IndiciumDirect3D10.h"
 #include "Indicium/Engine/IndiciumDirect3D11.h"
@@ -213,34 +212,6 @@ INDICIUM_API PVOID IndiciumEngineGetCustomContext(PINDICIUM_ENGINE Engine)
     }
 
     return Engine->CustomContext;
-}
-
-INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromDXGISwapChain(IDXGISwapChain *pSwapChain)
-{
-    for (const auto& kv : g_EngineHostInstances)
-    {
-        const auto& engine = kv.second;
-
-        if (engine->RenderPipeline.pSwapChain == pSwapChain) {
-            return engine;
-        }
-    }
-
-    return nullptr;
-}
-
-INDICIUM_API PINDICIUM_ENGINE IndiciumEngineGetHandleFromARC(IAudioRenderClient * client)
-{
-    for (const auto& kv : g_EngineHostInstances)
-    {
-        const auto& engine = kv.second;
-
-        if (engine->CoreAudio.pARC == client) {
-            return engine;
-        }
-    }
-
-    return nullptr;
 }
 
 #ifndef INDICIUM_NO_D3D9

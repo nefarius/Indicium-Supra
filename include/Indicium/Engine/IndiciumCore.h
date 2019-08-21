@@ -76,6 +76,88 @@ extern "C" {
     typedef struct _INDICIUM_D3D12_EVENT_CALLBACKS *PINDICIUM_D3D12_EVENT_CALLBACKS;
     typedef struct _INDICIUM_ARC_EVENT_CALLBACKS *PINDICIUM_ARC_EVENT_CALLBACKS;
 
+    typedef struct _INDICIUM_EVT_PRE_EXTENSION
+    {
+        //
+        // Internal engine handle
+        // 
+        PINDICIUM_ENGINE    Engine;
+
+        //
+        // Custom context memory (if any, might be NULL)
+        // 
+        PVOID               Context;
+
+    } INDICIUM_EVT_PRE_EXTENSION, *PINDICIUM_EVT_PRE_EXTENSION;
+
+    /**
+     * \fn  VOID FORCEINLINE INDICIUM_EVT_PRE_EXTENSION_INIT( PINDICIUM_EVT_PRE_EXTENSION Extension, PINDICIUM_ENGINE Engine, PVOID Context )
+     *
+     * \brief   Indicium event pre extension initialize
+     *
+     * \author  Benjamin Höglinger-Stelzer
+     * \date    20.08.2019
+     *
+     * \param   Extension   The extension.
+     * \param   Engine      The engine.
+     * \param   Context     The context.
+     *
+     * \returns A FORCEINLINE.
+     */
+    VOID FORCEINLINE INDICIUM_EVT_PRE_EXTENSION_INIT(
+        PINDICIUM_EVT_PRE_EXTENSION Extension,
+        PINDICIUM_ENGINE Engine,
+        PVOID Context
+    )
+    {
+        ZeroMemory(Extension, sizeof(INDICIUM_EVT_PRE_EXTENSION));
+
+        Extension->Engine = Engine;
+        Extension->Context = Context;
+    }
+
+    typedef struct _INDICIUM_EVT_POST_EXTENSION
+    {
+        //
+        // Internal engine handle
+        // 
+        PINDICIUM_ENGINE    Engine;
+
+        //
+        // Custom context memory (if any, might be NULL)
+        // 
+        PVOID               Context;
+
+    } INDICIUM_EVT_POST_EXTENSION, *PINDICIUM_EVT_POST_EXTENSION;
+
+    /**
+     * \fn  VOID FORCEINLINE INDICIUM_EVT_POST_EXTENSION_INIT( PINDICIUM_EVT_POST_EXTENSION Extension, PINDICIUM_ENGINE Engine, PVOID Context )
+     *
+     * \brief   Indicium event post extension initialize
+     *
+     * \author  Benjamin Höglinger-Stelzer
+     * \date    20.08.2019
+     *
+     * \param   Extension   The extension.
+     * \param   Engine      The engine.
+     * \param   Context     The native result.
+     *
+     * \returns A FORCEINLINE.
+     *
+     * ### param    NativeResult    The native result.
+     */
+    VOID FORCEINLINE INDICIUM_EVT_POST_EXTENSION_INIT(
+        PINDICIUM_EVT_POST_EXTENSION Extension,
+        PINDICIUM_ENGINE Engine,
+        PVOID Context
+    )
+    {
+        ZeroMemory(Extension, sizeof(INDICIUM_EVT_POST_EXTENSION));
+
+        Extension->Engine = Engine;
+        Extension->Context = Context;
+    }
+
     typedef
         _Function_class_(EVT_INDICIUM_GAME_HOOKED)
         VOID
