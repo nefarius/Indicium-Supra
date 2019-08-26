@@ -69,6 +69,78 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 	// 
 	DisableThreadLibraryCalls(static_cast<HMODULE>(hInstance));
 
+	INDICIUM_ENGINE_CONFIG cfg;
+	INDICIUM_ENGINE_CONFIG_INIT(&cfg);
+
+	cfg.Direct3D.HookDirect3D9 = TRUE;
+	cfg.Direct3D.HookDirect3D10 = TRUE;
+	cfg.Direct3D.HookDirect3D11 = TRUE;
+
+	cfg.EvtIndiciumGameHooked = EvtIndiciumGameHooked;
+
+
+
+	INDICIUM_ERROR err;
+
+	switch (dwReason)
+	{
+	case DLL_PROCESS_ATTACH:
+
+		//
+		// Bootstrap the engine. Allocates resources, establishes hooks etc.
+		// 
+		(void)IndiciumEngineCreate(
+			static_cast<HMODULE>(hInstance),
+			&cfg,
+			NULL
+		);
+
+		break;
+	case DLL_PROCESS_DETACH:
+
+		//
+		// Tears down the engine. Graceful shutdown, frees resources etc.
+		// 
+		(void)IndiciumEngineDestroy(static_cast<HMODULE>(hInstance));
+
+		break;
+	default:
+		break;
+	}
+
+	return TRUE;
+}
+
+/**
+ * \fn	void EvtIndiciumGameHooked( PINDICIUM_ENGINE EngineHandle, const INDICIUM_D3D_VERSION GameVersion )
+ *
+ * \brief	Gets called when the games' rendering pipeline has successfully been hooked and the
+ * 			rendering callbacks are about to get fired. The detected version of the used
+ * 			rendering objects is reported as well.
+ *
+ * \author	Benjamin "Nefarius" Höglinger
+ * \date	16.06.2018
+ *
+ * \param	EngineHandle	Handle of the engine.
+ * \param	GameVersion 	The detected DirectX/Direct3D version.
+ */
+void EvtIndiciumGameHooked(
+	PINDICIUM_ENGINE EngineHandle,
+	const INDICIUM_D3D_VERSION GameVersion
+)
+{
+	IndiciumEngineLogInfo("Loading ImGui plugin");
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsClassic();
+
 	INDICIUM_D3D9_EVENT_CALLBACKS d3d9;
 	INDICIUM_D3D9_EVENT_CALLBACKS_INIT(&d3d9);
 	d3d9.EvtIndiciumD3D9PrePresent = EvtIndiciumD3D9Present;
@@ -90,74 +162,18 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 	d3d11.EvtIndiciumD3D11PreResizeBuffers = EvtIndiciumD3D11PreResizeBuffers;
 	d3d11.EvtIndiciumD3D11PostResizeBuffers = EvtIndiciumD3D11PostResizeBuffers;
 
-	INDICIUM_ERROR err;
-
-	switch (dwReason)
+	switch (GameVersion)
 	{
-	case DLL_PROCESS_ATTACH:
-
-		if (!engine)
-		{
-			//
-			// Get engine handle
-			// 
-			engine = IndiciumEngineAlloc();
-
-			//
-			// Register render pipeline callbacks
-			// 
-			IndiciumEngineSetD3D9EventCallbacks(engine, &d3d9);
-			IndiciumEngineSetD3D10EventCallbacks(engine, &d3d10);
-			IndiciumEngineSetD3D11EventCallbacks(engine, &d3d11);
-
-			// 
-			// TODO: cover failure
-			// 
-			err = IndiciumEngineInit(engine, EvtIndiciumGameHooked);
-		}
-
+	case IndiciumDirect3DVersion9:
+		IndiciumEngineSetD3D9EventCallbacks(EngineHandle, &d3d9);
 		break;
-	case DLL_PROCESS_DETACH:
-
-		if (engine)
-		{
-			IndiciumEngineShutdown(engine, EvtIndiciumGameUnhooked);
-			IndiciumEngineFree(engine);
-		}
-
+	case IndiciumDirect3DVersion10:
+		IndiciumEngineSetD3D10EventCallbacks(EngineHandle, &d3d10);
 		break;
-	default:
+	case IndiciumDirect3DVersion11:
+		IndiciumEngineSetD3D11EventCallbacks(EngineHandle, &d3d11);
 		break;
 	}
-
-	return TRUE;
-}
-
-/**
- * \fn  void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
- *
- * \brief   Gets called when the games' rendering pipeline has successfully been hooked and the
- *          rendering callbacks are about to get fired. The detected version of the used
- *          rendering objects is reported as well.
- *
- * \author  Benjamin "Nefarius" Höglinger
- * \date    16.06.2018
- *
- * \param   GameVersion The detected DirectX/Direct3D version.
- */
-void EvtIndiciumGameHooked(const INDICIUM_D3D_VERSION GameVersion)
-{
-    IndiciumEngineLogInfo("Loading ImGui plugin");
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
-
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
 }
 
 /**
@@ -211,14 +227,14 @@ void EvtIndiciumD3D9Present(
 	{
 		D3DDEVICE_CREATION_PARAMETERS params;
 
-        const auto hr = pd3dDevice->GetCreationParameters(&params);
+		const auto hr = pd3dDevice->GetCreationParameters(&params);
 		if (FAILED(hr))
 		{
-            IndiciumEngineLogError("Couldn't get creation parameters from device");
+			IndiciumEngineLogError("Couldn't get creation parameters from device");
 			return;
 		}
 
-        ImGui_ImplWin32_Init(params.hFocusWindow);
+		ImGui_ImplWin32_Init(params.hFocusWindow);
 		ImGui_ImplDX9_Init(pd3dDevice);
 
 		IndiciumEngineLogInfo("ImGui (DX9) initialized");
@@ -233,13 +249,13 @@ void EvtIndiciumD3D9Present(
 		return;
 
 	TOGGLE_STATE(VK_F12, show_overlay);
-	if (!show_overlay) 
+	if (!show_overlay)
 		return;
 
-    // Start the Dear ImGui frame
-    ImGui_ImplDX9_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
+	// Start the Dear ImGui frame
+	ImGui_ImplDX9_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
 	RenderScene();
 
@@ -282,14 +298,14 @@ void EvtIndiciumD3D9PresentEx(
 	{
 		D3DDEVICE_CREATION_PARAMETERS params;
 
-        const auto hr = pd3dDevice->GetCreationParameters(&params);
+		const auto hr = pd3dDevice->GetCreationParameters(&params);
 		if (FAILED(hr))
 		{
 			IndiciumEngineLogError("Couldn't get creation parameters from device");
 			return;
 		}
 
-        ImGui_ImplWin32_Init(params.hFocusWindow);
+		ImGui_ImplWin32_Init(params.hFocusWindow);
 		ImGui_ImplDX9_Init(pd3dDevice);
 
 		IndiciumEngineLogInfo("ImGui (DX9Ex) initialized");
@@ -304,13 +320,13 @@ void EvtIndiciumD3D9PresentEx(
 		return;
 
 	TOGGLE_STATE(VK_F12, show_overlay);
-	if (!show_overlay) 
+	if (!show_overlay)
 		return;
 
-    // Start the Dear ImGui frame
-    ImGui_ImplDX9_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
+	// Start the Dear ImGui frame
+	ImGui_ImplDX9_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
 	RenderScene();
 
@@ -368,7 +384,7 @@ void EvtIndiciumD3D10Present(
 
 		IndiciumEngineLogInfo("Initializing ImGui");
 
-        ImGui_ImplWin32_Init(sd.OutputWindow);
+		ImGui_ImplWin32_Init(sd.OutputWindow);
 		ImGui_ImplDX10_Init(pDevice);
 
 		IndiciumEngineLogInfo("ImGui (DX10) initialized");
@@ -386,11 +402,11 @@ void EvtIndiciumD3D10Present(
 	if (!show_overlay)
 		return;
 
-	
-    // Start the Dear ImGui frame
-    ImGui_ImplDX10_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
+
+	// Start the Dear ImGui frame
+	ImGui_ImplDX10_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
 	RenderScene();
 
@@ -429,9 +445,10 @@ void EvtIndiciumD3D10PostResizeBuffers(
 static ID3D11RenderTargetView *g_d3d11_mainRenderTargetView = nullptr;
 
 void EvtIndiciumD3D11Present(
-	IDXGISwapChain  *pSwapChain,
-	UINT            SyncInterval,
-	UINT            Flags
+	IDXGISwapChain				*pSwapChain,
+	UINT						SyncInterval,
+	UINT						Flags,
+	PINDICIUM_EVT_PRE_EXTENSION Extension
 )
 {
 	static auto initialized = false;
@@ -464,7 +481,7 @@ void EvtIndiciumD3D11Present(
 
 		IndiciumEngineLogInfo("Initializing ImGui");
 
-        ImGui_ImplWin32_Init(sd.OutputWindow);
+		ImGui_ImplWin32_Init(sd.OutputWindow);
 		ImGui_ImplDX11_Init(pDevice, pContext);
 
 		IndiciumEngineLogInfo("ImGui (DX11) initialized");
@@ -482,10 +499,10 @@ void EvtIndiciumD3D11Present(
 	if (!show_overlay)
 		return;
 
-    // Start the Dear ImGui frame
-    ImGui_ImplDX11_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
+	// Start the Dear ImGui frame
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
 
 	pContext->OMSetRenderTargets(1, &g_d3d11_mainRenderTargetView, NULL);
 
@@ -498,41 +515,43 @@ void EvtIndiciumD3D11Present(
 // Called prior to the original invocation of ResizeBuffers.
 // 
 void EvtIndiciumD3D11PreResizeBuffers(
-	IDXGISwapChain  *pSwapChain,
-	UINT            BufferCount,
-	UINT            Width,
-	UINT            Height,
-	DXGI_FORMAT     NewFormat,
-	UINT            SwapChainFlags
+	IDXGISwapChain				*pSwapChain,
+	UINT						BufferCount,
+	UINT						Width,
+	UINT						Height,
+	DXGI_FORMAT					NewFormat,
+	UINT						SwapChainFlags,
+	PINDICIUM_EVT_PRE_EXTENSION Extension
 )
 {
-    if (g_d3d11_mainRenderTargetView)
-    {
-        g_d3d11_mainRenderTargetView->Release(); 
-        g_d3d11_mainRenderTargetView = nullptr;
-    }
+	if (g_d3d11_mainRenderTargetView)
+	{
+		g_d3d11_mainRenderTargetView->Release();
+		g_d3d11_mainRenderTargetView = nullptr;
+	}
 }
 
 //
 // Called after the original invocation of ResizeBuffers.
 // 
 void EvtIndiciumD3D11PostResizeBuffers(
-	IDXGISwapChain  *pSwapChain,
-	UINT            BufferCount,
-	UINT            Width,
-	UINT            Height,
-	DXGI_FORMAT     NewFormat,
-	UINT            SwapChainFlags
+	IDXGISwapChain					*pSwapChain,
+	UINT							BufferCount,
+	UINT							Width,
+	UINT							Height,
+	DXGI_FORMAT						NewFormat,
+	UINT							SwapChainFlags,
+	PINDICIUM_EVT_POST_EXTENSION	Extension
 )
 {
-    ID3D11Texture2D* pBackBuffer;
-    ID3D11DeviceContext *pContext;
-    ID3D11Device *pDevice;
-    D3D11_DEVICE_IMMEDIATE_CONTEXT_FROM_SWAPCHAIN(pSwapChain, &pDevice, &pContext);
+	ID3D11Texture2D* pBackBuffer;
+	ID3D11DeviceContext *pContext;
+	ID3D11Device *pDevice;
+	D3D11_DEVICE_IMMEDIATE_CONTEXT_FROM_SWAPCHAIN(pSwapChain, &pDevice, &pContext);
 
-    pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-    pDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_d3d11_mainRenderTargetView);
-    pBackBuffer->Release();
+	pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+	pDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_d3d11_mainRenderTargetView);
+	pBackBuffer->Release();
 }
 
 #pragma endregion
