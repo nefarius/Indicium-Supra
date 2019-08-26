@@ -187,9 +187,6 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Indicium-ImGui.ini" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\src\Indicium-Supra\Indicium-Supra.vcxproj">
       <Project>{db383579-da7f-48c0-ab1f-7c4c93544e2c}</Project>
     </ProjectReference>

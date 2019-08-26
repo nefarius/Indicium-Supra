@@ -52,9 +52,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Indicium-ImGui.ini" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="Indicium-ImGui.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
