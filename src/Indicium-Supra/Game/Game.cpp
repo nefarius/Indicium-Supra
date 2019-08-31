@@ -168,6 +168,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     // Internal flow-control hooks
     // 
     static Hook<CallConvention::stdcall_t, VOID, UINT> exitProcessHook;
+	static Hook<CallConvention::stdcall_t, void, int> postQuitMessageHook;
 
     /*
      * This is a bit of a gamble but ExitProcess is expected to be implicitly called
@@ -183,6 +184,9 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         auto logger = spdlog::get("indicium")->clone("process");
 
         logger->info("Host process is terminating, performing pre-DLL-detach clean-up tasks");
+
+		// avoid cleaning up multiple times
+		postQuitMessageHook.remove();
 
         if (engine->EngineConfig.EvtIndiciumGamePreExit) {
             engine->EngineConfig.EvtIndiciumGamePreExit(engine);
@@ -230,7 +234,68 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
         exitProcessHook.call_orig(uExitCode);
     });
 
+	/*
+	 * Hooking PostQuitMessage in addition to ExitProcess should be practically
+	 * more reliable since a game is expected to have at least one main window
+	 * which _should_ receive the WM_QUIT message upon application shutdown.
+	 */
+	postQuitMessageHook.apply((size_t)PostQuitMessage, [](
+		int nExitCode
+		)
+	{
+		auto logger = spdlog::get("indicium")->clone("quit");
 
+		logger->info("WM_QUIT was fired, performing pre-DLL-detach clean-up tasks");
+
+		// avoid cleaning up multiple times
+		exitProcessHook.remove();
+
+		if (engine->EngineConfig.EvtIndiciumGamePreExit) {
+			engine->EngineConfig.EvtIndiciumGamePreExit(engine);
+		}
+
+		//
+		// This will instruct the main thread to gracefully end
+		// 
+		const auto ret = SetEvent(engine->EngineCancellationEvent);
+
+		if (!ret)
+		{
+			logger->error("SetEvent failed: {}", GetLastError());
+		}
+
+		//
+		// Give the thread a short breather to end gracefully
+		// 
+		const auto result = WaitForSingleObject(engine->EngineThread, 3000);
+
+		switch (result)
+		{
+		case WAIT_ABANDONED:
+			logger->error("Unknown state, host process might crash");
+			break;
+		case WAIT_OBJECT_0:
+			logger->info("Thread shutdown complete");
+			break;
+		case WAIT_TIMEOUT:
+#ifndef _DEBUG
+			TerminateThread(engine->EngineThread, 0);
+			logger->error("Thread hasn't finished clean-up within expected time, terminating");
+#endif
+			break;
+		case WAIT_FAILED:
+			logger->error("Unknown error, host process might crash");
+			break;
+		default:
+			TerminateThread(engine->EngineThread, 0);
+			logger->error("Unexpected return value, terminating");
+			break;
+		}
+
+		postQuitMessageHook.call_orig(nExitCode);
+	});
+	
+	
 #pragma region D3D9
 
     /*
