@@ -1107,10 +1107,26 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     //
     // Wait until cancellation requested
     // 
-    WaitForSingleObject(engine->EngineCancellationEvent, INFINITE);
-
-    logger->info("Shutting down hooks...");
-
+    const auto result = WaitForSingleObject(engine->EngineCancellationEvent, INFINITE);
+    logger->info("Shutting down hooks... {} {}", result, GetLastError());
+    switch (result)
+    {
+    case WAIT_ABANDONED:
+        logger->info("Shutting down hooks... Unknown state, host process might crash");
+        break;
+    case WAIT_OBJECT_0:
+        logger->info("Shutting down hooks... Thread shutdown complete");
+        break;
+    case WAIT_TIMEOUT:
+        logger->info("Shutting down hooks... Thread hasn't finished clean-up within expected time, terminating");
+        break;
+    case WAIT_FAILED:
+        logger->info("Shutting down hooks... Unknown error, host process might crash");
+        break;
+    default:
+        logger->info("Shutting down hooks... Unexpected return value, terminating");
+        break;
+    }
     //
     // Notify host that we are about to release all render pipeline hooks
     // 

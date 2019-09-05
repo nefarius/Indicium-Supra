@@ -93,8 +93,8 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM
     //
     // Event to notify engine thread about termination
     // 
-    engine->EngineCancellationEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-
+    engine->EngineCancellationEvent = CreateEvent(nullptr, FALSE, FALSE, TEXT("IndiciumRandomString"));
+    auto dwLastError = GetLastError();
     //
     // Set up logging
     //
@@ -116,8 +116,10 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM
 
     logger = spdlog::get("indicium")->clone("api");
 
-    logger->info("Indicium engine initialized, attempting to launch main thread");
-
+    logger->info("Indicium engine initialized, attempting to launch main thread" );
+    if (engine->EngineCancellationEvent == INVALID_HANDLE_VALUE) {
+        logger->error("Failed to create the Engine Cancellation Event {}." dwLastError);
+    }
     //
     // Kickstart hooking the rendering pipeline
     // 
