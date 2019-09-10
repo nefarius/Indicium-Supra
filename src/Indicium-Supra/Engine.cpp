@@ -121,7 +121,7 @@ INDICIUM_API INDICIUM_ERROR IndiciumEngineCreate(HMODULE HostInstance, PINDICIUM
 		nullptr,
 		FALSE, // Auto-reset event
 		FALSE, // Initial state non-signaled
-		TEXT("IndiciumEngineCancellationEvent") // Named unique event
+		NULL // Named unique event
 	);
 
 	if (engine->EngineCancellationEvent == INVALID_HANDLE_VALUE

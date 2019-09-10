@@ -1189,7 +1189,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     // Decrease host DLL reference count and exit thread
     // 
     FreeLibraryAndExitThread(engine->HostInstance, 0);
-    }
+}
 
 #ifdef HOOK_DINPUT8
 void HookDInput8(size_t* vtable8)
