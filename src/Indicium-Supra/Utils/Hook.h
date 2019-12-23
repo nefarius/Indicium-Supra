@@ -25,7 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include "Windows.h"
-#include <detours.h>
+#include <detours/detours.h>
 #include "Exceptions.hpp"
 
 
