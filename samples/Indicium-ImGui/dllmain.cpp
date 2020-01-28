@@ -78,10 +78,6 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID)
 
 	cfg.EvtIndiciumGameHooked = EvtIndiciumGameHooked;
 
-
-
-	INDICIUM_ERROR err;
-
 	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
