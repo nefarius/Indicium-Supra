@@ -22,9 +22,8 @@ API-Hooking and rendering framework for DirectX-based games.
 
 **Samples are currently broken on this branch due to major API redesign!**
 
-- Visual Studio **2017** ([Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15) is just fine)
+- Visual Studio **2019** ([Community Edition](https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=16) is just fine)
 - [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
-- [.NET Core SDK 2.1](https://www.microsoft.com/net/download/dotnet-core/2.1) (or greater, required for building via CLI only)
 - [Follow the Vcpkg Quick Start](https://github.com/Microsoft/vcpkg#quick-start) and install the following packages:
   - `.\vcpkg install spdlog:x86-windows-static spdlog:x64-windows-static detours:x86-windows-static detours:x64-windows-static`
   - For the ImGui sample to build you'll also need:
@@ -35,14 +34,6 @@ Building should be pretty straight-forward since the dependencies get installed 
 ### Visual Studio
 
 Just open the solution file `Indicium-Supra.sln` and start the build from there.
-
-### Command Line
-
-Navigate to the solution directory on the command line and invoke:
-
-```PowerShell
-powershell .\build.ps1
-```
 
 ### The lazy way
 
