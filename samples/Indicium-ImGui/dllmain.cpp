@@ -27,7 +27,7 @@ SOFTWARE.
 // 
 // Detours
 // 
-#include <detours.h>
+#include <detours/detours.h>
 
 // 
 // STL

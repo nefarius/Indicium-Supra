@@ -1,5 +1,5 @@
-version: 3.5.{build}.0
-image: Visual Studio 2017
+version: 4.0.{build}.0
+image: Visual Studio 2019
 install:
 - cmd: git submodule -q update --init
 - cmd: |
@@ -11,7 +11,7 @@ before_build:
 - cmd: nuget restore
 - cmd: vcpkg integrate install
 - cmd: vcpkg update
-- cmd: vcpkg install detours:x86-windows-static detours:x64-windows-static
+- cmd: vcpkg install spdlog:x86-windows-static spdlog:x64-windows-static detours:x86-windows-static detours:x64-windows-static
 - cmd: vcpkg install imgui:x86-windows-static imgui:x64-windows-static
 build_script:
 - ps: .\build.ps1
