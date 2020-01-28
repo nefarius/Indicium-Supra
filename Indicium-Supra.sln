@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Indicium-Supra", "src\Indicium-Supra\Indicium-Supra.vcxproj", "{DB383579-DA7F-48C0-AB1F-7C4C93544E2C}"
 EndProject
@@ -12,8 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{FC1684BA-3749-41B4-B35E-4B576A299F72}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{395DA647-2D87-485A-88DA-5AF160444A8A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{5B003A67-E263-47FF-AF14-02691F7681D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,18 +73,6 @@ Global
 		{FC86B49A-3A73-4D82-81BA-D72B54C9132D}.Release|Win32.Build.0 = Release|Win32
 		{FC86B49A-3A73-4D82-81BA-D72B54C9132D}.Release|x64.ActiveCfg = Release|x64
 		{FC86B49A-3A73-4D82-81BA-D72B54C9132D}.Release|x64.Build.0 = Release|x64
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Debug_LIB|Win32.ActiveCfg = Debug|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Debug_LIB|Win32.Build.0 = Debug|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Debug_LIB|x64.ActiveCfg = Debug|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Debug_LIB|x64.Build.0 = Debug|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Release_LIB|Win32.ActiveCfg = Release|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Release_LIB|Win32.Build.0 = Release|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Release_LIB|x64.ActiveCfg = Release|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Release_LIB|x64.Build.0 = Release|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Release|Win32.ActiveCfg = Release|Any CPU
-		{5B003A67-E263-47FF-AF14-02691F7681D2}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
