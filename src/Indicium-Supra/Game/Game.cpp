@@ -1108,7 +1108,7 @@ DWORD WINAPI IndiciumMainThread(LPVOID Params)
     // Wait until cancellation requested
     // 
     const auto result = WaitForSingleObject(engine->EngineCancellationEvent, INFINITE);
-    logger->info("Shutting down hooks... {} {}", result, GetLastError());
+    logger->info("Shutting down hooks... (result: {}, error: {})", result, GetLastError());
     switch (result)
     {
     case WAIT_ABANDONED:
