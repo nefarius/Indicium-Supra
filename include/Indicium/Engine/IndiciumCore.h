@@ -235,14 +235,23 @@ extern "C" {
 
         struct
         {
+        	//
+        	// Enables hooking relevant Core Audio APIs
+        	// 
             BOOL HookCoreAudio;
 
         } CoreAudio;
 
         struct
         {
+        	//
+        	// TRUE if log file should be generated, FALSE otherwise
+        	// 
             BOOL IsEnabled;
 
+        	//
+        	// Full path and name to log file
+        	// 
             PCSTR FilePath;
 
         } Logging;
