@@ -4,7 +4,7 @@ platform:
 - Win32
 - x64
 configuration:
-- Release
+- Release_LIB
 install:
 - cmd: git submodule -q update --init
 - cmd: |
@@ -13,25 +13,16 @@ install:
     .\bootstrap-vcpkg.bat > NUL
     cd %appveyor_build_folder%
 before_build:
-- cmd: nuget restore
 - cmd: vcpkg integrate install
 - cmd: vcpkg update
 - cmd: vcpkg install spdlog:x86-windows-static spdlog:x64-windows-static detours:x86-windows-static detours:x64-windows-static
 - cmd: vcpkg install imgui:x86-windows-static imgui:x64-windows-static
+- ps: Invoke-WebRequest "https://downloads.vigem.org/other/nefarius/vpatch/vpatch.exe" -OutFile vpatch.exe
+- cmd: vpatch.exe --stamp-version "%APPVEYOR_BUILD_VERSION%" --target-file ".\src\Indicium-Supra\Indicium-Supra.rc" --resource.file-version --resource.product-version
+- cmd: vpatch.exe --stamp-version "%APPVEYOR_BUILD_VERSION%" --target-file ".\src\samples\Indicium-ImGui\Indicium-ImGui.rc" --resource.file-version --resource.product-version
+- cmd: vpatch.exe --stamp-version "%APPVEYOR_BUILD_VERSION%" --target-file ".\src\samples\Indicium-FW1FontWrapper\Indicium-FW1FontWrapper.rc" --resource.file-version --resource.product-version
 build:
   project: $(APPVEYOR_BUILD_FOLDER)\$(APPVEYOR_PROJECT_NAME).sln
-after_build:
-- ps: |
-    Invoke-WebRequest "https://downloads.vigem.org/other/pavel-a/ddverpatch/verpatch-1.0.15.1-x86-codeplex.zip" -OutFile verpatch-1.0.15.1-x86-codeplex.zip
-    Expand-Archive verpatch-1.0.15.1-x86-codeplex.zip -DestinationPath .
-    .\verpatch.exe .\bin\x64\Indicium-FW1FontWrapper.dll "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x64\Indicium-FW1FontWrapper.dll /pv "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x64\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x64\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x86\Indicium-FW1FontWrapper.dll "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x86\Indicium-FW1FontWrapper.dll /pv "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x86\Indicium-ImGui.dll "$env:APPVEYOR_BUILD_VERSION"
-    .\verpatch.exe .\bin\x86\Indicium-ImGui.dll /pv "$env:APPVEYOR_BUILD_VERSION"
 artifacts:
 - path: 'bin\**\*.dll'
   name: Indicium-Supra
