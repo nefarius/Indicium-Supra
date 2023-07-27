@@ -37,7 +37,7 @@ Just open the solution file `Indicium-Supra.sln` and start the build from there.
 
 ### The lazy way
 
-Now if you're really in a hurry you can [grab pre-built binaries from the buildbot](https://buildbot.vigem.org/builds/Indicium-Supra/master/). Boom, done.
+Now if you're really in a hurry you can [grab pre-built binaries from the buildbot](https://buildbot.nefarius.at/builds/Indicium-Supra/master/). Boom, done.
 
 ## How to use
 
