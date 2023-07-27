@@ -17,7 +17,7 @@ before_build:
 - cmd: vcpkg update
 - cmd: vcpkg install spdlog:x86-windows-static spdlog:x64-windows-static detours:x86-windows-static detours:x64-windows-static
 - cmd: vcpkg install imgui:x86-windows-static imgui:x64-windows-static
-- ps: Invoke-WebRequest "https://downloads.vigem.org/other/nefarius/vpatch/vpatch.exe" -OutFile vpatch.exe
+- ps: Invoke-WebRequest "https://downloads.nefarius.at/other/nefarius/vpatch/vpatch.exe" -OutFile vpatch.exe
 - cmd: vpatch.exe --stamp-version "%APPVEYOR_BUILD_VERSION%" --target-file ".\src\Indicium-Supra\Indicium-Supra.rc" --resource.file-version --resource.product-version
 - cmd: vpatch.exe --stamp-version "%APPVEYOR_BUILD_VERSION%" --target-file ".\samples\Indicium-ImGui\Indicium-ImGui.rc" --resource.file-version --resource.product-version
 - cmd: vpatch.exe --stamp-version "%APPVEYOR_BUILD_VERSION%" --target-file ".\samples\Indicium-FW1FontWrapper\Indicium-FW1FontWrapper.rc" --resource.file-version --resource.product-version
